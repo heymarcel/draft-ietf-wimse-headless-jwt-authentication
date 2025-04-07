@@ -9,7 +9,7 @@ number:
 date:
 consensus: true
 v: 3
-area: AREA
+area: ""
 workgroup: "Workload Identity in Multi System Environments"
 keyword:
  - workload
@@ -18,12 +18,12 @@ keyword:
  - exchange
 venue:
   group: "Workload Identity in Multi System Environments"
-  type: "Working Group"
+  type: ""
   mail: "wimse@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/wimse/"
   github: "heymarcel/draft-ietf-wimse-headless-jwt-authentication"
-  latest: "https://ietf-wg-wimse.github.io/draft-ietf-wimse-s2s-protocol/draft-ietf-wimse-s2s-protocol.html"
-workgroup: WG Working Group
+  latest: "https://heymarcel.github.io/draft-ietf-wimse-headless-jwt-authentication/draft-levy-wimse-headless-jwt-authentication-practices.html"
+workgroup: "Workload Identity in Multi System Environments"
 
 author:
  -
