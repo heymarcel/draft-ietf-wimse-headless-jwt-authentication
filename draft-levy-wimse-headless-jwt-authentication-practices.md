@@ -19,35 +19,38 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "WIMSE Headless JWT Authentication Practices"
+abbrev: "WIMSE Headless JWT Authentication Practices"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
+docname: draft-levy-wimse-headless-jwt-authentication-practices-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
 consensus: true
 v: 3
 area: AREA
-workgroup: WG Working Group
+workgroup: "Workload Identity in Multi System Environments"
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - workload
+ - identity
+ - credential
+ - exchange
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+  group: "Workload Identity in Multi System Environments"
+  type: "Working Group"
+  mail: "wimse@ietf.org"
+  arch: "https://mailarchive.ietf.org/arch/browse/wimse/"
+  github: "heymarcel/draft-ietf-wimse-headless-jwt-authentication"
+  latest: "https://ietf-wg-wimse.github.io/draft-ietf-wimse-s2s-protocol/draft-ietf-wimse-s2s-protocol.html"
+workgroup: WG Working Group
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: Marcel Levy
+    organization: SPIRL
+    email: heymarcel@gmail.com
+    role: editor
 
 normative:
 
