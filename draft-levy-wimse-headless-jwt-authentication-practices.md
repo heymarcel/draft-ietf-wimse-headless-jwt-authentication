@@ -33,7 +33,16 @@ author:
     role: editor
 
 normative:
-
+  RFC6749: OAuth 2.0
+  Discovery:
+    title: OpenID Connect Discovery 1.0 incorporating errata set 2
+    target: https://openid.net/specs/openid-connect-discovery-1_0.html
+    date: 2023
+    author:
+      - ins: N. Sakimura
+      - ins: J. Bradley
+      - ins: M. Jones
+      - ins: E. Jay
 informative:
 
 
@@ -46,8 +55,17 @@ TODO Abstract
 
 # Introduction
 
-TODO Introduction
+In service-to-service communication, a common pattern is to use JWKs
+for authentication purposes. This is done by having the workload
+(i.e. service) present a bearer token in the form of a signed JWT,
+which is then verified by the receiving party. The "bootstrap" problem
+of establishing the signing JWK is solved by using an OpenID Connect
+Discovery Point {{Discovery}}.
 
+Since this pattern is not described in a specification, it leads to
+variability in practice. The purpose of this document is to capture
+this common workload identity authentication practice as an RFC in
+order to obtain consistency and promote interoperability in industry.
 
 # Conventions and Definitions
 
