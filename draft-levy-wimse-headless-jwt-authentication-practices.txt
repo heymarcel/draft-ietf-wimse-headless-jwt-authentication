@@ -2,10 +2,10 @@
 
 
 
-WG Working Group                                            M. Levy, Ed.
+Workload Identity in Multi System Environments              M. Levy, Ed.
 Internet-Draft                                                     SPIRL
-Intended status: Informational                              7 April 2025
-Expires: 9 October 2025
+Intended status: Informational                              8 April 2025
+Expires: 10 October 2025
 
 
               WIMSE Headless JWT Authentication Practices
@@ -19,17 +19,17 @@ About This Document
 
    This note is to be removed before publishing as an RFC.
 
-   The latest revision of this draft can be found at https://ietf-wg-
-   wimse.github.io/draft-ietf-wimse-s2s-protocol/draft-ietf-wimse-s2s-
-   protocol.html.  Status information for this document may be found at
+   The latest revision of this draft can be found at
+   https://heymarcel.github.io/draft-ietf-wimse-headless-jwt-
+   authentication/draft-levy-wimse-headless-jwt-authentication-
+   practices.html.  Status information for this document may be found at
    https://datatracker.ietf.org/doc/draft-levy-wimse-headless-jwt-
    authentication-practices/.
 
    Discussion of this document takes place on the Workload Identity in
-   Multi System Environments Working Group mailing list
-   (mailto:wimse@ietf.org), which is archived at
-   https://mailarchive.ietf.org/arch/browse/wimse/.  Subscribe at
-   https://www.ietf.org/mailman/listinfo/wimse/.
+   Multi System Environments mailing list (mailto:wimse@ietf.org), which
+   is archived at https://mailarchive.ietf.org/arch/browse/wimse/.
+   Subscribe at https://www.ietf.org/mailman/listinfo/wimse/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-
@@ -50,7 +50,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 October 2025.
+   This Internet-Draft will expire on 10 October 2025.
 
 Copyright Notice
 
@@ -78,7 +78,17 @@ Table of Contents
 
 1.  Introduction
 
-   TODO Introduction
+   In service-to-service communication, a common pattern is to use JWKs
+   for authentication purposes.  This is done by having the workload
+   (i.e. service) present a bearer token in the form of a signed JWT,
+   which is then verified by the receiving party.  The "bootstrap"
+   problem of establishing the signing JWK is solved by using an OpenID
+   Connect Discovery Point [Discovery].
+
+   Since this pattern is not described in a specification, it leads to
+   variability in practice.  The purpose of this document is to capture
+   this common workload identity authentication practice as an RFC in
+   order to obtain consistency and promote interoperability in industry.
 
 2.  Conventions and Definitions
 
@@ -98,10 +108,20 @@ Table of Contents
 
 5.  Normative References
 
+   [Discovery]
+              Sakimura, N., Bradley, J., Jones, M., and E. Jay, "OpenID
+              Connect Discovery 1.0 incorporating errata set 2", 2023,
+              <https://openid.net/specs/openid-connect-discovery-
+              1_0.html>.
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
+              RFC 6749, DOI 10.17487/RFC6749, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6749>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
