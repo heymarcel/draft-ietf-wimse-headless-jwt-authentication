@@ -1,6 +1,6 @@
 ---
-title: "WIMSE Headless JWT Authentication Practices"
-abbrev: "WIMSE Headless JWT Authentication Practices"
+title: "WIMSE Headless JWT Authentication"
+abbrev: "WIMSE Headless JWT Authentication"
 category: info
 
 docname: draft-levy-wimse-headless-jwt-authentication-practices-latest
@@ -67,10 +67,29 @@ variability in practice. The purpose of this document is to capture
 this common workload identity authentication practice as an RFC in
 order to obtain consistency and promote interoperability in industry.
 
+# Architecture and Message Flow
+TODO - ASCII Diagram showing the flow between the client with a JWT, the Server receiving it and the OIDC endpoint from which the keys are retrieved.
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
+# JWT used for Authentication over HTTP
+TODO describes how the JWT is used over HTTP (protocol binding) - maybe just refer to RFC 7523. Leave door open for other protocol bindings that can be defined elsewhere
+
+# Key Discovery
+TODO describes the key discovery mechanism - refer to OpenID Connecct discovery mechanisms,
+
+# JWT Format and Processing Requriements
+
+## JWT Format
+TODO - describe claims and format of JWT needed.
+
+## JWT Processsing
+TODO - how should the client and server process the JWT (verification etc)
+
+## JWT Provisioning
+TODO - describe where the JWT may come from. Who issues it etc (could also be a security consideration)
 
 # Security Considerations
 
