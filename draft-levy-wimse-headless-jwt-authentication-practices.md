@@ -71,7 +71,7 @@ TODO - ASCII Diagram showing the flow between the client with a JWT, the Server 
 {{fig-message-flow}} illustrates the message flow described in {{JWT.authentication}}:
 
 ~~~ aasvg
-                             2) GET /.well-known/openid-configuration
+                            2) GET /.well-known/openid-configuration
                      +-----------------------------------------+
                      |                                         |
                      |                                +--------v----------------+
@@ -79,9 +79,9 @@ TODO - ASCII Diagram showing the flow between the client with a JWT, the Server 
       |                 |                             |      JWT Issuer/        |
       |    Resource     <----------------------------->  Authorization Server   |
       |     Server      |   3) Retrieve JWKs          |                         |
-      |                 |      from "jwks_uri"        |                         |
-      +---^-------+-----+                             |                         |
-          |       |       4) Verify signature         +-------------------------+
+      |                 |      from "jwks_uri"        +-------------------------+
+      +---^-------+-----+
+          |       |       4) Verify signature
           |       |          using JWK
           |       |
 1) JWT    |       |
