@@ -71,9 +71,9 @@ Table of Contents
    1.  Introduction
    2.  Architecture and Message Flow
    3.  Conventions and Definitions
-   4.  JWT used for Authentication over HTTP
+   4.  JWT used for Authentication
    5.  Key Discovery
-   6.  JWT Format and Processing Requriements
+   6.  JWT Format and Processing Requirements
      6.1.  JWT Format
      6.2.  JWT Processsing
      6.3.  JWT Provisioning
@@ -85,12 +85,12 @@ Table of Contents
 
 1.  Introduction
 
-   In service-to-service communication, a common pattern is to use JWKs
-   for authentication purposes.  This is done by having the workload
-   (i.e. service) present a bearer token in the form of a signed JWT,
-   which is then verified by the receiving party.  The "bootstrap"
-   problem of establishing the signing JWK is solved by using an OpenID
-   Connect Discovery Point [OIDC.Discovery].
+   In service-to-service communication, a common pattern is to use a
+   JSON Web Token (JWT) for authentication purposes.  This is done by
+   having the workload (i.e. service) present a bearer token in the form
+   of a signed JWT, which is then verified by the receiving party.  The
+   "bootstrap" problem of establishing the signing JWK is solved by
+   using an OpenID Connect Discovery Point [OIDC.Discovery].
 
    Since this pattern is not described in a specification, it leads to
    variability in practice.  The purpose of this document is to capture
@@ -120,7 +120,7 @@ Table of Contents
           |       |
 1) JWT    |       |
    Bearer |       |  5) Response after
-   Token  |       |     authentication
+   Token  |       |     verification
           |       |
           |       |
       +---+-------v-----+
@@ -139,18 +139,41 @@ Table of Contents
    BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-4.  JWT used for Authentication over HTTP
+4.  JWT used for Authentication
 
-   TODO describes how the JWT is used over HTTP (protocol binding) -
-   maybe just refer to RFC 7523.  Leave door open for other protocol
-   bindings that can be defined elsewhere
+   The overall message flow is seen in Figure 1, and this section
+   explains it in more detail.  It assumes the workload has previously
+   acquired a JWT adhering to the profile specified in [RFC7523].  This
+   JWT provisioning process is described in more detail in Section 6.3.
+
+   1.  The workload calls a Resource Server over HTTP and presents a JWT
+       Bearer Token as specified in Section 4 of [RFC7521].
+
+   2.  The Resource Server takes the value from the iss claim and
+       appends "/.well-known/openid-configuration" to retrieve the
+       Authorization Server's configuration via HTTP, as specified in
+       [OIDC.Discovery].
+
+   3.  The Resource Server then retrieves the JWKs via HTTP from the
+       jwks_uri declared in the Authorization Server's configuration
+       response.
+
+   4.  Using the appropiate issuer key, the Resource Server verifies the
+       signature of the JWT Bearer Token.
+
+   5.  The Resource Server then responds to the workload according to
+       the outcome of the signature verification.
+
+   This document limits discussion to HTTP, as this is the protocol
+   predominantly used.  Although other protocols are out of scope, this
+   should not be read as a limit on their future use.
 
 5.  Key Discovery
 
    TODO describes the key discovery mechanism - refer to OIDC discovery
    mechanisms.
 
-6.  JWT Format and Processing Requriements
+6.  JWT Format and Processing Requirements
 
 6.1.  JWT Format
 
@@ -168,7 +191,8 @@ Table of Contents
 
 7.  Security Considerations
 
-   TODO Security
+   1.  A secure channel (i.e. TLS) MUST be used when providing a JWT for
+       authentication.
 
 8.  IANA Considerations
 
@@ -190,6 +214,16 @@ Table of Contents
    [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
               RFC 6749, DOI 10.17487/RFC6749, October 2012,
               <https://www.rfc-editor.org/rfc/rfc6749>.
+
+   [RFC7521]  Campbell, B., Mortimore, C., Jones, M., and Y. Goland,
+              "Assertion Framework for OAuth 2.0 Client Authentication
+              and Authorization Grants", RFC 7521, DOI 10.17487/RFC7521,
+              May 2015, <https://www.rfc-editor.org/rfc/rfc7521>.
+
+   [RFC7523]  Jones, M., Campbell, B., and C. Mortimore, "JSON Web Token
+              (JWT) Profile for OAuth 2.0 Client Authentication and
+              Authorization Grants", RFC 7523, DOI 10.17487/RFC7523, May
+              2015, <https://www.rfc-editor.org/rfc/rfc7523>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
