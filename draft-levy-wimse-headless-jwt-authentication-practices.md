@@ -71,9 +71,9 @@ TODO - ASCII Diagram showing the flow between the client with a JWT, the Server 
 {{fig-message-flow}} illustrates the message flow described in {{JWT.authentication}}:
 
 ~~~ aasvg
-                             2) GET /.well-known/openid-configuration             
-                     +-----------------------------------------+                 
-                     |                                         |                 
+                             2) GET /.well-known/openid-configuration
+                     +-----------------------------------------+
+                     |                                         |
                      |                                +--------v----------------+
       +--------------v--+                             |                         |
       |                 |                             |      JWT Issuer/        |
@@ -82,18 +82,18 @@ TODO - ASCII Diagram showing the flow between the client with a JWT, the Server 
       |                 |      from "jwks_uri"        |                         |
       +---^-------+-----+                             |                         |
           |       |       4) Verify signature         +-------------------------+
-          |       |          using JWK                                           
-          |       |                                                              
-1) JWT    |       |                                                              
-   Bearer |       |  5) Response after                                           
-   Token  |       |     authentication                                           
-          |       |                                                              
-          |       |                                                              
-      +---+-------v-----+                                                        
-      |                 |                                                        
-      |    Workload     |                                                        
-      |                 |                                                        
-      +-----------------+                                                        
+          |       |          using JWK
+          |       |
+1) JWT    |       |
+   Bearer |       |  5) Response after
+   Token  |       |     authentication
+          |       |
+          |       |
+      +---+-------v-----+
+      |                 |
+      |    Workload     |
+      |                 |
+      +-----------------+
 ~~~
 {: #fig-message-flow title="OIDC message flow when used in a headless environment"}
 
