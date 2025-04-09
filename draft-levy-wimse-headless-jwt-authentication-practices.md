@@ -34,7 +34,7 @@ author:
 
 normative:
   RFC6749: OAuth 2.0
-  Discovery:
+  OIDC.Discovery:
     title: OpenID Connect Discovery 1.0 incorporating errata set 2
     target: https://openid.net/specs/openid-connect-discovery-1_0.html
     date: 2023
@@ -45,11 +45,9 @@ normative:
       - ins: E. Jay
 informative:
 
-
 --- abstract
 
 TODO Abstract
-
 
 --- middle
 
@@ -60,7 +58,7 @@ for authentication purposes. This is done by having the workload
 (i.e. service) present a bearer token in the form of a signed JWT,
 which is then verified by the receiving party. The "bootstrap" problem
 of establishing the signing JWK is solved by using an OpenID Connect
-Discovery Point {{Discovery}}.
+Discovery Point {{OIDC.Discovery}}.
 
 Since this pattern is not described in a specification, it leads to
 variability in practice. The purpose of this document is to capture
@@ -70,15 +68,50 @@ order to obtain consistency and promote interoperability in industry.
 # Architecture and Message Flow
 TODO - ASCII Diagram showing the flow between the client with a JWT, the Server receiving it and the OIDC endpoint from which the keys are retrieved.
 
+{{fig-message-flow}} illustrates the message flow described in {{JWT.authentication}}:
+
+~~~ aasvg
+                             2) GET /.well-known/openid-configuration             
+                     +-----------------------------------------+                 
+                     |                                         |                 
+                     |                                +--------v----------------+
+      +--------------v--+                             |                         |
+      |                 |                             |      JWT Issuer/        |
+      |    Resource     <----------------------------->  Authorization Server   |
+      |     Server      |   3) Retrieve JWKs          |                         |
+      |                 |      from "jwks_uri"        |                         |
+      +---^-------+-----+                             |                         |
+          |       |       4) Verify signature         +-------------------------+
+          |       |          using JWK                                           
+          |       |                                                              
+1) JWT    |       |                                                              
+   Bearer |       |  5) Response after                                           
+   Token  |       |     authentication                                           
+          |       |                                                              
+          |       |                                                              
+      +---+-------v-----+                                                        
+      |                 |                                                        
+      |    Workload     |                                                        
+      |                 |                                                        
+      +-----------------+                                                        
+~~~
+{: #fig-message-flow title="OIDC message flow when used in a headless environment"}
+
+
+
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}
 
-# JWT used for Authentication over HTTP
+# JWT used for Authentication over HTTP {#JWT.authentication}
 TODO describes how the JWT is used over HTTP (protocol binding) - maybe just refer to RFC 7523. Leave door open for other protocol bindings that can be defined elsewhere
 
+
+
+
 # Key Discovery
-TODO describes the key discovery mechanism - refer to OpenID Connecct discovery mechanisms,
+TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.
 
 # JWT Format and Processing Requriements
 
