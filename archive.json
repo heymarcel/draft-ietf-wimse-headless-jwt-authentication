@@ -1,0 +1,122 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2025-04-10T00:02:26.172781+00:00",
+  "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOOVtHv86xlvim",
+      "title": "Change Title",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/1",
+      "state": "CLOSED",
+      "author": "PieterKas",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Suggest to drop the \"Practices\" from the specification - WIMSE Headless JWT Authentication",
+      "createdAt": "2025-04-08T11:15:50Z",
+      "updatedAt": "2025-04-08T15:29:24Z",
+      "closedAt": "2025-04-08T15:29:23Z",
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Agreed. Changed as part of merge from PR #2 ",
+          "createdAt": "2025-04-08T15:29:23Z",
+          "updatedAt": "2025-04-08T15:29:23Z"
+        }
+      ]
+    }
+  ],
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDOOVtHv86RxaHM",
+      "title": "Adding Document Skeleton",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/2",
+      "state": "MERGED",
+      "author": "PieterKas",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fleshing out the specification topics",
+      "createdAt": "2025-04-08T11:28:51Z",
+      "updatedAt": "2025-04-08T14:07:30Z",
+      "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "89db246d20ea4c7f7592e935e8e4e9bf22afd3cb",
+      "headRepository": "PieterKas/draft-ietf-wimse-headless-jwt-authentication",
+      "headRefName": "patch-1",
+      "headRefOid": "dd771b4f061dde273898ccefddbd990045942741",
+      "closedAt": "2025-04-08T14:07:30Z",
+      "mergedAt": "2025-04-08T14:07:30Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "4790196de381af1577edc91fc85edcb695f6c97a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOVtHv86j65gR",
+          "commit": {
+            "abbreviatedOid": "dd771b4"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Thanks!",
+          "createdAt": "2025-04-08T14:05:15Z",
+          "updatedAt": "2025-04-08T14:05:15Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
