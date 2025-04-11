@@ -97,7 +97,9 @@ Table of Contents
    having the workload (i.e. service) present a bearer token in the form
    of a signed JWT, which is then verified by the receiving party.  The
    "bootstrap" problem of establishing the signing JWK is solved by
-   using an OpenID Connect Discovery Point [OIDC.Discovery].
+   requesting a JSON configuration document using the process described
+   in OpenID Connect Discovery [OIDC.Discovery] or OAuth 2.0
+   Authorization Server Metadata [RFC8414].
 
    Since this pattern is not described in a specification, it leads to
    variability in practice.  The purpose of this document is to capture
@@ -110,7 +112,8 @@ Table of Contents
    the Server receiving it and the OIDC endpoint from which the keys are
    retrieved.
 
-   Figure 1 illustrates the message flow described in Section 4:
+   Figure 1 illustrates the OIDC-based message flow described in
+   Section 4:
 
                             2) GET /.well-known/openid-configuration
                      +-----------------------------------------+
@@ -157,9 +160,10 @@ Table of Contents
        Bearer Token as specified in Section 4 of [RFC7521].
 
    2.  The Resource Server takes the value from the iss claim and
-       appends "/.well-known/openid-configuration" to retrieve the
+       appends /.well-known/openid-configuration to retrieve the
        Authorization Server's configuration via HTTP, as specified in
-       [OIDC.Discovery].
+       [OIDC.Discovery].  Alternatively, the OAuth 2.0 Authorization
+       Server Metadata endpoint [RFC8414] may be used.
 
    3.  The Resource Server then retrieves the JWKs via HTTP from the
        jwks_uri declared in the Authorization Server's configuration
@@ -181,16 +185,16 @@ Table of Contents
 
 5.  Key Discovery
 
+   TODO describes the key discovery mechanism - refer to OIDC discovery
+   mechanisms, but also mention OAuth 2.0.
+
    Issuer key discovery follows the steps outlined in Section 4 of
    [OIDC.Discovery].
 
    GET /.well-known/openid-configuration HTTP/1.1
    Host: example.com
 
-        Figure 2: Example request to issuer to obtain configuration
-
-   TODO describes the key discovery mechanism - refer to OIDC discovery
-   mechanisms.
+      Figure 2: Example request to issuer to obtain OIDC configuration
 
    {
      "issuer": "https://example.com",
@@ -200,6 +204,14 @@ Table of Contents
    }
 
               Figure 3: Example issuer configuration response
+
+   Equivalent flow using OAuth 2.0:
+
+   GET /.well-known/oauth-authorization-server HTTP/1.1
+   Host: example.com
+
+          Figure 4: Example request to issuer to obtain OAuth 2.0
+                       Authorization Server metadata
 
 6.  JWT Format and Processing Requirements
 
@@ -269,6 +281,11 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8414]  Jones, M., Sakimura, N., and J. Bradley, "OAuth 2.0
+              Authorization Server Metadata", RFC 8414,
+              DOI 10.17487/RFC8414, June 2018,
+              <https://www.rfc-editor.org/rfc/rfc8414>.
 
 Acknowledgments
 

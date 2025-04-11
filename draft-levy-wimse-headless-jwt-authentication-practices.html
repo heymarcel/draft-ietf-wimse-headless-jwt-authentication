@@ -1218,8 +1218,9 @@ in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 (JWT) for authentication purposes. This is done by having the workload (i.e.
 service) present a bearer token in the form of a signed JWT, which is then
 verified by the receiving party. The "bootstrap" problem of establishing the
-signing JWK is solved by using an OpenID Connect Discovery Point
-<span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+signing JWK is solved by requesting a JSON configuration document using the
+process described in OpenID Connect Discovery <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span> or OAuth 2.0
+Authorization Server Metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Since this pattern is not described in a specification, it leads to
 variability in practice. The purpose of this document is to capture
 this common workload identity authentication practice as an RFC in
@@ -1232,7 +1233,7 @@ order to obtain consistency and promote interoperability in industry.<a href="#s
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-architecture-and-message-fl" class="section-name selfRef">Architecture and Message Flow</a>
       </h2>
 <p id="section-2-1">TODO - ASCII Diagram showing the flow between the client with a JWT, the Server receiving it and the OIDC endpoint from which the keys are retrieved.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<p id="section-2-2"><a href="#fig-message-flow" class="auto internal xref">Figure 1</a> illustrates the message flow described in <a href="#JWT.authentication" class="auto internal xref">Section 4</a>:<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-2"><a href="#fig-message-flow" class="auto internal xref">Figure 1</a> illustrates the OIDC-based message flow described in <a href="#JWT.authentication" class="auto internal xref">Section 4</a>:<a href="#section-2-2" class="pilcrow">¶</a></p>
 <span id="name-oidc-message-flow-when-used"></span><div id="fig-message-flow">
 <figure id="figure-1">
         <div id="section-2-3.1">
@@ -1334,8 +1335,9 @@ Token as specified in Section 4 of <span>[<a href="#RFC7521" class="cite xref">R
 </li>
         <li id="section-4-2.2">
           <p id="section-4-2.2.1">The Resource Server takes the value from the <code>iss</code> claim and appends
-"/.well-known/openid-configuration" to retrieve the Authorization Server's
-configuration via HTTP, as specified in <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
+<code>/.well-known/openid-configuration</code> to retrieve the Authorization Server's
+configuration via HTTP, as specified in <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. Alternatively, the
+OAuth 2.0 Authorization Server Metadata endpoint <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span> may be used.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.3">
           <p id="section-4-2.3.1">The Resource Server then retrieves the JWKs via HTTP from the <code>jwks_uri</code>
@@ -1346,7 +1348,8 @@ declared in the Authorization Server's configuration response.<a href="#section-
 of the JWT Bearer Token.<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.5">
-          <p id="section-4-2.5.1">The Resource Server then responds to the workload according to the outcome of the signature verification.<a href="#section-4-2.5.1" class="pilcrow">¶</a></p>
+          <p id="section-4-2.5.1">The Resource Server then responds to the workload according to the outcome of
+the signature verification.<a href="#section-4-2.5.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
 <p id="section-4-3">As we can see, the headless JWT authentication pattern closely follows that of
@@ -1362,18 +1365,18 @@ limit on their future use.<a href="#section-4-4" class="pilcrow">¶</a></p>
       <h2 id="name-key-discovery">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-key-discovery" class="section-name selfRef">Key Discovery</a>
       </h2>
-<p id="section-5-1">Issuer key discovery follows the steps outlined in Section 4 of <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-1">TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms, but also mention OAuth 2.0.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">Issuer key discovery follows the steps outlined in Section 4 of <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <span id="name-example-request-to-issuer-t"></span><figure id="figure-2">
-        <div class="alignLeft art-text artwork" id="section-5-2.1">
+        <div class="alignLeft art-text artwork" id="section-5-3.1">
 <pre>
 GET /.well-known/openid-configuration HTTP/1.1
 Host: example.com
 </pre>
 </div>
 <figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
-<a href="#name-example-request-to-issuer-t" class="selfRef">Example request to issuer to obtain configuration</a>
+<a href="#name-example-request-to-issuer-t" class="selfRef">Example request to issuer to obtain OIDC configuration</a>
         </figcaption></figure>
-<p id="section-5-3">TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.<a href="#section-5-3" class="pilcrow">¶</a></p>
 <span id="name-example-issuer-configuratio"></span><figure id="figure-3">
         <div class="lang-json sourcecode" id="section-5-4.1">
 <pre>
@@ -1387,6 +1390,17 @@ Host: example.com
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
 <a href="#name-example-issuer-configuratio" class="selfRef">Example issuer configuration response</a>
+        </figcaption></figure>
+<p id="section-5-5">Equivalent flow using OAuth 2.0:<a href="#section-5-5" class="pilcrow">¶</a></p>
+<span id="name-example-request-to-issuer-to"></span><figure id="figure-4">
+        <div class="alignLeft art-text artwork" id="section-5-6.1">
+<pre>
+GET /.well-known/oauth-authorization-server HTTP/1.1
+Host: example.com
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-example-request-to-issuer-to" class="selfRef">Example request to issuer to obtain OAuth 2.0 Authorization Server metadata</a>
         </figcaption></figure>
 </section>
 </div>
@@ -1479,8 +1493,12 @@ tokens, stolen JWTs are particularly valuable to attackers:<a href="#section-7-1
 <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Campbell, B.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants"</span>, <span class="seriesInfo">RFC 7523</span>, <span class="seriesInfo">DOI 10.17487/RFC7523</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7523">https://www.rfc-editor.org/rfc/rfc7523</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-    <dd>
+      <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8414">[RFC8414]</dt>
+    <dd>
+<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Sakimura, N.</span>, and <span class="refAuthor">J. Bradley</span>, <span class="refTitle">"OAuth 2.0 Authorization Server Metadata"</span>, <span class="seriesInfo">RFC 8414</span>, <span class="seriesInfo">DOI 10.17487/RFC8414</span>, <time datetime="2018-06" class="refDate">June 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8414">https://www.rfc-editor.org/rfc/rfc8414</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
