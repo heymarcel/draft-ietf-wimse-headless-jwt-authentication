@@ -23,7 +23,6 @@ venue:
   arch: "https://mailarchive.ietf.org/arch/browse/wimse/"
   github: "heymarcel/draft-ietf-wimse-headless-jwt-authentication"
   latest: "https://heymarcel.github.io/draft-ietf-wimse-headless-jwt-authentication/draft-levy-wimse-headless-jwt-authentication-practices.html"
-workgroup: "Workload Identity in Multi System Environments"
 
 author:
  -
@@ -36,8 +35,6 @@ normative:
   RFC6749: OAuth 2.0
   RFC7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
   RFC7523: JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
-  OIDC.Connect:
-
   OIDC.Discovery:
     title: OpenID Connect Discovery 1.0 incorporating errata set 2
     target: https://openid.net/specs/openid-connect-discovery-1_0.html
@@ -135,16 +132,28 @@ limit on their future use.
 # Key Discovery
 
 
+Issuer key discovery follows the steps outlined in Section 4 of [OIDC.Discovery].
+
+~~~
+GET /.well-known/openid-configuration HTTP/1.1
+Host: example.com
+~~~
+{: title="Example request to issuer to obtain configuration"}
+
 TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.
-~~~json
+
+~~~ json
 {
   "issuer": "https://example.com",
   "authorization_endpoint": "https://example.com/auth",
   "token_endpoint": "https://example.com/token",
-  "jwks_uri": "https://example.com/.well-known/jwks.json",
-  "response_types_supported": ["code", "id_token", "token id_token"]
+  "jwks_uri": "https://example.com/.well-known/jwks.json"
 }
 ~~~
+{: title="Example issuer configuration response"}
+
+
+
 # JWT Format and Processing Requirements
 
 ## JWT Format
@@ -154,14 +163,15 @@ TODO - describe claims and format of JWT needed.
 TODO - how should the client and server process the JWT (verification etc)
 
 ## JWT Provisioning {#JWT.provisioning}
+
+The workload is provisioned with a JWT from a trusted source -- usually, but not
+exclusively, the underlying "platform" where the workload runs.
+
 TODO - describe where the JWT may come from. Who issues it etc (could also be a security consideration)
-
-
 
 # Security Considerations
 
 1. A secure channel (i.e. TLS) MUST be used when providing a JWT for authentication.
-
 
 # IANA Considerations
 
