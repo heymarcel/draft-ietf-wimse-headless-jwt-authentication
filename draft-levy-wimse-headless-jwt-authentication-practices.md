@@ -36,6 +36,8 @@ normative:
   RFC6749: OAuth 2.0
   RFC7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
   RFC7523: JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
+  OIDC.Connect:
+
   OIDC.Discovery:
     title: OpenID Connect Discovery 1.0 incorporating errata set 2
     target: https://openid.net/specs/openid-connect-discovery-1_0.html
@@ -49,7 +51,12 @@ informative:
 
 --- abstract
 
-TODO Abstract
+In service-to-service communication, a common pattern is to use a JSON Web Token
+(JWT) for authentication purposes. It is an adaptation for workloads of existing
+authorization flows designed for users. Since this pattern is not described in a
+specification, it leads to variability in practice. The purpose of this document
+is to capture this common workload identity authentication practice as an RFC in
+order to obtain consistency and promote interoperability in industry.
 
 --- middle
 
@@ -126,8 +133,18 @@ used. Although other protocols are out of scope, this should not be read as a
 limit on their future use.
 
 # Key Discovery
-TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.
 
+
+TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.
+~~~json
+{
+  "issuer": "https://example.com",
+  "authorization_endpoint": "https://example.com/auth",
+  "token_endpoint": "https://example.com/token",
+  "jwks_uri": "https://example.com/.well-known/jwks.json",
+  "response_types_supported": ["code", "id_token", "token id_token"]
+}
+~~~
 # JWT Format and Processing Requirements
 
 ## JWT Format
@@ -138,6 +155,8 @@ TODO - how should the client and server process the JWT (verification etc)
 
 ## JWT Provisioning {#JWT.provisioning}
 TODO - describe where the JWT may come from. Who issues it etc (could also be a security consideration)
+
+
 
 # Security Considerations
 
