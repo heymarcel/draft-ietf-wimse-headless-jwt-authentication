@@ -49,11 +49,12 @@ informative:
 --- abstract
 
 In service-to-service communication, a common pattern is to use a JSON Web Token
-(JWT) for authentication purposes. It is an adaptation for workloads of existing
-authorization flows designed for users. Since this pattern is not described in a
-specification, it leads to variability in practice. The purpose of this document
-is to capture this common workload identity authentication practice as an RFC in
-order to obtain consistency and promote interoperability in industry.
+(JWT) for authentication purposes. It is a partial adaptation for workloads of
+existing authorization flows designed for users. Since this pattern is not
+described in a specification, it leads to variability in practice. The purpose
+of this document is to capture this common workload identity authentication
+practice as an RFC in order to obtain consistency and promote interoperability
+in industry.
 
 --- middle
 
@@ -111,7 +112,7 @@ TODO - ASCII Diagram showing the flow between the client with a JWT, the Server 
 
 The overall message flow is seen in {{fig-message-flow}}, and this section explains
 it in more detail. It assumes the workload has previously acquired a JWT
-adhering to the profile specified in [RFC7523]. This JWT provisioning process is
+adhering to the profile specified in [RFC7523]. JWT provisioning assumptions are
 described in more detail in {{JWT.provisioning}}.
 
 1. The workload calls a Resource Server over HTTP and presents a JWT Bearer
@@ -124,6 +125,10 @@ described in more detail in {{JWT.provisioning}}.
 4. Using the appropiate issuer key, the Resource Server verifies the signature
    of the JWT Bearer Token.
 5. The Resource Server then responds to the workload according to the outcome of the signature verification.
+
+As we can see, the headless JWT authentication pattern closely follows that of
+OIDC, but like much great literature it starts "in medias res," without the
+initial authorization by a user.
 
 This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
@@ -164,14 +169,20 @@ TODO - how should the client and server process the JWT (verification etc)
 
 ## JWT Provisioning {#JWT.provisioning}
 
-The workload is provisioned with a JWT from a trusted source -- usually, but not
-exclusively, the underlying "platform" where the workload runs.
-
-TODO - describe where the JWT may come from. Who issues it etc (could also be a security consideration)
+The workload is provisioned with a JWT from a trusted source. This can be the
+underlying platform where the workload runs, or a separate issuing system. Regardless of the actual mechanism,
+JWT provisioning relies on an enrollment mechanism that establishes
+mutually-trusted connections between the workload and the JWT provisioner.
 
 # Security Considerations
 
-1. A secure channel (i.e. TLS) MUST be used when providing a JWT for authentication.
+The security considerations in section 8 of [RFC7521] generally apply. As bearer
+tokens, stolen JWTs are particularly valuable to attackers:
+
+1. A secure channel (e.g. TLS) MUST be used when providing a JWT for authentication.
+2. JWTs MUST be protected from unauthorized access using operating system or platform access controls.
+3. JWT validity SHOULD be set to the shortest possible duration allowable by overall system availability constraints.
+
 
 # IANA Considerations
 
