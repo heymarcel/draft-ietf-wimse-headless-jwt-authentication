@@ -35,6 +35,7 @@ normative:
   RFC6749: OAuth 2.0
   RFC7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
   RFC7523: JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
+  RFC8414: OAuth 2.0 Authorization Server Metadata
   OIDC.Discovery:
     title: OpenID Connect Discovery 1.0 incorporating errata set 2
     target: https://openid.net/specs/openid-connect-discovery-1_0.html
@@ -64,8 +65,9 @@ In service-to-service communication, a common pattern is to use a JSON Web Token
 (JWT) for authentication purposes. This is done by having the workload (i.e.
 service) present a bearer token in the form of a signed JWT, which is then
 verified by the receiving party. The "bootstrap" problem of establishing the
-signing JWK is solved by using an OpenID Connect Discovery Point
-{{OIDC.Discovery}}.
+signing JWK is solved by requesting a JSON configuration document using the
+process described in OpenID Connect Discovery {{OIDC.Discovery}} or OAuth 2.0
+Authorization Server Metadata [RFC8414].
 
 Since this pattern is not described in a specification, it leads to
 variability in practice. The purpose of this document is to capture
@@ -75,7 +77,7 @@ order to obtain consistency and promote interoperability in industry.
 # Architecture and Message Flow
 TODO - ASCII Diagram showing the flow between the client with a JWT, the Server receiving it and the OIDC endpoint from which the keys are retrieved.
 
-{{fig-message-flow}} illustrates the message flow described in {{JWT.authentication}}:
+{{fig-message-flow}} illustrates the OIDC-based message flow described in {{JWT.authentication}}:
 
 ~~~ aasvg
                             2) GET /.well-known/openid-configuration
@@ -118,13 +120,15 @@ described in more detail in {{JWT.provisioning}}.
 1. The workload calls a Resource Server over HTTP and presents a JWT Bearer
    Token as specified in Section 4 of [RFC7521].
 2. The Resource Server takes the value from the `iss` claim and appends
-   "/.well-known/openid-configuration" to retrieve the Authorization Server's
-   configuration via HTTP, as specified in [OIDC.Discovery].
+   `/.well-known/openid-configuration` to retrieve the Authorization Server's
+   configuration via HTTP, as specified in [OIDC.Discovery]. Alternatively, the
+   OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
 3. The Resource Server then retrieves the JWKs via HTTP from the `jwks_uri`
    declared in the Authorization Server's configuration response.
 4. Using the appropiate issuer key, the Resource Server verifies the signature
    of the JWT Bearer Token.
-5. The Resource Server then responds to the workload according to the outcome of the signature verification.
+5. The Resource Server then responds to the workload according to the outcome of
+   the signature verification.
 
 As we can see, the headless JWT authentication pattern closely follows that of
 OIDC, but like much great literature it starts "in medias res," without the
@@ -136,6 +140,8 @@ limit on their future use.
 
 # Key Discovery
 
+TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms, but also mention OAuth 2.0.
+
 
 Issuer key discovery follows the steps outlined in Section 4 of [OIDC.Discovery].
 
@@ -143,9 +149,8 @@ Issuer key discovery follows the steps outlined in Section 4 of [OIDC.Discovery]
 GET /.well-known/openid-configuration HTTP/1.1
 Host: example.com
 ~~~
-{: title="Example request to issuer to obtain configuration"}
+{: title="Example request to issuer to obtain OIDC configuration"}
 
-TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.
 
 ~~~ json
 {
@@ -156,6 +161,17 @@ TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms.
 }
 ~~~
 {: title="Example issuer configuration response"}
+
+Equivalent flow using OAuth 2.0:
+
+~~~
+GET /.well-known/oauth-authorization-server HTTP/1.1
+Host: example.com
+~~~
+{: title="Example request to issuer to obtain OAuth 2.0 Authorization Server metadata"}
+
+
+
 
 
 
