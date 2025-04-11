@@ -80,12 +80,13 @@ Table of Contents
    3.  Conventions and Definitions
    4.  JWT used for Authentication
    5.  Key Discovery
-     5.1.  JWT Format
-     5.2.  JWT Processsing
-     5.3.  JWT Provisioning
-   6.  Security Considerations
-   7.  IANA Considerations
-   8.  Normative References
+   6.  JWT Format and Processing Requirements
+     6.1.  JWT Format
+     6.2.  JWT Processsing
+     6.3.  JWT Provisioning
+   7.  Security Considerations
+   8.  IANA Considerations
+   9.  Normative References
    Acknowledgments
    Author's Address
 
@@ -150,7 +151,7 @@ Table of Contents
    The overall message flow is seen in Figure 1, and this section
    explains it in more detail.  It assumes the workload has previously
    acquired a JWT adhering to the profile specified in [RFC7523].  This
-   JWT provisioning process is described in more detail in Section 5.3.
+   JWT provisioning process is described in more detail in Section 6.3.
 
    1.  The workload calls a Resource Server over HTTP and presents a JWT
        Bearer Token as specified in Section 4 of [RFC7521].
@@ -176,38 +177,56 @@ Table of Contents
 
 5.  Key Discovery
 
-   TODO describes the key discovery mechanism - refer to OIDC discovery
-   mechanisms. ~~~json { "issuer": "https://example.com",
-   "authorization_endpoint": "https://example.com/auth",
-   "token_endpoint": "https://example.com/token", "jwks_uri":
-   "https://example.com/.well-known/jwks.json",
-   "response_types_supported": ["code", "id_token", "token id_token"] }
-   ~~~ # JWT Format and Processing Requirements
+   Issuer key discovery follows the steps outlined in Section 4 of
+   [OIDC.Discovery].
 
-5.1.  JWT Format
+   GET /.well-known/openid-configuration HTTP/1.1
+   Host: example.com
+
+        Figure 2: Example request to issuer to obtain configuration
+
+   TODO describes the key discovery mechanism - refer to OIDC discovery
+   mechanisms.
+
+   {
+     "issuer": "https://example.com",
+     "authorization_endpoint": "https://example.com/auth",
+     "token_endpoint": "https://example.com/token",
+     "jwks_uri": "https://example.com/.well-known/jwks.json"
+   }
+
+              Figure 3: Example issuer configuration response
+
+6.  JWT Format and Processing Requirements
+
+6.1.  JWT Format
 
    TODO - describe claims and format of JWT needed.
 
-5.2.  JWT Processsing
+6.2.  JWT Processsing
 
    TODO - how should the client and server process the JWT (verification
    etc)
 
-5.3.  JWT Provisioning
+6.3.  JWT Provisioning
+
+   The workload is provisioned with a JWT from a trusted source --
+   usually, but not exclusively, the underlying "platform" where the
+   workload runs.
 
    TODO - describe where the JWT may come from.  Who issues it etc
    (could also be a security consideration)
 
-6.  Security Considerations
+7.  Security Considerations
 
    1.  A secure channel (i.e. TLS) MUST be used when providing a JWT for
        authentication.
 
-7.  IANA Considerations
+8.  IANA Considerations
 
    This document has no IANA actions.
 
-8.  Normative References
+9.  Normative References
 
    [OIDC.Discovery]
               Sakimura, N., Bradley, J., Jones, M., and E. Jay, "OpenID
