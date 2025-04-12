@@ -32,6 +32,7 @@ author:
     role: editor
 
 normative:
+  RFC5785: Defining Well-Known Uniform Resource Identifiers (URIs)
   RFC6749: OAuth 2.0
   RFC7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
   RFC7523: JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
@@ -140,40 +141,32 @@ limit on their future use.
 
 # Key Discovery
 
-TODO describes the key discovery mechanism - refer to OIDC discovery mechanisms, but also mention OAuth 2.0.
+Issuer key discovery follows the steps outlined in Section 4 of
+[OIDC.Discovery]. The Resource Server makes a request to a location that is
+well-known according to [RFC5785]:
 
-
-Issuer key discovery follows the steps outlined in Section 4 of [OIDC.Discovery].
-
-~~~
+~~~ text
 GET /.well-known/openid-configuration HTTP/1.1
 Host: example.com
 ~~~
 {: title="Example request to issuer to obtain OIDC configuration"}
 
+For OAuth 2.0, the equivalent location is
+`/.well-known/oauth-authorization-server`. In both cases, the requester expects
+a JSON document containing configuration information. An example is provided here:
 
 ~~~ json
 {
   "issuer": "https://example.com",
+  "jwks_uri": "https://example.com/.well-known/jwks.json",
   "authorization_endpoint": "https://example.com/auth",
-  "token_endpoint": "https://example.com/token",
-  "jwks_uri": "https://example.com/.well-known/jwks.json"
+  "token_endpoint": "https://example.com/token"
 }
 ~~~
 {: title="Example issuer configuration response"}
 
-Equivalent flow using OAuth 2.0:
-
-~~~
-GET /.well-known/oauth-authorization-server HTTP/1.1
-Host: example.com
-~~~
-{: title="Example request to issuer to obtain OAuth 2.0 Authorization Server metadata"}
-
-
-
-
-
+For the sake of the pattern described in this document, only the `issuer` and
+`jwks_uri` fields are relevant.
 
 # JWT Format and Processing Requirements
 
