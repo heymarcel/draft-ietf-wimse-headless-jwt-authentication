@@ -183,13 +183,18 @@ For the sake of the pattern described in this document, only the `issuer` and
 # JWT Format and Processing Requirements
 
 ## JWT Format
-TODO - describe claims and format of JWT needed. Use the SPIFFE AWS OIDC example to illustrate.
+
+An example JWT adhering to [RFC7523] is seen below. Although this example uses a SPIFFE ID in the
+subject ("sub") claim, this is not a requirement in practice.
 
 ~~~ json
 {
-   iss: "https://issuer.example.com",
-   sub: "",
-   aud: "",
+  "iss": "https://issuer.example.org",
+  "sub": "spiffe://example.org/ns/default/sa/backend-job-runner",
+  "aud": "https://auth.example.com/token",
+  "jti": "jwt-grant-id-x1y2z3a4",
+  "exp": 1744845092,
+  "iat": 1744841036,
 }
 ~~~
 
