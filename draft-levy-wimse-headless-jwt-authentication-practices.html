@@ -1216,11 +1216,12 @@ in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-1-1">In service-to-service communication, a common pattern is to use a JSON Web Token
 (JWT) for authentication purposes. This is done by having the workload (i.e.
-service) present a bearer token in the form of a signed JWT, which is then
-verified by the receiving party. The "bootstrap" problem of establishing the
-signing JWK is solved by requesting a JSON configuration document using the
-process described in OpenID Connect Discovery <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span> or OAuth 2.0
-Authorization Server Metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+service) present an asynchronously-provisioned bearer token in the form of a
+signed JWT, which is then verified by an Authorization Server, which then
+provides an access token as per <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>. The "bootstrap" problem of
+discovering the original JWT issuer is solved by requesting a JSON configuration
+document using the process described in OpenID Connect Discovery
+<span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span> or OAuth 2.0 Authorization Server Metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Since this pattern is not described in a specification, it leads to
 variability in practice. The purpose of this document is to capture
 this common workload identity authentication practice as an RFC in
