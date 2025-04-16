@@ -64,11 +64,12 @@ in industry.
 
 In service-to-service communication, a common pattern is to use a JSON Web Token
 (JWT) for authentication purposes. This is done by having the workload (i.e.
-service) present a bearer token in the form of a signed JWT, which is then
-verified by the receiving party. The "bootstrap" problem of establishing the
-signing JWK is solved by requesting a JSON configuration document using the
-process described in OpenID Connect Discovery {{OIDC.Discovery}} or OAuth 2.0
-Authorization Server Metadata [RFC8414].
+service) present an asynchronously-provisioned bearer token in the form of a
+signed JWT, which is then verified by an Authorization Server, which then
+provides an access token as per [RFC6749]. The "bootstrap" problem of
+discovering the original JWT issuer is solved by requesting a JSON configuration
+document using the process described in OpenID Connect Discovery
+{{OIDC.Discovery}} or OAuth 2.0 Authorization Server Metadata [RFC8414].
 
 Since this pattern is not described in a specification, it leads to
 variability in practice. The purpose of this document is to capture
