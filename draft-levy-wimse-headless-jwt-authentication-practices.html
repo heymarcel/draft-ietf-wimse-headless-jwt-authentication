@@ -1423,13 +1423,17 @@ a JSON document containing configuration information. An example is provided her
         <h3 id="name-jwt-format">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-jwt-format" class="section-name selfRef">JWT Format</a>
         </h3>
-<p id="section-6.1-1">TODO - describe claims and format of JWT needed. Use the SPIFFE AWS OIDC example to illustrate.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">An example JWT adhering to <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> is seen below. Although this example uses a SPIFFE ID in the
+subject ("sub") claim, this is not a requirement in practice.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-6.1-2">
 <pre>
 {
-   iss: "https://issuer.example.com",
-   sub: "",
-   aud: "",
+  "iss": "https://issuer.example.org",
+  "sub": "spiffe://example.org/ns/default/sa/backend-job-runner",
+  "aud": "https://auth.example.com/token",
+  "jti": "jwt-grant-id-x1y2z3a4",
+  "exp": 1744845092,
+  "iat": 1744841036,
 }
 </pre><a href="#section-6.1-2" class="pilcrow">¶</a>
 </div>
