@@ -76,34 +76,42 @@ this common workload identity authentication practice as an RFC in
 order to obtain consistency and promote interoperability in industry.
 
 # Architecture and Message Flow
-TODO - ASCII Diagram showing the flow between the client with a JWT, the Server receiving it and the OIDC endpoint from which the keys are retrieved.
+
 
 {{fig-message-flow}} illustrates the OIDC-based message flow described in {{JWT.authentication}}:
 
 ~~~ aasvg
-                            2) GET /.well-known/openid-configuration
-                     +-----------------------------------------+
-                     |                                         |
-                     |                                +--------v----------------+
-      +--------------v--+                             |                         |
-      |                 |                             |      JWT Issuer/        |
-      |    Resource     <----------------------------->  Authorization Server   |
-      |     Server      |   3) Retrieve JWKs          |                         |
-      |                 |      from "jwks_uri"        +-------------------------+
-      +---^-------+-----+
-          |       |       4) Verify signature
-          |       |          using JWK
-          |       |
-1) JWT    |       |
-   Bearer |       |  5) Response after
-   Token  |       |     verification
-          |       |
-          |       |
-      +---+-------v-----+
-      |                 |
-      |    Workload     |
-      |                 |
-      +-----------------+
+      4) Verify signature
+         using JWK
+
+     +----------------+   2) GET /.well-known/openid-configuration
+     |                <-----------------------+
+     | Authorization  <--------------------+  |
+     |    Server      | 3) Retrieve JWKs   |  |
+     |                |    from "jwks_uri" |  |
+     +----+-------+---+                    |  |
+          |       |                        |  |
+          |       | 5) Access token        |  |
+1) JWT    |       |                        |  |
+   Bearer |       |              +---------v--v--+
+   Token  |       |              |               |
+          |       |              |  JWT Issuer   |
+          |       |              |               |
+      +---+-------v-----+        +-------+-------+
+      |                 |                |
+      |    Workload     <----------------+
+      |                 |     Initial provisioning
+      +--------+--------+
+               |
+               |  5) Authenticate
+               |     with token
+               |
+         +-----v------+
+         |            |
+         |  Resource  |
+         |   Server   |
+         |            |
+         +------------+
 ~~~
 {: #fig-message-flow title="OIDC message flow when used in a headless environment"}
 
@@ -113,27 +121,30 @@ TODO - ASCII Diagram showing the flow between the client with a JWT, the Server 
 
 # JWT used for Authentication {#JWT.authentication}
 
+
+
 The overall message flow is seen in {{fig-message-flow}}, and this section explains
 it in more detail. It assumes the workload has previously acquired a JWT
 adhering to the profile specified in [RFC7523]. JWT provisioning assumptions are
 described in more detail in {{JWT.provisioning}}.
 
-1. The workload calls a Resource Server over HTTP and presents a JWT Bearer
-   Token as specified in Section 4 of [RFC7521].
-2. The Resource Server takes the value from the `iss` claim and appends
-   `/.well-known/openid-configuration` to retrieve the Authorization Server's
+
+1. The workload calls an Authorization Server's token endpoint and presents a
+   JWT Bearer Token as specified in Section 4 of [RFC7521].
+2. The Authorization Server takes the value from the `iss` claim and appends
+   `/.well-known/openid-configuration` to retrieve the JWT issuer's
    configuration via HTTP, as specified in [OIDC.Discovery]. Alternatively, the
    OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
-3. The Resource Server then retrieves the JWKs via HTTP from the `jwks_uri`
-   declared in the Authorization Server's configuration response.
-4. Using the appropiate issuer key, the Resource Server verifies the signature
+3. The Authorization Server then retrieves the JWKs via HTTP from the `jwks_uri`
+   declared in the JWT issuer's configuration response.
+4. Using the appropiate issuer key, the Authorization Server verifies the signature
    of the JWT Bearer Token.
-5. The Resource Server then responds to the workload according to the outcome of
-   the signature verification.
+5. The Authorization Server then responds to the workload with an access token
+   suitable for use with the Resource Server.
+6. The Workload then authenticates with the Resource Server using the access token.
 
 As we can see, the headless JWT authentication pattern closely follows that of
-OIDC, but like much great literature it starts "in medias res," without the
-initial authorization by a user.
+OIDC, but without the initial authentication by a user.
 
 This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
@@ -171,7 +182,15 @@ For the sake of the pattern described in this document, only the `issuer` and
 # JWT Format and Processing Requirements
 
 ## JWT Format
-TODO - describe claims and format of JWT needed.
+TODO - describe claims and format of JWT needed. Use the SPIFFE AWS OIDC example to illustrate.
+
+~~~ json
+{
+   iss: "https://issuer.example.com",
+   sub: "",
+   aud: "",
+}
+~~~
 
 ## JWT Processsing
 TODO - how should the client and server process the JWT (verification etc)
@@ -203,4 +222,4 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+TODO acknowledge Pieter, Hirsch.
