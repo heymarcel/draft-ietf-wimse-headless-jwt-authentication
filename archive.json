@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-10T00:02:26.172781+00:00",
+  "timestamp": "2025-04-17T00:02:10.988216+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -73,6 +73,80 @@
           "updatedAt": "2025-04-08T15:29:23Z"
         }
       ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOOVtHv86y2rYT",
+      "title": "Simplify diagram",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/3",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "* Take out the call to `/.well-known/openid-configuration` -- we can just explain elsewhere in the document.\n* Number the \"initial provisioning\" step, and add to \"JWT used for Authentication\"\n",
+      "createdAt": "2025-04-16T20:32:10Z",
+      "updatedAt": "2025-04-16T20:32:10Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOOVtHv86y2r_R",
+      "title": "Fill out \"JWT Format\" and \"JWT Processing\"",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/4",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "heymarcel"
+      ],
+      "labels": [],
+      "body": "See the TODOs.",
+      "createdAt": "2025-04-16T20:33:41Z",
+      "updatedAt": "2025-04-16T22:31:28Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Added an example JWT in this commit: 4643dd74e3ff84abb925d434518922372e02940a",
+          "createdAt": "2025-04-16T22:31:18Z",
+          "updatedAt": "2025-04-16T22:31:28Z"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOOVtHv86y2tC1",
+      "title": "Add more detail to \"JWT Provisioning\"",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/5",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We can reference the Client Credentials flow here, for example.",
+      "createdAt": "2025-04-16T20:35:35Z",
+      "updatedAt": "2025-04-16T20:35:35Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOOVtHv86y2tSL",
+      "title": "Address the issue of client registration",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/6",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "It's not mentioned at all in the spec, but it does need to be dealt with.",
+      "createdAt": "2025-04-16T20:36:10Z",
+      "updatedAt": "2025-04-16T20:36:10Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
