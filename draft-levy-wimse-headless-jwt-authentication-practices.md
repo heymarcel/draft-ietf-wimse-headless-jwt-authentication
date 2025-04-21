@@ -196,12 +196,19 @@ subject ("sub") claim, this is not a requirement in practice.
   "iat": 1744841036
 }
 ~~~
-
+{: title="Example RFC7523 JWT"}
 
 ## JWT Processsing
-TODO - how should the client and server process the JWT (verification etc)
 
+### Authorization Server Processing
 
+TODO: Discuss signature validation and also refer to Section 3.1 in [RFC7523].
+
+### Workload Processing
+
+The workload is considered the client in this interaction. It can treat the JWT
+acquired during provisioning as an opaque token. It must handle any error
+reponse from the authorization server as per Section 3.2 in [RFC7523].
 
 ## JWT Provisioning {#JWT.provisioning}
 
@@ -210,6 +217,10 @@ underlying platform where the workload runs, or a separate issuing system.
 Regardless of the actual mechanism, JWT provisioning relies on an enrollment
 mechanism that establishes mutually-trusted connections between the workload and
 the JWT provisioner.
+
+# Interoperability Considerations
+
+TODO Speak to the issue of registration/configuration
 
 # Security Considerations
 
