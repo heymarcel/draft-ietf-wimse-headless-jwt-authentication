@@ -83,10 +83,13 @@ Table of Contents
    6.  JWT Format and Processing Requirements
      6.1.  JWT Format
      6.2.  JWT Processsing
+       6.2.1.  Authorization Server Processing
+       6.2.2.  Workload Processing
      6.3.  JWT Provisioning
-   7.  Security Considerations
-   8.  IANA Considerations
-   9.  Normative References
+   7.  Interoperability Considerations
+   8.  Security Considerations
+   9.  IANA Considerations
+   10. Normative References
    Acknowledgments
    Author's Address
 
@@ -236,10 +239,21 @@ Table of Contents
      "iat": 1744841036
    }
 
+                       Figure 4: Example RFC7523 JWT
+
 6.2.  JWT Processsing
 
-   TODO - how should the client and server process the JWT (verification
-   etc)
+6.2.1.  Authorization Server Processing
+
+   TODO: Discuss signature validation and also refer to Section 3.1 in
+   [RFC7523].
+
+6.2.2.  Workload Processing
+
+   The workload is considered the client in this interaction.  It can
+   treat the JWT acquired during provisioning as an opaque token.  It
+   must handle any error reponse from the authorization server as per
+   Section 3.2 in [RFC7523].
 
 6.3.  JWT Provisioning
 
@@ -249,7 +263,11 @@ Table of Contents
    relies on an enrollment mechanism that establishes mutually-trusted
    connections between the workload and the JWT provisioner.
 
-7.  Security Considerations
+7.  Interoperability Considerations
+
+   TODO Speak to the issue of registration/configuration
+
+8.  Security Considerations
 
    The security considerations in section 8 of [RFC7521] generally
    apply.  As bearer tokens, stolen JWTs are particularly valuable to
@@ -264,11 +282,11 @@ Table of Contents
    3.  JWT validity SHOULD be set to the shortest possible duration
        allowable by overall system availability constraints.
 
-8.  IANA Considerations
+9.  IANA Considerations
 
    This document has no IANA actions.
 
-9.  Normative References
+10.  Normative References
 
    [OIDC.Discovery]
               Sakimura, N., Bradley, J., Jones, M., and E. Jay, "OpenID
