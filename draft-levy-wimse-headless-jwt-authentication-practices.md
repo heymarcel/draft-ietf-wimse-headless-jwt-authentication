@@ -82,32 +82,31 @@ order to obtain consistency and promote interoperability in industry.
 {{fig-message-flow}} illustrates the OIDC-based message flow described in {{JWT.authentication}}:
 
 ~~~ aasvg
-      4) Verify signature
+      5) Verify signature
          using JWK
-
-     +----------------+   2) GET /.well-known/openid-configuration
-     |                <-----------------------+
-     | Authorization  <--------------------+  |
-     |    Server      | 3) Retrieve JWKs   |  |
+     +----------------+ 3) GET /.well-known/openid-configuration
+     |                |<----------------------+
+     | Authorization  |<-------------------+  |
+     |    Server      | 4) Retrieve JWKs   |  |
      |                |    from "jwks_uri" |  |
-     +----+-------+---+                    |  |
-          |       |                        |  |
-          |       | 5) Access token        |  |
-1) JWT    |       |                        |  |
-   Bearer |       |              +---------v--v--+
-   Token  |       |              |               |
-          |       |              |  JWT Issuer   |
+     +------------+---+                    |  |
+          ^       |                        |  |
+2) JWT    |       | 6) Provide             |  |
+   Bearer |       |    access              v  v
+   Token  |       |    token     +---------------+
           |       |              |               |
-      +---+-------v-----+        +-------+-------+
+          |       |              |  JWT Issuer   |
+          |       v              |               |
+      +---+-------------+        +-------+-------+
       |                 |                |
-      |    Workload     <----------------+
-      |                 |     Initial provisioning
+      |    Workload     |<---------------+
+      |                 |    1) Initial provisioning
       +--------+--------+
                |
-               |  5) Authenticate
+               |  7) Authenticate
                |     with token
-               |
-         +-----v------+
+               v
+         +------------+
          |            |
          |  Resource  |
          |   Server   |
@@ -194,19 +193,23 @@ subject ("sub") claim, this is not a requirement in practice.
   "aud": "https://auth.example.com/token",
   "jti": "jwt-grant-id-x1y2z3a4",
   "exp": 1744845092,
-  "iat": 1744841036,
+  "iat": 1744841036
 }
 ~~~
+
 
 ## JWT Processsing
 TODO - how should the client and server process the JWT (verification etc)
 
+
+
 ## JWT Provisioning {#JWT.provisioning}
 
 The workload is provisioned with a JWT from a trusted source. This can be the
-underlying platform where the workload runs, or a separate issuing system. Regardless of the actual mechanism,
-JWT provisioning relies on an enrollment mechanism that establishes
-mutually-trusted connections between the workload and the JWT provisioner.
+underlying platform where the workload runs, or a separate issuing system.
+Regardless of the actual mechanism, JWT provisioning relies on an enrollment
+mechanism that establishes mutually-trusted connections between the workload and
+the JWT provisioner.
 
 # Security Considerations
 
