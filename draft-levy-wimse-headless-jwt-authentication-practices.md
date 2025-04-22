@@ -203,6 +203,8 @@ subject ("sub") claim, this is not a requirement in practice.
 ### Authorization Server Processing
 
 TODO: Discuss signature validation and also refer to Section 3.1 in [RFC7523].
+Also refer to Section 1.3.4 in [RFC6749]. (Client credentials as authorization grant)
+
 
 ### Workload Processing
 
@@ -214,9 +216,9 @@ reponse from the authorization server as per Section 3.2 in [RFC7523].
 
 The workload is provisioned with a JWT from a trusted source. This can be the
 underlying platform where the workload runs, or a separate issuing system.
-Regardless of the actual mechanism, JWT provisioning relies on an enrollment
-mechanism that establishes mutually-trusted connections between the workload and
-the JWT provisioner.
+Regardless of the actual mechanism, JWT provisioning relies on a registration
+mechanism that establishes mutually-trusted, secure connections between the
+workload and the JWT provisioner.
 
 # Interoperability Considerations
 
