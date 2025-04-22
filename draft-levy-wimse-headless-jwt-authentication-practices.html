@@ -1304,9 +1304,9 @@ order to obtain consistency and promote interoperability in industry.<a href="#s
                 <text x="172" y="180">6)</text>
                 <text x="216" y="180">Provide</text>
                 <text x="52" y="196">Bearer</text>
-                <text x="212" y="196">access</text>
+                <text x="212" y="196">Access</text>
                 <text x="48" y="212">Token</text>
-                <text x="208" y="212">token</text>
+                <text x="208" y="212">Token</text>
                 <text x="304" y="244">JWT</text>
                 <text x="348" y="244">Issuer</text>
                 <text x="124" y="308">Workload</text>
@@ -1369,11 +1369,11 @@ declared in the JWT issuer's configuration response.<a href="#section-4-2.3.1" c
 of the JWT Bearer Token.<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.5">
-          <p id="section-4-2.5.1">The Authorization Server then responds to the workload with an access token
+          <p id="section-4-2.5.1">The Authorization Server then responds to the workload with an Access Token
 suitable for use with the Resource Server.<a href="#section-4-2.5.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.6">
-          <p id="section-4-2.6.1">The Workload then authenticates with the Resource Server using the access token.<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
+          <p id="section-4-2.6.1">The Workload then authenticates with the Resource Server using the Access Token.<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
 <p id="section-4-3">As we can see, the headless JWT authentication pattern closely follows that of
@@ -1488,6 +1488,9 @@ underlying platform where the workload runs, or a separate issuing system.
 Regardless of the actual mechanism, JWT provisioning relies on a registration
 mechanism that establishes mutually-trusted, secure connections between the
 workload and the JWT provisioner.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3-2">This provisioning mechanism illustrates a key difference from flows defined in
+<span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> and <span>[<a href="#OIDC.Core" class="cite xref">OIDC.Core</a>]</span>, in that there are no client credentials involved in
+the interaction with the Authorization Server.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1534,6 +1537,10 @@ tokens, stolen JWTs are particularly valuable to attackers:<a href="#section-8-1
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
+<dt id="OIDC.Core">[OIDC.Core]</dt>
+      <dd>
+<span class="refAuthor">Sakimura, N.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">de Medeiros, B.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"OpenID Connect Core 1.0 incorporating errata set 2"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="OIDC.Discovery">[OIDC.Discovery]</dt>
       <dd>
 <span class="refAuthor">Sakimura, N.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Jones, M.</span>, and <span class="refAuthor">E. Jay</span>, <span class="refTitle">"OpenID Connect Discovery 1.0 incorporating errata set 2"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-discovery-1_0.html">https://openid.net/specs/openid-connect-discovery-1_0.html</a>&gt;</span>. </dd>

@@ -126,8 +126,8 @@ Table of Contents
         +------------+---+                    |  |
              ^       |                        |  |
    2) JWT    |       | 6) Provide             |  |
-      Bearer |       |    access              v  v
-      Token  |       |    token     +---------------+
+      Bearer |       |    Access              v  v
+      Token  |       |    Token     +---------------+
              |       |              |               |
              |       |              |  JWT Issuer   |
              |       v              |               |
@@ -181,10 +181,10 @@ Table of Contents
        verifies the signature of the JWT Bearer Token.
 
    5.  The Authorization Server then responds to the workload with an
-       access token suitable for use with the Resource Server.
+       Access Token suitable for use with the Resource Server.
 
    6.  The Workload then authenticates with the Resource Server using
-       the access token.
+       the Access Token.
 
    As we can see, the headless JWT authentication pattern closely
    follows that of OIDC, but without the initial authentication by a
@@ -264,6 +264,11 @@ Table of Contents
    relies on a registration mechanism that establishes mutually-trusted,
    secure connections between the workload and the JWT provisioner.
 
+   This provisioning mechanism illustrates a key difference from flows
+   defined in [RFC6749] and [OIDC.Core], in that there are no client
+   credentials involved in the interaction with the Authorization
+   Server.
+
 7.  Interoperability Considerations
 
    TODO Speak to the issue of registration/configuration
@@ -288,6 +293,12 @@ Table of Contents
    This document has no IANA actions.
 
 10.  Normative References
+
+   [OIDC.Core]
+              Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and
+              C. Mortimore, "OpenID Connect Core 1.0 incorporating
+              errata set 2", 2023,
+              <https://openid.net/specs/openid-connect-core-1_0.html>.
 
    [OIDC.Discovery]
               Sakimura, N., Bradley, J., Jones, M., and E. Jay, "OpenID
