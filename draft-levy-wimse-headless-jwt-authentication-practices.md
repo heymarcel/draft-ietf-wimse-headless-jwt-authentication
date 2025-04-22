@@ -37,6 +37,16 @@ normative:
   RFC7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
   RFC7523: JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
   RFC8414: OAuth 2.0 Authorization Server Metadata
+  OIDC.Core:
+   title: OpenID Connect Core 1.0 incorporating errata set 2
+   target: https://openid.net/specs/openid-connect-core-1_0.html
+   date: 2023
+   author:
+      - ins: N. Sakimura
+      - ins: J. Bradley
+      - ins: M. Jones
+      - ins: B. de Medeiros
+      - ins: C. Mortimore
   OIDC.Discovery:
     title: OpenID Connect Discovery 1.0 incorporating errata set 2
     target: https://openid.net/specs/openid-connect-discovery-1_0.html
@@ -92,8 +102,8 @@ order to obtain consistency and promote interoperability in industry.
      +------------+---+                    |  |
           ^       |                        |  |
 2) JWT    |       | 6) Provide             |  |
-   Bearer |       |    access              v  v
-   Token  |       |    token     +---------------+
+   Bearer |       |    Access              v  v
+   Token  |       |    Token     +---------------+
           |       |              |               |
           |       |              |  JWT Issuer   |
           |       v              |               |
@@ -139,9 +149,9 @@ described in more detail in {{JWT.provisioning}}.
    declared in the JWT issuer's configuration response.
 4. Using the appropiate issuer key, the Authorization Server verifies the signature
    of the JWT Bearer Token.
-5. The Authorization Server then responds to the workload with an access token
+5. The Authorization Server then responds to the workload with an Access Token
    suitable for use with the Resource Server.
-6. The Workload then authenticates with the Resource Server using the access token.
+6. The Workload then authenticates with the Resource Server using the Access Token.
 
 As we can see, the headless JWT authentication pattern closely follows that of
 OIDC, but without the initial authentication by a user.
@@ -219,6 +229,10 @@ underlying platform where the workload runs, or a separate issuing system.
 Regardless of the actual mechanism, JWT provisioning relies on a registration
 mechanism that establishes mutually-trusted, secure connections between the
 workload and the JWT provisioner.
+
+This provisioning mechanism illustrates a key difference from flows defined in
+[RFC6749] and [OIDC.Core], in that there are no client credentials involved in
+the interaction with the Authorization Server.
 
 # Interoperability Considerations
 
