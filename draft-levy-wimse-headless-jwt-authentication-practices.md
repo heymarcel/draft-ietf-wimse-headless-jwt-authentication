@@ -26,10 +26,13 @@ venue:
 
 author:
  -
-    fullname: Marcel Levy
+    fullname: "Marcel Levy"
     organization: SPIRL
     email: heymarcel@gmail.com
-    role: editor
+ -
+    fullname: "Hirsch Singhal"
+    organization: GitHub
+    email: hpsin@github.com
 
 normative:
   RFC5785: Defining Well-Known Uniform Resource Identifiers (URIs)
