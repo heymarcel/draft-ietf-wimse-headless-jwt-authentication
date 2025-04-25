@@ -70,6 +70,7 @@ normative:
       - ins: M. Jones
 
 informative:
+  I-D.ietf-wimse-s2s-protocol:
 
 --- abstract
 
@@ -211,8 +212,9 @@ discussed further in {{interoperability-considerations}}.
 
 ## JWT Format {#jwt-format}
 
-An example JWT adhering to [RFC7523] is seen below. Although this example uses a SPIFFE ID in the
-subject ("sub") claim, this is not a requirement in practice.
+An example JWT adhering to [RFC7523] is seen below. Although this example uses a
+WIMSE workload identifier ({{I-D.ietf-wimse-s2s-protocol}}) in the subject
+("sub") claim, this is not a requirement in practice.
 
 ~~~ json
 {
@@ -289,4 +291,5 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge Pieter
+The authors would like to thank Pieter Kasselman for his guidance in structuring
+this document.
