@@ -8,13 +8,10 @@
 <meta content="Marcel Levy" name="author">
 <meta content="Hirsch Singhal" name="author">
 <meta content="
-       In service-to-service communication, a common pattern is to use a JSON Web Token
-(JWT) for authentication purposes. It is a partial adaptation for workloads of
-existing authorization flows designed for users. Since this pattern is not
-described in a specification, it leads to variability in practice. The purpose
-of this document is to capture this common workload identity authentication
-practice as an RFC in order to obtain consistency and promote interoperability
-in industry. 
+       In workload-to-service communication, a common pattern is for a workload to present a JSON Web Token
+(JWT) to an authorization server in order to obtain an access token for the service it needs to access. It is a partial adaptation for workloads of existing flows designed for users. Implementing this pattern combines multiple existing standards from different working groups and standards bodies. Since this pattern is not
+described in a specification, it leads to variability in interoperability. The purpose
+of this document is to capture this common workload identity practice as an RFC in order to obtain consistency and promote interoperability in industry. 
     " name="description">
 <meta content="xml2rfc 3.28.1" name="generator">
 <meta content="workload" name="keyword">
@@ -1093,13 +1090,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">WIMSE Headless JWT Authentication</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">In service-to-service communication, a common pattern is to use a JSON Web Token
-(JWT) for authentication purposes. It is a partial adaptation for workloads of
-existing authorization flows designed for users. Since this pattern is not
-described in a specification, it leads to variability in practice. The purpose
-of this document is to capture this common workload identity authentication
-practice as an RFC in order to obtain consistency and promote interoperability
-in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">In workload-to-service communication, a common pattern is for a workload to present a JSON Web Token
+(JWT) to an authorization server in order to obtain an access token for the service it needs to access. It is a partial adaptation for workloads of existing flows designed for users. Implementing this pattern combines multiple existing standards from different working groups and standards bodies. Since this pattern is not
+described in a specification, it leads to variability in interoperability. The purpose
+of this document is to capture this common workload identity practice as an RFC in order to obtain consistency and promote interoperability in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1237,17 +1231,16 @@ in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">In service-to-service communication, a common pattern is to use a JSON Web Token
-(JWT) for authentication purposes. This is done by having the workload (i.e.
-service) present an asynchronously-provisioned bearer token in the form of a
-signed JWT, which is then verified by an Authorization Server, which then
-provides an access token as per <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span>. The "bootstrap" problem of
+<p id="section-1-1">In workload-to-service communication, a common pattern is for a workloads to use a JSON Web Token
+(JWT) to identify and authenticate itself as part of a process to obtain an access token for a service. This is done by having the workload present an asynchronously-provisioned bearer token in the form of a
+signed JWT to an Authorization Server. The Authorization Server verifies the JWT and then
+provides an OAuth access token as described in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. The "bootstrap" problem of
 discovering the original JWT issuer is solved by requesting a JSON configuration
 document using the process described in OpenID Connect Discovery
 <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span> or OAuth 2.0 Authorization Server Metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Since this pattern is not described in a specification, it leads to
-variability in practice. The purpose of this document is to capture
-this common workload identity authentication practice as an RFC in
+variability in interoperability. The purpose of this document is to capture
+this common workload identity practice as an RFC in
 order to obtain consistency and promote interoperability in industry.<a href="#section-1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1364,7 +1357,7 @@ described in more detail in <a href="#jwt-provisioning" class="auto internal xre
 <ol start="1" type="1" class="normal type-1" id="section-4-2">
 <li id="section-4-2.1">
           <p id="section-4-2.1.1">The workload calls an Authorization Server's token endpoint and presents a
-JWT Bearer Token as specified in Section 4 of <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+JWT Bearer Token as specified in Section 4 of <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.2">
           <p id="section-4-2.2.1">The Authorization Server takes the value from the <code>iss</code> claim and appends
