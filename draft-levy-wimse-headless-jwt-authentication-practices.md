@@ -39,6 +39,7 @@ normative:
   RFC6749: OAuth 2.0
   RFC7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
   RFC7523: JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
+  RFC7591: OAuth 2.0 Dynamic Client Registration Protocol
   RFC8414: OAuth 2.0 Authorization Server Metadata
   OIDC.Core:
    title: OpenID Connect Core 1.0 incorporating errata set 2
@@ -59,6 +60,15 @@ normative:
       - ins: J. Bradley
       - ins: M. Jones
       - ins: E. Jay
+  OIDC.Dynamic:
+    title: OpenID Connect Dynamic Client Registration 1.0 incorporating errata set 2
+    target: https://openid.net/specs/openid-connect-registration-1_0.html
+    date: 2023
+    author:
+      - ins: N. Sakimura
+      - ins: J. Bradley
+      - ins: M. Jones
+
 informative:
 
 --- abstract
@@ -89,10 +99,10 @@ variability in practice. The purpose of this document is to capture
 this common workload identity authentication practice as an RFC in
 order to obtain consistency and promote interoperability in industry.
 
-# Architecture and Message Flow
+# Architecture and Message Flow {#architecture-and-message-flow}
 
 
-{{fig-message-flow}} illustrates the OIDC-based message flow described in {{JWT.authentication}}:
+{{fig-message-flow}} illustrates the OIDC-based message flow described in {{jwt-authentication}}:
 
 ~~~ aasvg
       5) Verify signature
@@ -132,14 +142,14 @@ order to obtain consistency and promote interoperability in industry.
 
 {::boilerplate bcp14-tagged}
 
-# JWT used for Authentication {#JWT.authentication}
+# JWT used for Authentication {#jwt-authentication}
 
 
 
 The overall message flow is seen in {{fig-message-flow}}, and this section explains
 it in more detail. It assumes the workload has previously acquired a JWT
 adhering to the profile specified in [RFC7523]. JWT provisioning assumptions are
-described in more detail in {{JWT.provisioning}}.
+described in more detail in {{jwt-provisioning}}.
 
 
 1. The workload calls an Authorization Server's token endpoint and presents a
@@ -163,7 +173,7 @@ This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
 limit on their future use.
 
-# Key Discovery
+# Key Discovery {#key-discovery}
 
 Issuer key discovery follows the steps outlined in Section 4 of
 [OIDC.Discovery]. The Resource Server makes a request to a location that is
@@ -177,7 +187,8 @@ Host: example.com
 
 For OAuth 2.0, the equivalent location is
 `/.well-known/oauth-authorization-server`. In both cases, the requester expects
-a JSON document containing configuration information. An example is provided here:
+a JSON document containing configuration information. An example is provided
+here:
 
 ~~~ json
 {
@@ -192,9 +203,13 @@ a JSON document containing configuration information. An example is provided her
 For the sake of the pattern described in this document, only the `issuer` and
 `jwks_uri` fields are relevant.
 
-# JWT Format and Processing Requirements
+Note that this key discovery mechanism does not address the question of whether
+the key itself should be trusted. This is a registration problem, and is
+discussed further in {{interoperability-considerations}}.
 
-## JWT Format
+# JWT Format and Processing Requirements {#jwt-format-and-processing}
+
+## JWT Format {#jwt-format}
 
 An example JWT adhering to [RFC7523] is seen below. Although this example uses a SPIFFE ID in the
 subject ("sub") claim, this is not a requirement in practice.
@@ -211,21 +226,27 @@ subject ("sub") claim, this is not a requirement in practice.
 ~~~
 {: title="Example RFC7523 JWT"}
 
-## JWT Processsing
+## JWT Processsing {#jwt-processing}
 
-### Authorization Server Processing
+### Authorization Server Processing {#authorization-server-processing}
 
-TODO: Discuss signature validation and also refer to Section 3.1 in [RFC7523].
-Also refer to Section 1.3.4 in [RFC6749]. (Client credentials as authorization grant)
+The authorization server validates the JWT according to Section 3 in [RFC7523],
+with the following exceptions:
 
+1. The "sub" (subject) claim does not identify either a resource owner or an
+   anonymous user.
+2. The "sub" claim need not correspond to the "client id" of an OAuth client.
 
-### Workload Processing
+The authorization server validates the signature using the key discovered by the
+process described in {{key-discovery}}.
+
+### Workload Processing {#workload-processing}
 
 The workload is considered the client in this interaction. It can treat the JWT
 acquired during provisioning as an opaque token. It must handle any error
 reponse from the authorization server as per Section 3.2 in [RFC7523].
 
-## JWT Provisioning {#JWT.provisioning}
+## JWT Provisioning {#jwt-provisioning}
 
 The workload is provisioned with a JWT from a trusted source. This can be the
 underlying platform where the workload runs, or a separate issuing system.
@@ -237,18 +258,25 @@ This provisioning mechanism illustrates a key difference from flows defined in
 [RFC6749] and [OIDC.Core], in that there are no client credentials involved in
 the interaction with the Authorization Server.
 
-# Interoperability Considerations
+# Interoperability Considerations {#interoperability-considerations}
 
-TODO Speak to the issue of registration/configuration
+TODO Speak to the issue of registration/configuration, because this seems to be
+getting to the heart of the problem. The Authorization Server has a mechanism to
+get the issuer key, but how do we establish trust? Right now it seems to always
+be a manual process. [RFC7591] and [OIDC.Dynamic] are popular things to say, but
+they don't seem to be what people implement.
 
-# Security Considerations
+# Security Considerations {#security-considerations}
 
 The security considerations in section 8 of [RFC7521] generally apply. As bearer
 tokens, stolen JWTs are particularly valuable to attackers:
 
-1. A secure channel (e.g. TLS) MUST be used when providing a JWT for authentication.
-2. JWTs MUST be protected from unauthorized access using operating system or platform access controls.
-3. JWT validity SHOULD be set to the shortest possible duration allowable by overall system availability constraints.
+1. A secure channel (e.g. TLS) MUST be used when providing a JWT for
+   authentication.
+2. JWTs MUST be protected from unauthorized access using operating system or
+   platform access controls.
+3. JWT validity SHOULD be set to the shortest possible duration allowable by
+   overall system availability constraints.
 
 
 # IANA Considerations
@@ -261,4 +289,4 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge Pieter, Hirsch.
+TODO acknowledge Pieter
