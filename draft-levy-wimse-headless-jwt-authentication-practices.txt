@@ -90,7 +90,9 @@ Table of Contents
    7.  Interoperability Considerations
    8.  Security Considerations
    9.  IANA Considerations
-   10. Normative References
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -232,8 +234,9 @@ Table of Contents
 6.1.  JWT Format
 
    An example JWT adhering to [RFC7523] is seen below.  Although this
-   example uses a SPIFFE ID in the subject ("sub") claim, this is not a
-   requirement in practice.
+   example uses a WIMSE workload identifier
+   ([I-D.ietf-wimse-s2s-protocol]) in the subject ("sub") claim, this is
+   not a requirement in practice.
 
    {
      "iss": "https://issuer.example.org",
@@ -310,7 +313,9 @@ Table of Contents
 
    This document has no IANA actions.
 
-10.  Normative References
+10.  References
+
+10.1.  Normative References
 
    [OIDC.Core]
               Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and
@@ -368,9 +373,20 @@ Table of Contents
               DOI 10.17487/RFC8414, June 2018,
               <https://www.rfc-editor.org/rfc/rfc8414>.
 
+10.2.  Informative References
+
+   [I-D.ietf-wimse-s2s-protocol]
+              Campbell, B., Salowey, J., Schwenkschuster, A., and Y.
+              Sheffer, "WIMSE Workload to Workload Authentication", Work
+              in Progress, Internet-Draft, draft-ietf-wimse-s2s-
+              protocol-03, 3 March 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
+              s2s-protocol-03>.
+
 Acknowledgments
 
-   TODO acknowledge Pieter
+   The authors would like to thank Pieter Kasselman for his guidance in
+   structuring this document.
 
 Authors' Addresses
 
