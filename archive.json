@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-17T00:02:10.988216+00:00",
+  "timestamp": "2025-04-27T00:01:51.736549+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -95,7 +95,7 @@
       "id": "I_kwDOOVtHv86y2r_R",
       "title": "Fill out \"JWT Format\" and \"JWT Processing\"",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/4",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -104,8 +104,8 @@
       "labels": [],
       "body": "See the TODOs.",
       "createdAt": "2025-04-16T20:33:41Z",
-      "updatedAt": "2025-04-16T22:31:28Z",
-      "closedAt": null,
+      "updatedAt": "2025-04-25T01:05:33Z",
+      "closedAt": "2025-04-25T01:05:33Z",
       "comments": [
         {
           "author": "heymarcel",
@@ -188,6 +188,48 @@
           "body": "Thanks!",
           "createdAt": "2025-04-08T14:05:15Z",
           "updatedAt": "2025-04-08T14:05:15Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOOVtHv86T5Urs",
+      "title": "Suggested Tweaks",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/7",
+      "state": "MERGED",
+      "author": "PieterKas",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-04-25T10:53:19Z",
+      "updatedAt": "2025-04-25T16:07:23Z",
+      "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "e6d2414653511272170caf710af2df013888debf",
+      "headRepository": "PieterKas/draft-ietf-wimse-headless-jwt-authentication",
+      "headRefName": "patch-2",
+      "headRefOid": "1c6145670b247b22f7469701bd76c10941c14a9e",
+      "closedAt": "2025-04-25T16:07:23Z",
+      "mergedAt": "2025-04-25T16:07:23Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "68ac58e022120fc5df15f3ba9587532c9c2e52d8"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOVtHv86mknG3",
+          "commit": {
+            "abbreviatedOid": "1c61456"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Thanks!",
+          "createdAt": "2025-04-25T16:06:06Z",
+          "updatedAt": "2025-04-25T16:06:06Z",
           "comments": []
         }
       ]
