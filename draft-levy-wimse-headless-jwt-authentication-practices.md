@@ -102,29 +102,30 @@ order to obtain consistency and promote interoperability in industry.
 {{fig-message-flow}} illustrates the OIDC-based message flow described in {{jwt-authentication}}:
 
 ~~~ aasvg
-      5) Verify signature
+      4) Verify signature
          using JWK
-     +----------------+ 3) GET /.well-known/openid-configuration
-     |                |<----------------------+
-     | Authorization  |<-------------------+  |
-     |    Server      | 4) Retrieve JWKs   |  |
-     |                |    from "jwks_uri" |  |
-     +------------+---+                    |  |
-          ^       |                        |  |
-2) JWT    |       | 6) Provide             |  |
-   Bearer |       |    Access              v  v
-   Token  |       |    Token     +---------------+
+
+     +----------------+ 3) Retrieve JWKs
+     |                |    from "jwks_uri"
+     | Authorization  +<-------------------+
+     |    Server      |                    |
+     |                |                    |
+     +----+-------+---+                    |
+          ^       |                        |
+2) JWT    |       | 5) Provide             |
+   Bearer |       |    Access              v
+   Token  |       |    Token     +---------+-----+
           |       |              |               |
           |       |              |  JWT Issuer   |
           |       v              |               |
-      +---+-------------+        +-------+-------+
+      +---+-------+-----+        +-------+-------+
       |                 |                |
       |    Workload     |<---------------+
-      |                 |    1) Initial provisioning
+      |                 |  1) Initial provisioning
       +--------+--------+
                |
-               |  7) Authenticate
-               |     with token
+               |  6) Authenticate with
+               |     Access Token
                v
          +------------+
          |            |
