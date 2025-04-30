@@ -5,8 +5,8 @@
 Workload Identity in Multi System Environments                   M. Levy
 Internet-Draft                                                     SPIRL
 Intended status: Informational                                H. Singhal
-Expires: 27 October 2025                                          GitHub
-                                                           25 April 2025
+Expires: 1 November 2025                                          GitHub
+                                                           30 April 2025
 
 
                    WIMSE Headless JWT Authentication
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 October 2025.
+   This Internet-Draft will expire on 1 November 2025.
 
 Copyright Notice
 
@@ -123,29 +123,30 @@ Table of Contents
    Figure 1 illustrates the OIDC-based message flow described in
    Section 4:
 
-         5) Verify signature
+         4) Verify signature
             using JWK
-        +----------------+ 3) GET /.well-known/openid-configuration
-        |                |<----------------------+
-        | Authorization  |<-------------------+  |
-        |    Server      | 4) Retrieve JWKs   |  |
-        |                |    from "jwks_uri" |  |
-        +------------+---+                    |  |
-             ^       |                        |  |
-   2) JWT    |       | 6) Provide             |  |
-      Bearer |       |    Access              v  v
-      Token  |       |    Token     +---------------+
+
+        +----------------+ 3) Retrieve JWKs
+        |                |    from "jwks_uri"
+        | Authorization  +<-------------------+
+        |    Server      |                    |
+        |                |                    |
+        +----+-------+---+                    |
+             ^       |                        |
+   2) JWT    |       | 5) Provide             |
+      Bearer |       |    Access              v
+      Token  |       |    Token     +---------+-----+
              |       |              |               |
              |       |              |  JWT Issuer   |
              |       v              |               |
-         +---+-------------+        +-------+-------+
+         +---+-------+-----+        +-------+-------+
          |                 |                |
          |    Workload     |<---------------+
-         |                 |    1) Initial provisioning
+         |                 |  1) Initial provisioning
          +--------+--------+
                   |
-                  |  7) Authenticate
-                  |     with token
+                  |  6) Authenticate with
+                  |     Access Token
                   v
             +------------+
             |            |
