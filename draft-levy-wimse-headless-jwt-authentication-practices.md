@@ -107,20 +107,20 @@ order to obtain consistency and promote interoperability in industry.
 
      +----------------+ 3) Retrieve JWKs
      |                |    from "jwks_uri"
-     | Authorization  +<------------------.
-     |    Server      |                    |
-     |                |                    |
-     +----+-------+---+                    |
-          ^       |                        |
-2) JWT    |       | 5) Provide             |
-   Bearer |       |    Access              v
-   Token  |       |    Token     +---------+-----+
-          |       |              |               |
-          |       |              |  JWT Issuer   |
-          |       v              |               |
-      +---+-------+-----+        +---------+-----+
-      |                 |                  |
-      |    Workload     |<----------------'
+     | Authorization  +<----------------.
+     |    Server      |                  |
+     |                |                  |
+     +----+-------+---+                  |
+          ^       |                      |
+2) JWT    |       | 5) Provide           |
+   Bearer |       |    Access            v
+   Token  |       |    Token     +-------+------+
+          |       |              |              |
+          |       |              |  JWT Issuer  |
+          |       v              |              |
+      +---+-------+-----+        +-------+------+
+      |                 |                |
+      |    Workload     |<--------------'
       |                 |  1) Initial provisioning
       +--------+--------+
                |
