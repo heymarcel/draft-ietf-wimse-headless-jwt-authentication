@@ -107,7 +107,7 @@ order to obtain consistency and promote interoperability in industry.
 
      +----------------+ 3) Retrieve JWKs
      |                |    from "jwks_uri"
-     | Authorization  +<-------------------+
+     | Authorization  +<------------------.
      |    Server      |                    |
      |                |                    |
      +----+-------+---+                    |
@@ -118,9 +118,9 @@ order to obtain consistency and promote interoperability in industry.
           |       |              |               |
           |       |              |  JWT Issuer   |
           |       v              |               |
-      +---+-------+-----+        +-------+-------+
-      |                 |                |
-      |    Workload     |<---------------+
+      +---+-------+-----+        +---------+-----+
+      |                 |                  |
+      |    Workload     |<----------------'
       |                 |  1) Initial provisioning
       +--------+--------+
                |
