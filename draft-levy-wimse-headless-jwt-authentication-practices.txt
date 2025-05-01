@@ -5,8 +5,8 @@
 Workload Identity in Multi System Environments                   M. Levy
 Internet-Draft                                                     SPIRL
 Intended status: Informational                                H. Singhal
-Expires: 1 November 2025                                          GitHub
-                                                           30 April 2025
+Expires: 2 November 2025                                          GitHub
+                                                              1 May 2025
 
 
                    WIMSE Headless JWT Authentication
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 November 2025.
+   This Internet-Draft will expire on 2 November 2025.
 
 Copyright Notice
 
@@ -128,7 +128,7 @@ Table of Contents
 
         +----------------+ 3) Retrieve JWKs
         |                |    from "jwks_uri"
-        | Authorization  +<-------------------+
+        | Authorization  +<------------------.
         |    Server      |                    |
         |                |                    |
         +----+-------+---+                    |
@@ -139,9 +139,9 @@ Table of Contents
              |       |              |               |
              |       |              |  JWT Issuer   |
              |       v              |               |
-         +---+-------+-----+        +-------+-------+
-         |                 |                |
-         |    Workload     |<---------------+
+         +---+-------+-----+        +---------+-----+
+         |                 |                  |
+         |    Workload     |<----------------'
          |                 |  1) Initial provisioning
          +--------+--------+
                   |
