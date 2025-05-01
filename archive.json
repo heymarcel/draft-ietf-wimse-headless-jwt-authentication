@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-29T00:02:24.572093+00:00",
+  "timestamp": "2025-05-01T00:01:48.461927+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -79,15 +79,15 @@
       "id": "I_kwDOOVtHv86y2rYT",
       "title": "Simplify diagram",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/3",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "* Take out the call to `/.well-known/openid-configuration` -- we can just explain elsewhere in the document.\n* Number the \"initial provisioning\" step, and add to \"JWT used for Authentication\"\n",
       "createdAt": "2025-04-16T20:32:10Z",
-      "updatedAt": "2025-04-16T20:32:10Z",
-      "closedAt": null,
+      "updatedAt": "2025-04-30T23:43:07Z",
+      "closedAt": "2025-04-30T23:43:07Z",
       "comments": []
     },
     {
@@ -121,16 +121,24 @@
       "id": "I_kwDOOVtHv86y2tC1",
       "title": "Add more detail to \"JWT Provisioning\"",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/5",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "We can reference the Client Credentials flow here, for example.",
       "createdAt": "2025-04-16T20:35:35Z",
-      "updatedAt": "2025-04-16T20:35:35Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-04-30T23:03:20Z",
+      "closedAt": "2025-04-30T23:03:19Z",
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Fixed in 323366dfb50b4b1e55efc34b0ba09c870fbef452",
+          "createdAt": "2025-04-30T23:03:19Z",
+          "updatedAt": "2025-04-30T23:03:19Z"
+        }
+      ]
     },
     {
       "number": 6,
@@ -160,9 +168,45 @@
       "labels": [],
       "body": "In [RFC 6749 #3.2.1](https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1) and 4.4, we find that it doesn't appear to be mandatory for a client_credentials caller to actually specify which client_id they intend to authenticate for. The client secret is assumed to be sufficient to figure out which client_id is being authenticated. \n\nThat's not true though for these federated credentials - it's reasonable to say that a workload in the issuing domain is allowed to sign in to 3 different receiving domain `client_id`s with the same issuer/sub/aud claims. As a result, if the receiving AS gets a request with this JWT and no identifying client_id, it can't accurately deduce which client_id to issue a token for. \n\nSo... given a bare JWT and some scopes, how does the receiving domain know which client ID to sign in for?\nGitHub has this problem here: https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-the-authenticated-app\n\nAnd in general the [installation token API](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app) does not indicate which GitHub App is being signed into. Instead, we look for the `appid` in the JWT, and ensure that the installation ID is a valid installation for that app. \n\nNon-standard implementations of this pattern, and even standard implementations (assuming that the client_credentials flow will be the standard path here) will require some amount of help to identify the client_id.\n\nOptions I can think of that solve some or all of the issue: \n1. A `client_id` claim in the JWT?\n    * Some better name for that claim that makes it clear it's the client ID in the receiving domain?\n2. Indicate that `client_ID` is required in this scenario for all flows. \n   * For scenarios that aren't client credentials (so all my GitHub scenarios), require support for a parameter that represents the client ID\n3. Mandate that the triplet of issuer/subject/audience is unique within a receiving domain - only one client_id can use a particular triplet. \n\nAll of these are problematic:\n1. Claim injection is not evenly supported in many IDPs. For example, they can be injected in Entra but only via relatively expensive [custom claims](https://learn.microsoft.com/en-us/entra/identity-platform/custom-claims-provider-reference) or fixed-format claims which would not match a standardized claim (`extn_{GUID for the client}_claimname`). \n2. This is a compat issue for existing code that wants to update from using self-signed JWTs in client_credentials flows to issued JWTs. It doesn't always fit cleanly into existing APIs either - e.g. `/app` on GitHub, do we accept a query parameter there? A bit ugly. \n3. This is a scenario blocker for users. It's reasonable that we have cardinality mismatches between the domains - i.e. one production workload in the issuing domain, but test, dev, and prod clients in the receiving domain that all need to trust the same workload's JWT. ",
       "createdAt": "2025-04-28T19:31:02Z",
-      "updatedAt": "2025-04-28T19:31:02Z",
+      "updatedAt": "2025-04-30T22:59:48Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Summary of further discussion in Slack:\n\n1. In the context of GitHub, an App is owned by an Account. (There are three different types of Accounts: User, Organization, and Enterprise).\n2. A field _like_ `client_id` is the easiest way to correlate a JWT to an App \n3. This naturally turns into an M:N mapping (See Hirsch's example below)\n\n> So 6 workloads are linked to 4 identities.\n> W1-6 are all attached to ID1.\n> W2 is attached to all 4 IDs.\n> W3 and W4 are attached to ID3.\n> etc...\n\nNote that we'll see this concept of \"resource\" within \"account\" in many other providers (e.g. AWS).\n\nIn terms of solving the issue, perhaps we don't present a single option, but discuss the problem in \"Interoperability\", along with some or all of the options you've presented.\n\nSpeaking of the options, I'm not sure I'm keen on number 3, not only for the reason you mentioned, but also because I don't believe that this will be enforced enough in practice to be reliable.  \n \nThe current draft mentions that the `sub` claim need not equal the `client_id`, but that's also an option.",
+          "createdAt": "2025-04-29T17:30:20Z",
+          "updatedAt": "2025-04-29T17:30:20Z"
+        },
+        {
+          "author": "hpsin",
+          "authorAssociation": "NONE",
+          "body": "> The current draft mentions that the sub claim need not equal the client_id, but that's also an option.\n\nI think that will be difficult to support. Imagine an IDP issuing JWTs for multiple workloads, federating with multiple domains. So e.g. a central SPIFFE issuer giving tokens to a workload, for use with JFrog, GitHub, and FooSaaS. \n\nEach of JFrog, GitHub, and FooSaaS are going to track their own `client_id` for the app in their domain. So in GitHub, we call the workload \"client_id=182745\". In JFrog the workload is given the client_id `customer123.app42`. And FooSaaS uses URIs for client_ids, so they expect a token with `client_id=Foo://customer123/group1/bar`. \n\nIs the token issuer going to track which subject to use with which audience? What happens when two audiences use the same client ID to reference different apps? I don't think there's a world where the `sub` claim is _ever_ going to be a value that is derived from the receiving domain. ",
+          "createdAt": "2025-04-29T23:33:15Z",
+          "updatedAt": "2025-04-29T23:33:29Z"
+        },
+        {
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "RFC7523 (https://datatracker.ietf.org/doc/html/rfc7523#section-2.1) states that client_id is optional when the JWT is used as an Authorization Grant.\n\n@hpsin I am trying to understand this a bit better:\n\n> That's not true though for these federated credentials - it's reasonable to say that a workload in the issuing domain is allowed > to sign in to 3 different receiving domain client_ids with the same issuer/sub/aud claims. As a result, if the receiving AS gets a > request with this JWT and no identifying client_id, it can't accurately deduce which client_id to issue a token for.\n\nWhat does \"a workload in the issuing domain is allowed to sign in to 3 different receiving domain client_ids\" mean? \n\nWhat is issueing domain vs receiving domain?\n\nAre you saying that you have a scenario where a single workload with a single JWT may act as three distinct clients with the same Authorization Server when requesting an Access Token? Does the AS use the client_id as part of the authorisation decision (apart from the fact that it is registered) before issueing the Access Token?\n\n",
+          "createdAt": "2025-04-30T20:14:46Z",
+          "updatedAt": "2025-04-30T20:14:46Z"
+        },
+        {
+          "author": "hpsin",
+          "authorAssociation": "NONE",
+          "body": "I was just creating another issue to try and standardize on some names and labels for the various actors here. \n\nAnd yes, that was my fear was that the client_id is optional, however it does indicate that it's \"only needed when a form of client authentication that relies on the parameter is used.\" I think this is referring to basic auth versus not, however. \n\nI'm trying to find appropriate words to describe the two trust domains in play here - the \"issuing\" domain is the one that owns the IDP that issues the JWT that is used for federation. The \"receiving\" domain is the domain that validates the JWT and issues a new token in response, for an identity that is managed within that domain. The net is that the \"issuing domain workload\" (e.g. a Jenkins pipeline in a customer environment that was given a JWT SVID) is able to run the token exchange to get a token and assumed identity within the \"receiving domain\" (e.g. using that SVID with an Entra FIC to get an Entra-issued access token with which to call Azure APIs).\n\nTo extend the scenario - consider a single pipeline that needs to assume the identities of three different Entra service principals. Each SP would have a FIC on it that points to the pipeline's identity. Naively, we would expect the FIC `aud` to be \"Entra\", the `sub` to  be the pipeline's SPIFFE ID, and the `iss` to be the customer's SPIFFE issuer. \n\nMy concern (perhaps specific to API design problems in GitHub) is that this is a single token that can be used in an exchange with Entra to assume one of three service principal identities. The standard JWT claims on their own cannot be used to determine _which_ of the identities to assume - that detail must be provided in some way through one of the methods I described, or the confusion cannot be allowed to occur. \n\nI think this can be called a modeling problem, and not allowing multiple identical FICS is a valid solution, as we've sat on this some more - those three FICs should not share an `aud` claim because they are not the same identity. Instead they should be represented as three distinct token audiences within the SPIFFE setup, and the pipeline should request _three_ tokens from the SPIFFE provider - one for each of the identities it wishes to assume within Entra. \n\n",
+          "createdAt": "2025-04-30T21:04:47Z",
+          "updatedAt": "2025-04-30T21:04:47Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "I wouldn't limit the concern to GitHub/Entra. It's likely that other systems would solve the same problem in a similar way. Even if we could solve it by, say, adding values to the \"aud\" claim, we would be kicking the can down the road. The problem reminds me a bit of hosting providers who would jam as many domains into a single certificate as possible in order to save on load balancers. In these cases, the issuing mechanism ends up having to \"know\" more about the usage of the token than it should.\n\nI'm fine with adding an opinion in the interoperability section that states that these tokens should not share an \"aud\" claim. That would give you the unique iss/sub/aud tuple you mentioned earlier, even if the iss/sub remains the same across the tokens. ",
+          "createdAt": "2025-04-30T22:59:48Z",
+          "updatedAt": "2025-04-30T22:59:48Z"
+        }
+      ]
     }
   ],
   "pulls": [
