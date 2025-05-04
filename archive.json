@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-01T00:01:48.461927+00:00",
+  "timestamp": "2025-05-04T00:01:50.427053+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -152,9 +152,17 @@
       "labels": [],
       "body": "It's not mentioned at all in the spec, but it does need to be dealt with.",
       "createdAt": "2025-04-16T20:36:10Z",
-      "updatedAt": "2025-04-16T20:36:10Z",
+      "updatedAt": "2025-05-01T10:20:01Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "RFC 7523 states that client ID is optional when using the JWT as an authorization grant. Since that seems to be the goal, more so than client authentication, perhaps we don't need client registration for this speccification.\n\nanother path to explore is whether we do implicit registration - for example, the JWT was issued by a trusted entitiy, the \"sub\" claim can be trusted as the identity of the workload. An AS my decide that given that it trusts the JWT issuer, it also trust the \"sub\" and treats it as an act of registration. In essence, it outsorces client registration to the JWT issuer. The AS may maintain its own mapping of \"sub\" to some kind of \"client_id\" internally, but that is an implementation detail.\n\nBasically a variation of this: https://www.linkedin.com/posts/pieter-kasselman-0259862_spiffe-oauth-mcp-activity-7314979089797296128-gkw2?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAB__J0Bpgv2Y6ZcpNNGu7FxZiO5luiLBxc",
+          "createdAt": "2025-05-01T10:19:18Z",
+          "updatedAt": "2025-05-01T10:20:00Z"
+        }
+      ]
     },
     {
       "number": 8,
@@ -168,7 +176,7 @@
       "labels": [],
       "body": "In [RFC 6749 #3.2.1](https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1) and 4.4, we find that it doesn't appear to be mandatory for a client_credentials caller to actually specify which client_id they intend to authenticate for. The client secret is assumed to be sufficient to figure out which client_id is being authenticated. \n\nThat's not true though for these federated credentials - it's reasonable to say that a workload in the issuing domain is allowed to sign in to 3 different receiving domain `client_id`s with the same issuer/sub/aud claims. As a result, if the receiving AS gets a request with this JWT and no identifying client_id, it can't accurately deduce which client_id to issue a token for. \n\nSo... given a bare JWT and some scopes, how does the receiving domain know which client ID to sign in for?\nGitHub has this problem here: https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-the-authenticated-app\n\nAnd in general the [installation token API](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app) does not indicate which GitHub App is being signed into. Instead, we look for the `appid` in the JWT, and ensure that the installation ID is a valid installation for that app. \n\nNon-standard implementations of this pattern, and even standard implementations (assuming that the client_credentials flow will be the standard path here) will require some amount of help to identify the client_id.\n\nOptions I can think of that solve some or all of the issue: \n1. A `client_id` claim in the JWT?\n    * Some better name for that claim that makes it clear it's the client ID in the receiving domain?\n2. Indicate that `client_ID` is required in this scenario for all flows. \n   * For scenarios that aren't client credentials (so all my GitHub scenarios), require support for a parameter that represents the client ID\n3. Mandate that the triplet of issuer/subject/audience is unique within a receiving domain - only one client_id can use a particular triplet. \n\nAll of these are problematic:\n1. Claim injection is not evenly supported in many IDPs. For example, they can be injected in Entra but only via relatively expensive [custom claims](https://learn.microsoft.com/en-us/entra/identity-platform/custom-claims-provider-reference) or fixed-format claims which would not match a standardized claim (`extn_{GUID for the client}_claimname`). \n2. This is a compat issue for existing code that wants to update from using self-signed JWTs in client_credentials flows to issued JWTs. It doesn't always fit cleanly into existing APIs either - e.g. `/app` on GitHub, do we accept a query parameter there? A bit ugly. \n3. This is a scenario blocker for users. It's reasonable that we have cardinality mismatches between the domains - i.e. one production workload in the issuing domain, but test, dev, and prod clients in the receiving domain that all need to trust the same workload's JWT. ",
       "createdAt": "2025-04-28T19:31:02Z",
-      "updatedAt": "2025-04-30T22:59:48Z",
+      "updatedAt": "2025-05-01T10:13:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -205,6 +213,13 @@
           "body": "I wouldn't limit the concern to GitHub/Entra. It's likely that other systems would solve the same problem in a similar way. Even if we could solve it by, say, adding values to the \"aud\" claim, we would be kicking the can down the road. The problem reminds me a bit of hosting providers who would jam as many domains into a single certificate as possible in order to save on load balancers. In these cases, the issuing mechanism ends up having to \"know\" more about the usage of the token than it should.\n\nI'm fine with adding an opinion in the interoperability section that states that these tokens should not share an \"aud\" claim. That would give you the unique iss/sub/aud tuple you mentioned earlier, even if the iss/sub remains the same across the tokens. ",
           "createdAt": "2025-04-30T22:59:48Z",
           "updatedAt": "2025-04-30T22:59:48Z"
+        },
+        {
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think I understand the scenario now @hpsin.\n\n1. A workload is issued with a JWT containing a \"sub\" (it's SPIFFE ID), \"aud\" (the Authorization server in the receiving domain), and an \"iss\" (the SPIFFE issuer).\n2. The receiving domain authorization server protects numerous resources. It figures out which resource the workload that is presenting the JWT SVID is trying to access.\n3. The receiving domain's authorisation server issues the access token for the specific resource server.\n4. The workload present the Access Token to the Resource Server to gain access.\n\nA few thoughts:\n\nToken Claims\n-------------\nThe \"aud\" claim should be used to identify the receiving domain's authorization server. This should probably be a single \"aud\" value.\n\nThe \"sub\" claim should uniquely identify the workload. The receiving domain's authorization server may apply some kind of wildcarding (e.g. some SPIFFE IDs may have regional or cluster specific information included, which may not be relevant to the receiving domain's decision on whether to accept the token). Some common sense constraints should be enforced though (allow * seems harmful for example). Implementation and support is at the discretion of the receiving domain's authorization server.\n\nThe \"iss\" claim indicates the SPIFFE issuer. This should be matched to the JWKs discovery point that was previously configured for validation.\n\nResource Server Selection\n--------------------------\nDetermining which resource the workload is requesting access to should probably not be treated as a credential format problem or a client_id problem. Instead, we should consider treating this as a protocol problem and letting the workload specify which resource it is trying to access. \n\nThe receiving domain's authorization server can maintain a list of resources for which the \"sub\" is allowed to request an Access Token (this is setup at the same time as the JWKS URL, sub, aud and other claims). Some ideas on how the workload can indicate which resource it wants to access:\n\n1. RFC 8707 is dedicated to describing the \"resource\" parameter (https://www.rfc-editor.org/rfc/rfc8707.html). This seems like an easy extension to support. We can introduce this as a SHOULD or a MUST when using the JWT as an Authorisation Grant as specified in RFC 7523.\n2. We can specify that the resource for which the workload is requesting and Access Token be indicated through the \"scope\" parameter. This may be a pragmatic alternative to RFC 8707, although it is probably bending the purpose/use of the \"scope\" parameter.\n",
+          "createdAt": "2025-05-01T10:13:32Z",
+          "updatedAt": "2025-05-01T10:13:32Z"
         }
       ]
     }
