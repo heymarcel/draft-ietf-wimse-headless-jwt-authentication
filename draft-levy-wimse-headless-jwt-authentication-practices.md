@@ -71,6 +71,11 @@ normative:
 
 informative:
   I-D.ietf-wimse-s2s-protocol:
+  GitHub:
+    title: About security hardening with OpenID Connect
+    target: https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+    date: 2025
+
 
 --- abstract
 
@@ -153,11 +158,11 @@ described in more detail in {{jwt-provisioning}}.
 1. The workload calls an Authorization Server's token endpoint and presents a
    JWT Bearer Token as specified in Section 4 of [RFC7523].
 2. The Authorization Server takes the value from the `iss` claim and appends
-   `/.well-known/openid-configuration` to retrieve the JWT issuer's
+   `/.well-known/openid-configuration` to retrieve the JWT Issuer's
    configuration via HTTP, as specified in [OIDC.Discovery]. Alternatively, the
    OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
 3. The Authorization Server then retrieves the JWKs via HTTP from the `jwks_uri`
-   declared in the JWT issuer's configuration response.
+   declared in the JWT Issuer's configuration response.
 4. Using the appropiate issuer key, the Authorization Server verifies the signature
    of the JWT Bearer Token.
 5. The Authorization Server then responds to the workload with an Access Token
@@ -259,11 +264,21 @@ the interaction with the Authorization Server.
 
 # Interoperability Considerations {#interoperability-considerations}
 
-TODO Speak to the issue of registration/configuration, because this seems to be
-getting to the heart of the problem. The Authorization Server has a mechanism to
-get the issuer key, but how do we establish trust? Right now it seems to always
-be a manual process. [RFC7591] and [OIDC.Dynamic] are popular things to say, but
-they don't seem to be what people implement.
+In order for the workload to access the resource, the following requires prior configuration:
+
+1. The JWT Issuer must be recognized by the Authorization Server,
+2. Claims in the JWT must be validated and allowed to authenticate to an
+   identity legible to the Resource Server,
+3. and the resulting Resource Server identity must be authorized to access the Resource.
+
+Step \#1 requires an explicit trust relationship between the Authorization
+Server and the JWT Issuer. Despite previous attempts to standardize dynamic
+client registration in [RFC7591] and [OIDC.Dynamic], in practice this trust
+relationship, still depends on vendor-specific configuration.
+
+Both Steps \#2 and \#3 are largely out of scope for this document, and are
+mentioned primarily to capture current practice, of which [GitHub] is an
+example.
 
 # Security Considerations {#security-considerations}
 
