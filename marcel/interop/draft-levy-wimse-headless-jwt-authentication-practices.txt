@@ -1,0 +1,424 @@
+
+
+
+
+Workload Identity in Multi System Environments                   M. Levy
+Internet-Draft                                                     SPIRL
+Intended status: Informational                                H. Singhal
+Expires: 6 November 2025                                          GitHub
+                                                              5 May 2025
+
+
+                   WIMSE Headless JWT Authentication
+     draft-levy-wimse-headless-jwt-authentication-practices-latest
+
+Abstract
+
+   In workload-to-service communication, a common pattern is for a
+   workload to present a JSON Web Token (JWT) to an authorization server
+   in order to obtain an access token for the service it needs to
+   access.  It is a partial adaptation for workloads of existing flows
+   designed for users.  Implementing this pattern combines multiple
+   existing standards from different working groups and standards
+   bodies.  Since this pattern is not described in a specification, it
+   leads to variability in interoperability.  The purpose of this
+   document is to capture this common workload identity practice as an
+   RFC in order to obtain consistency and promote interoperability in
+   industry.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://heymarcel.github.io/draft-ietf-wimse-headless-jwt-
+   authentication/draft-levy-wimse-headless-jwt-authentication-
+   practices.html.  Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-levy-wimse-headless-jwt-
+   authentication-practices/.
+
+   Discussion of this document takes place on the Workload Identity in
+   Multi System Environments mailing list (mailto:wimse@ietf.org), which
+   is archived at https://mailarchive.ietf.org/arch/browse/wimse/.
+   Subscribe at https://www.ietf.org/mailman/listinfo/wimse/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-
+   authentication.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 6 November 2025.
+
+Copyright Notice
+
+   Copyright (c) 2025 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Architecture and Message Flow
+   3.  Conventions and Definitions
+   4.  JWT used for Authentication
+   5.  Key Discovery
+   6.  JWT Format and Processing Requirements
+     6.1.  JWT Format
+     6.2.  JWT Processsing
+       6.2.1.  Authorization Server Processing
+       6.2.2.  Workload Processing
+     6.3.  JWT Provisioning
+   7.  Interoperability Considerations
+   8.  Security Considerations
+   9.  IANA Considerations
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
+   Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   In workload-to-service communication, a common pattern is for a
+   workloads to use a JSON Web Token (JWT) to identify and authenticate
+   itself as part of a process to obtain an access token for a service.
+   This is done by having the workload present an asynchronously-
+   provisioned bearer token in the form of a signed JWT to an
+   Authorization Server.  The Authorization Server verifies the JWT and
+   then provides an OAuth access token as described in [RFC7523].  The
+   "bootstrap" problem of discovering the original JWT issuer is solved
+   by requesting a JSON configuration document using the process
+   described in OpenID Connect Discovery [OIDC.Discovery] or OAuth 2.0
+   Authorization Server Metadata [RFC8414].
+
+   Since this pattern is not described in a specification, it leads to
+   variability in interoperability.  The purpose of this document is to
+   capture this common workload identity practice as an RFC in order to
+   obtain consistency and promote interoperability in industry.
+
+2.  Architecture and Message Flow
+
+   Figure 1 illustrates the OIDC-based message flow described in
+   Section 4:
+
+         4) Verify signature
+            using JWK
+
+        +----------------+ 3) Retrieve JWKs
+        |                |    from "jwks_uri"
+        | Authorization  +<----------------.
+        |    Server      |                  |
+        |                |                  |
+        +----+-------+---+                  |
+             ^       |                      |
+   2) JWT    |       | 5) Provide           |
+      Bearer |       |    Access            v
+      Token  |       |    Token     +-------+------+
+             |       |              |              |
+             |       |              |  JWT Issuer  |
+             |       v              |              |
+         +---+-------+-----+        +-------+------+
+         |                 |                |
+         |    Workload     |<--------------'
+         |                 |  1) Initial provisioning
+         +--------+--------+
+                  |
+                  |  6) Authenticate with
+                  |     Access Token
+                  v
+            +------------+
+            |            |
+            |  Resource  |
+            |   Server   |
+            |            |
+            +------------+
+
+      Figure 1: OIDC message flow when used in a headless environment
+
+3.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+4.  JWT used for Authentication
+
+   The overall message flow is seen in Figure 1, and this section
+   explains it in more detail.  It assumes the workload has previously
+   acquired a JWT adhering to the profile specified in [RFC7523].  JWT
+   provisioning assumptions are described in more detail in Section 6.3.
+
+   1.  The workload calls an Authorization Server's token endpoint and
+       presents a JWT Bearer Token as specified in Section 4 of
+       [RFC7523].
+
+   2.  The Authorization Server takes the value from the iss claim and
+       appends /.well-known/openid-configuration to retrieve the JWT
+       Issuer's configuration via HTTP, as specified in
+       [OIDC.Discovery].  Alternatively, the OAuth 2.0 Authorization
+       Server Metadata endpoint [RFC8414] may be used.
+
+   3.  The Authorization Server then retrieves the JWKs via HTTP from
+       the jwks_uri declared in the JWT Issuer's configuration response.
+
+   4.  Using the appropiate issuer key, the Authorization Server
+       verifies the signature of the JWT Bearer Token.
+
+   5.  The Authorization Server then responds to the workload with an
+       Access Token suitable for use with the Resource Server.
+
+   6.  The Workload then authenticates with the Resource Server using
+       the Access Token.
+
+   As we can see, the headless JWT authentication pattern closely
+   follows that of OIDC, but without the initial authentication by a
+   user.
+
+   This document limits discussion to HTTP, as this is the protocol
+   predominantly used.  Although other protocols are out of scope, this
+   should not be read as a limit on their future use.
+
+5.  Key Discovery
+
+   Issuer key discovery follows the steps outlined in Section 4 of
+   [OIDC.Discovery].  The Resource Server makes a request to a location
+   that is well-known according to [RFC5785]:
+
+   GET /.well-known/openid-configuration HTTP/1.1
+   Host: example.com
+
+      Figure 2: Example request to issuer to obtain OIDC configuration
+
+   For OAuth 2.0, the equivalent location is /.well-known/oauth-
+   authorization-server.  In both cases, the requester expects a JSON
+   document containing configuration information.  An example is
+   provided here:
+
+   {
+     "issuer": "https://example.com",
+     "jwks_uri": "https://example.com/.well-known/jwks.json",
+     "authorization_endpoint": "https://example.com/auth",
+     "token_endpoint": "https://example.com/token"
+   }
+
+              Figure 3: Example issuer configuration response
+
+   For the sake of the pattern described in this document, only the
+   issuer and jwks_uri fields are relevant.
+
+   Note that this key discovery mechanism does not address the question
+   of whether the key itself should be trusted.  This is a registration
+   problem, and is discussed further in Section 7.
+
+6.  JWT Format and Processing Requirements
+
+6.1.  JWT Format
+
+   An example JWT adhering to [RFC7523] is seen below.  Although this
+   example uses a WIMSE workload identifier
+   ([I-D.ietf-wimse-s2s-protocol]) in the subject ("sub") claim, this is
+   not a requirement in practice.
+
+   {
+     "iss": "https://issuer.example.org",
+     "sub": "spiffe://example.org/ns/default/sa/backend-job-runner",
+     "aud": "https://auth.example.com/token",
+     "jti": "jwt-grant-id-x1y2z3a4",
+     "exp": 1744845092,
+     "iat": 1744841036
+   }
+
+                       Figure 4: Example RFC7523 JWT
+
+6.2.  JWT Processsing
+
+6.2.1.  Authorization Server Processing
+
+   The authorization server validates the JWT according to Section 3 in
+   [RFC7523], with the following exceptions:
+
+   1.  The "sub" (subject) claim does not identify either a resource
+       owner or an anonymous user.
+
+   2.  The "sub" claim need not correspond to the "client id" of an
+       OAuth client.
+
+   The authorization server validates the signature using the key
+   discovered by the process described in Section 5.
+
+6.2.2.  Workload Processing
+
+   The workload is considered the client in this interaction.  It can
+   treat the JWT acquired during provisioning as an opaque token.  It
+   must handle any error reponse from the authorization server as per
+   Section 3.2 in [RFC7523].
+
+6.3.  JWT Provisioning
+
+   The workload is provisioned with a JWT from a trusted source.  This
+   can be the underlying platform where the workload runs, or a separate
+   issuing system.  Regardless of the actual mechanism, JWT provisioning
+   relies on a registration mechanism that establishes mutually-trusted,
+   secure connections between the workload and the JWT provisioner.
+
+   This provisioning mechanism illustrates a key difference from flows
+   defined in [RFC6749] and [OIDC.Core], in that there are no client
+   credentials involved in the interaction with the Authorization
+   Server.
+
+7.  Interoperability Considerations
+
+   In order for the workload to access the resource, the following
+   requires prior configuration:
+
+   1.  The JWT Issuer must be recognized by the Authorization Server,
+
+   2.  Claims in the JWT must be validated and allowed to authenticate
+       to an identity legible to the Resource Server,
+
+   3.  and the resulting Resource Server identity must be authorized to
+       access the Resource.
+
+   Step #1 requires an explicit trust relationship between the
+   Authorization Server and the JWT Issuer.  Despite previous attempts
+   to standardize dynamic client registration in [RFC7591] and
+   [OIDC.Dynamic], in practice this trust relationship, still depends on
+   vendor-specific configuration.
+
+   Both Steps #2 and #3 are largely out of scope for this document, and
+   are mentioned primarily to capture current practice, of which
+   [GitHub] is an example.
+
+8.  Security Considerations
+
+   The security considerations in section 8 of [RFC7521] generally
+   apply.  As bearer tokens, stolen JWTs are particularly valuable to
+   attackers:
+
+   1.  A secure channel (e.g. TLS) MUST be used when providing a JWT for
+       authentication.
+
+   2.  JWTs MUST be protected from unauthorized access using operating
+       system or platform access controls.
+
+   3.  JWT validity SHOULD be set to the shortest possible duration
+       allowable by overall system availability constraints.
+
+9.  IANA Considerations
+
+   This document has no IANA actions.
+
+10.  References
+
+10.1.  Normative References
+
+   [OIDC.Core]
+              Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and
+              C. Mortimore, "OpenID Connect Core 1.0 incorporating
+              errata set 2", 2023,
+              <https://openid.net/specs/openid-connect-core-1_0.html>.
+
+   [OIDC.Discovery]
+              Sakimura, N., Bradley, J., Jones, M., and E. Jay, "OpenID
+              Connect Discovery 1.0 incorporating errata set 2", 2023,
+              <https://openid.net/specs/openid-connect-discovery-
+              1_0.html>.
+
+   [OIDC.Dynamic]
+              Sakimura, N., Bradley, J., and M. Jones, "OpenID Connect
+              Dynamic Client Registration 1.0 incorporating errata set
+              2", 2023, <https://openid.net/specs/openid-connect-
+              registration-1_0.html>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5785]  Nottingham, M. and E. Hammer-Lahav, "Defining Well-Known
+              Uniform Resource Identifiers (URIs)", RFC 5785,
+              DOI 10.17487/RFC5785, April 2010,
+              <https://www.rfc-editor.org/rfc/rfc5785>.
+
+   [RFC6749]  Hardt, D., Ed., "The OAuth 2.0 Authorization Framework",
+              RFC 6749, DOI 10.17487/RFC6749, October 2012,
+              <https://www.rfc-editor.org/rfc/rfc6749>.
+
+   [RFC7521]  Campbell, B., Mortimore, C., Jones, M., and Y. Goland,
+              "Assertion Framework for OAuth 2.0 Client Authentication
+              and Authorization Grants", RFC 7521, DOI 10.17487/RFC7521,
+              May 2015, <https://www.rfc-editor.org/rfc/rfc7521>.
+
+   [RFC7523]  Jones, M., Campbell, B., and C. Mortimore, "JSON Web Token
+              (JWT) Profile for OAuth 2.0 Client Authentication and
+              Authorization Grants", RFC 7523, DOI 10.17487/RFC7523, May
+              2015, <https://www.rfc-editor.org/rfc/rfc7523>.
+
+   [RFC7591]  Richer, J., Ed., Jones, M., Bradley, J., Machulak, M., and
+              P. Hunt, "OAuth 2.0 Dynamic Client Registration Protocol",
+              RFC 7591, DOI 10.17487/RFC7591, July 2015,
+              <https://www.rfc-editor.org/rfc/rfc7591>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8414]  Jones, M., Sakimura, N., and J. Bradley, "OAuth 2.0
+              Authorization Server Metadata", RFC 8414,
+              DOI 10.17487/RFC8414, June 2018,
+              <https://www.rfc-editor.org/rfc/rfc8414>.
+
+10.2.  Informative References
+
+   [GitHub]   "About security hardening with OpenID Connect", 2025,
+              <https://docs.github.com/en/actions/security-for-github-
+              actions/security-hardening-your-deployments/about-
+              security-hardening-with-openid-connect>.
+
+   [I-D.ietf-wimse-s2s-protocol]
+              Campbell, B., Salowey, J., Schwenkschuster, A., and Y.
+              Sheffer, "WIMSE Workload to Workload Authentication", Work
+              in Progress, Internet-Draft, draft-ietf-wimse-s2s-
+              protocol-03, 3 March 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
+              s2s-protocol-03>.
+
+Acknowledgments
+
+   The authors would like to thank Pieter Kasselman for his guidance in
+   structuring this document.
+
+Authors' Addresses
+
+   Marcel Levy
+   SPIRL
+   Email: heymarcel@gmail.com
+
+
+   Hirsch Singhal
+   GitHub
+   Email: hpsin@github.com
