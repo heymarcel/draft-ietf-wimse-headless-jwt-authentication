@@ -267,27 +267,44 @@ the interaction with the Authorization Server.
 In order for the workload to access the resource, the following requires prior configuration:
 
 1. The JWT Issuer must be recognized by the Authorization Server,
-2. Claims in the JWT must be validated and allowed to authenticate to an
-   identity legible to the Resource Server,
-3. and the resulting Resource Server identity must be authorized to access the Resource.
+2. Claims in the JWT must be validated and "exchanged" for an identity legible
+   to the Resource Server,
+3. and the resulting Resource Server identity must be authorized to access the
+   Resource.
 
 Step \#1 requires an explicit trust relationship between the Authorization
 Server and the JWT Issuer. Despite previous attempts to standardize dynamic
 client registration in [RFC7591] and [OIDC.Dynamic], in practice this trust
 relationship, still depends on vendor-specific configuration.
 
-Both Steps \#2 and \#3 are largely out of scope for this document, and are
-mentioned primarily to capture current practice, of which [GitHub] is an
-example.
+As an example of current practice for configuration of Steps \#2 and \#3, see
+[GitHub].
 
 # Security Considerations {#security-considerations}
+
+This document illustrates a common pattern in trust domain federation. However,
+the "identity exchange" Step \#2 in {{interoperability-considerations}} is not
+standardized. In practice, the workload platform and the Resource Server
+platform define principals differently, and the translation mechanism between
+the two identities is implemented differently by each Resource Server platform.
+This lack of standardization is not merely inconvenient; it is a rich source of
+privilege escalation attacks due to misconfigurations.
+
+Therefore, the following recommendations apply to configurations that control
+the "identity exchange" step:
+
+1. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
+   the JWT Issuer from being used to impersonate any Resource Server identity.
+2. The configuration that controls the translation of the workload JWT to a
+   Resource Server identity SHOULD NOT rely on claims that can be controlled by an
+   attacker.
 
 The security considerations in section 8 of [RFC7521] generally apply. As bearer
 tokens, stolen JWTs are particularly valuable to attackers:
 
-1. A secure channel (e.g. TLS) MUST be used when providing a JWT for
+1. A secure channel (e.g. TLS) SHOULD be used when providing a JWT for
    authentication.
-2. JWTs MUST be protected from unauthorized access using operating system or
+2. JWTs SHOULD be protected from unauthorized access using operating system or
    platform access controls.
 3. JWT validity SHOULD be set to the shortest possible duration allowable by
    overall system availability constraints.
