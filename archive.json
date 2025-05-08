@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-06T00:01:57.355502+00:00",
+  "timestamp": "2025-05-08T00:01:48.192344+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -236,6 +236,54 @@
           "updatedAt": "2025-05-05T21:28:02Z"
         }
       ]
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOOVtHv861mH3D",
+      "title": "Security considerations for control flow claims versus request parameters",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/10",
+      "state": "OPEN",
+      "author": "hpsin",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Consumers of this pattern will need to (be able to) choose between performance and security, particularly in scenarios where there are many issuing domain workloads being mapped to a single resource domain principal, or one issuing domain workload being mapped to multiple resource domain principals. \n\nIn both cases, either preference may be possible:\n* Reuse a single token across multiple exchanges for multiple principals, getting performance at the risk of worse security (due to token reuse)\n* Require a distinct token for each exchange to guarantee that tokens cannot be reused improperly. \n\nThe latter is generally preferred, and would be ensured by adding additional unique data within the federating JWT to lock down how it can be used (for instance, by extending the subject claim to reference a specific issuing domain workload, including a claim that specifies a specific resource domain principal, or resource domain specific claims that help scope the resulting token).\n\nTo support this, both the issuing IDP and the authorizing resource AS should support this pattern:\n1. The issuing IDP needs to be able to inject claims (via some unspecified configuration) in response to runtime instructions and specific subject/audience combinations. These should be able to take any (unclaimed? i.e. can't be `sub`) claim name, to ensure compatibility with resource domain AS logic. \n2. The resource domain AS should support validating multiple custom claims in the token, and establish a known way of specifying the resource domain principal ID within the JWT, which allows the AS to better ensure that tokens cannot be reused across principals. \n3. The resource domain AS should support any runtime parameters they offer (for instance, the `scopes` parameter) being included in the JWT instead, and either only obey the JWT claims if present or take the most restrictive union of outcomes from JWT claims and runtime parameters, if both are present. \n    * For instance, GitHub supports \"[scoped tokens](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app)\", where the access token being requested can be scoped down to specific permissions by the inclusion of runtime parameters (`repositories` and `permissions`). It would be beneficial for security outcomes to enable an issuing IDP to mint a JWT that contains these two claims, thus restricting the workload to just those chosen repos and permissions in a way that cannot be tampered with by the workload. \n\n\nThe other alternative is to inject these signals to the AS at runtime, via request parameters. These are not enforced by the IDP, which allows for token reuse in ways that may be desired. For instance, a workload sometimes needs a tightly scoped resource access token, and sometimes wants a full-strength access token, and would use the runtime request parameters to alter the resulting token instead of relying on its IDP to provide multiple JWTs for use with the audience. This may be required for compatibility purposes as well, if the IDP or resource AS do not adequately support claim injection and validation. ",
+      "createdAt": "2025-05-07T17:21:05Z",
+      "updatedAt": "2025-05-07T17:28:14Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOOVtHv861mo0s",
+      "title": "Security Considerations: Use multiple signing keys",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/11",
+      "state": "OPEN",
+      "author": "PieterKas",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Following on from conversation - addd security considerations to use uniqque keys per account when issuing a token after a successful authentication.",
+      "createdAt": "2025-05-07T18:14:18Z",
+      "updatedAt": "2025-05-07T18:14:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 12,
+      "id": "I_kwDOOVtHv861mpZ_",
+      "title": "Security Considerations: Claims transcriptions",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/12",
+      "state": "OPEN",
+      "author": "PieterKas",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Add security considerations on risks of transcribing new claims from a JWT that was presented.",
+      "createdAt": "2025-05-07T18:15:27Z",
+      "updatedAt": "2025-05-07T18:15:27Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -335,19 +383,80 @@
       "labels": [],
       "body": "I doubt we'll be able to address everything in the discussion, but I'd like to surface the problem in a way that opens the door for another WIMSE draft to tackle it head-on. Here's a first attempt.",
       "createdAt": "2025-05-05T21:25:18Z",
-      "updatedAt": "2025-05-05T21:25:18Z",
+      "updatedAt": "2025-05-07T17:59:47Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "2251bd51115afde3eedf38e90a24f417a4b65b3d",
       "headRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "headRefName": "marcel/interop",
-      "headRefOid": "a84c0b5c575366c4108e5fe468ae142fc038d053",
+      "headRefOid": "bbd6b4829221d57fa7371bf9d07707f3e5ed8183",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOVtHv86oD8gy",
+          "commit": {
+            "abbreviatedOid": "bbd6b48"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-06T20:49:58Z",
+          "updatedAt": "2025-05-06T20:49:59Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "claims aren't exchanged.",
+              "createdAt": "2025-05-06T20:49:59Z",
+              "updatedAt": "2025-05-06T20:49:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86oP0lO",
+          "commit": {
+            "abbreviatedOid": "bbd6b48"
+          },
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-07T17:59:19Z",
+          "updatedAt": "2025-05-07T17:59:20Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "The lead-in to the this sentence talks about configuration, but then this point feels more like a processing rule (e.g. what should be done at runtime). \r\n\r\nwhat is it that should be configured here?",
+              "createdAt": "2025-05-07T17:59:20Z",
+              "updatedAt": "2025-05-07T17:59:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86oP0-R",
+          "commit": {
+            "abbreviatedOid": "bbd6b48"
+          },
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-07T17:59:47Z",
+          "updatedAt": "2025-05-07T17:59:47Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "similar to previous comment - is this a configuration, or a processing rule?",
+              "createdAt": "2025-05-07T17:59:47Z",
+              "updatedAt": "2025-05-07T17:59:47Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
