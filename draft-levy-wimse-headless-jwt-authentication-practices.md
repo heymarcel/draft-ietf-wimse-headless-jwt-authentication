@@ -264,21 +264,23 @@ the interaction with the Authorization Server.
 
 # Interoperability Considerations {#interoperability-considerations}
 
-In order for the workload to access the resource, the following requires prior configuration:
+In order for the workload to access the resource,
 
 1. The JWT Issuer must be recognized by the Authorization Server,
-2. Claims in the JWT must be validated and "exchanged" for an identity legible
-   to the Resource Server,
-3. and the resulting Resource Server identity must be authorized to access the
+2. Claims in the JWT are inspected and used to determine an identity legible to
+   the Resource Server,
+3. And the resulting Resource Server identity must be authorized to access the
    Resource.
 
-Step \#1 requires an explicit trust relationship between the Authorization
-Server and the JWT Issuer. Despite previous attempts to standardize dynamic
-client registration in [RFC7591] and [OIDC.Dynamic], in practice this trust
-relationship, still depends on vendor-specific configuration.
+Step \#1 requires the configuration of an explicit trust relationship between
+the Authorization Server and the JWT Issuer. Despite previous attempts to
+standardize dynamic client registration in [RFC7591] and [OIDC.Dynamic], in
+practice this trust relationship, still depends on vendor-specific
+configuration.
 
-As an example of current practice for configuration of Steps \#2 and \#3, see
-[GitHub].
+Step \#2 is a processing rule that is also previously-configured in an
+implementation-dependent manner. As an example of current practice for
+configuration of Steps \#2 and \#3, see [GitHub].
 
 # Security Considerations {#security-considerations}
 
