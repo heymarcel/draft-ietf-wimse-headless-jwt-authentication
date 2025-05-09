@@ -71,6 +71,11 @@ normative:
 
 informative:
   I-D.ietf-wimse-s2s-protocol:
+  GitHub:
+    title: About security hardening with OpenID Connect
+    target: https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+    date: 2025
+
 
 --- abstract
 
@@ -153,11 +158,11 @@ described in more detail in {{jwt-provisioning}}.
 1. The workload calls an Authorization Server's token endpoint and presents a
    JWT Bearer Token as specified in Section 4 of [RFC7523].
 2. The Authorization Server takes the value from the `iss` claim and appends
-   `/.well-known/openid-configuration` to retrieve the JWT issuer's
+   `/.well-known/openid-configuration` to retrieve the JWT Issuer's
    configuration via HTTP, as specified in [OIDC.Discovery]. Alternatively, the
    OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
 3. The Authorization Server then retrieves the JWKs via HTTP from the `jwks_uri`
-   declared in the JWT issuer's configuration response.
+   declared in the JWT Issuer's configuration response.
 4. Using the appropiate issuer key, the Authorization Server verifies the signature
    of the JWT Bearer Token.
 5. The Authorization Server then responds to the workload with an Access Token
@@ -216,7 +221,7 @@ WIMSE workload identifier ({{I-D.ietf-wimse-s2s-protocol}}) in the subject
 ~~~ json
 {
   "iss": "https://issuer.example.org",
-  "sub": "spiffe://example.org/ns/default/sa/backend-job-runner",
+  "sub": "conversation-router-agent-customer-support",
   "aud": "https://auth.example.com/token",
   "jti": "jwt-grant-id-x1y2z3a4",
   "exp": 1744845092,
@@ -259,24 +264,57 @@ the interaction with the Authorization Server.
 
 # Interoperability Considerations {#interoperability-considerations}
 
-TODO Speak to the issue of registration/configuration, because this seems to be
-getting to the heart of the problem. The Authorization Server has a mechanism to
-get the issuer key, but how do we establish trust? Right now it seems to always
-be a manual process. [RFC7591] and [OIDC.Dynamic] are popular things to say, but
-they don't seem to be what people implement.
+In order for the workload to access the resource,
+
+1. The JWT Issuer must be recognized by the Authorization Server,
+2. Claims in the JWT are inspected and used to determine the subject, or
+   principal, of the access token issued for the Resource Server,
+3. And the resulting Resource Server principal must be authorized to access the
+   Resource.
+
+Step \#1 requires the configuration of an explicit trust relationship between
+the Authorization Server and the JWT Issuer. Despite previous attempts to
+standardize dynamic client registration in [RFC7591] and [OIDC.Dynamic], in
+practice this trust relationship, still depends on vendor-specific
+configuration.
+
+Step \#2 is a processing rule that is also previously-configured in an
+implementation-dependent manner. As an example of current practice for
+configuration of Steps \#2 and \#3, see [GitHub].
 
 # Security Considerations {#security-considerations}
+
+This document illustrates a common pattern in trust domain federation. However,
+the "identity exchange" Step \#2 in {{interoperability-considerations}} is not
+standardized. In practice, the workload platform and the Resource Server
+platform define principals differently, and the translation mechanism between
+the two identities is implemented differently by each Resource Server platform.
+This lack of standardization is not merely inconvenient; it is a rich source of
+privilege escalation attacks. This is particularly true when both the workload
+platform and the Resource Server platform are multi-tenanted.
+
+The following recommendations apply to configurations that control
+the "identity exchange" step that controls the translation of the workload JWT to a
+Resource Server identity:
+
+1. The configuration SHOULD rely on a JWT issuing key bound to a single tenant
+   of the workload platform, rather than a platform-wide JWT issuing key.
+2. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
+   the JWT Issuer from being used to impersonate any Resource Server principal.
+3. The configuration SHOULD NOT rely on JWT claims that can be controlled by an
+   attacker.
+4. The configuration SHOULD NOT permit the transcription of JWT claims to the
+   Resource Server principal without performing additional validation.
 
 The security considerations in section 8 of [RFC7521] generally apply. As bearer
 tokens, stolen JWTs are particularly valuable to attackers:
 
-1. A secure channel (e.g. TLS) MUST be used when providing a JWT for
+1. A secure channel (e.g. TLS) SHOULD be used when providing a JWT for
    authentication.
-2. JWTs MUST be protected from unauthorized access using operating system or
+2. JWTs SHOULD be protected from unauthorized access using operating system or
    platform access controls.
 3. JWT validity SHOULD be set to the shortest possible duration allowable by
    overall system availability constraints.
-
 
 # IANA Considerations
 
