@@ -322,18 +322,23 @@ Table of Contents
    translation mechanism between the two identities is implemented
    differently by each Resource Server platform.  This lack of
    standardization is not merely inconvenient; it is a rich source of
-   privilege escalation attacks due to misconfigurations.
+   privilege escalation attacks when both the workload platform and the
+   Resource Server platform are multi-tenanted.
 
    Therefore, the following recommendations apply to configurations that
-   control the "identity exchange" step:
+   control the "identity exchange" step that controls the translation of
+   the workload JWT to a Resource Server identity:
 
-   1.  The configuration SHOULD use specific JWT claims to prevent any
+   1.  The configuration SHOULD rely on a JWT issuing key bound to a
+       single tenant of the workload platform, rather than a platform-
+       wide JWT issuing key.
+
+   2.  The configuration SHOULD use specific JWT claims to prevent any
        JWT signed by the JWT Issuer from being used to impersonate any
        Resource Server identity.
 
-   2.  The configuration that controls the translation of the workload
-       JWT to a Resource Server identity SHOULD NOT rely on claims that
-       can be controlled by an attacker.
+   3.  The configuration SHOULD NOT rely on claims that can be
+       controlled by an attacker.
 
    The security considerations in section 8 of [RFC7521] generally
    apply.  As bearer tokens, stolen JWTs are particularly valuable to
