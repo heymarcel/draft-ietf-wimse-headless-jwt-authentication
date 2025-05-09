@@ -221,7 +221,7 @@ WIMSE workload identifier ({{I-D.ietf-wimse-s2s-protocol}}) in the subject
 ~~~ json
 {
   "iss": "https://issuer.example.org",
-  "sub": "spiffe://example.org/ns/default/sa/backend-job-runner",
+  "sub": "conversation-router-agent-customer-support",
   "aud": "https://auth.example.com/token",
   "jti": "jwt-grant-id-x1y2z3a4",
   "exp": 1744845092,
@@ -290,19 +290,21 @@ standardized. In practice, the workload platform and the Resource Server
 platform define principals differently, and the translation mechanism between
 the two identities is implemented differently by each Resource Server platform.
 This lack of standardization is not merely inconvenient; it is a rich source of
-privilege escalation attacks when both the workload platform and the Resource
-Server platform are multi-tenanted.
+privilege escalation attacks. This is particularly true when both the workload
+platform and the Resource Server platform are multi-tenanted.
 
-Therefore, the following recommendations apply to configurations that control
+The following recommendations apply to configurations that control
 the "identity exchange" step that controls the translation of the workload JWT to a
 Resource Server identity:
 
 1. The configuration SHOULD rely on a JWT issuing key bound to a single tenant
    of the workload platform, rather than a platform-wide JWT issuing key.
 2. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
-   the JWT Issuer from being used to impersonate any Resource Server identity.
-3. The configuration SHOULD NOT rely on claims that can be controlled by an
+   the JWT Issuer from being used to impersonate any Resource Server principal.
+3. The configuration SHOULD NOT rely on JWT claims that can be controlled by an
    attacker.
+4. The configuration SHOULD NOT permit the transcription of JWT claims to the
+   Resource Server principal without performing additional validation.
 
 The security considerations in section 8 of [RFC7521] generally apply. As bearer
 tokens, stolen JWTs are particularly valuable to attackers:
@@ -313,7 +315,6 @@ tokens, stolen JWTs are particularly valuable to attackers:
    platform access controls.
 3. JWT validity SHOULD be set to the shortest possible duration allowable by
    overall system availability constraints.
-
 
 # IANA Considerations
 
