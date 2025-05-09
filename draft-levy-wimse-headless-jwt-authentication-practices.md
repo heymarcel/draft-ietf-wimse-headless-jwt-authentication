@@ -267,9 +267,9 @@ the interaction with the Authorization Server.
 In order for the workload to access the resource,
 
 1. The JWT Issuer must be recognized by the Authorization Server,
-2. Claims in the JWT are inspected and used to determine an identity legible to
-   the Resource Server,
-3. And the resulting Resource Server identity must be authorized to access the
+2. Claims in the JWT are inspected and used to determine the subject, or
+   principal, of the access token issued for the Resource Server,
+3. And the resulting Resource Server principal must be authorized to access the
    Resource.
 
 Step \#1 requires the configuration of an explicit trust relationship between
