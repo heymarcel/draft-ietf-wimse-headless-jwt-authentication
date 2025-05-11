@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-08T00:01:48.192344+00:00",
+  "timestamp": "2025-05-11T00:01:39.696369+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -152,7 +152,7 @@
       "labels": [],
       "body": "It's not mentioned at all in the spec, but it does need to be dealt with.",
       "createdAt": "2025-04-16T20:36:10Z",
-      "updatedAt": "2025-05-05T21:28:31Z",
+      "updatedAt": "2025-05-09T21:39:31Z",
       "closedAt": null,
       "comments": [
         {
@@ -183,7 +183,7 @@
       "labels": [],
       "body": "In [RFC 6749 #3.2.1](https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1) and 4.4, we find that it doesn't appear to be mandatory for a client_credentials caller to actually specify which client_id they intend to authenticate for. The client secret is assumed to be sufficient to figure out which client_id is being authenticated. \n\nThat's not true though for these federated credentials - it's reasonable to say that a workload in the issuing domain is allowed to sign in to 3 different receiving domain `client_id`s with the same issuer/sub/aud claims. As a result, if the receiving AS gets a request with this JWT and no identifying client_id, it can't accurately deduce which client_id to issue a token for. \n\nSo... given a bare JWT and some scopes, how does the receiving domain know which client ID to sign in for?\nGitHub has this problem here: https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-the-authenticated-app\n\nAnd in general the [installation token API](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app) does not indicate which GitHub App is being signed into. Instead, we look for the `appid` in the JWT, and ensure that the installation ID is a valid installation for that app. \n\nNon-standard implementations of this pattern, and even standard implementations (assuming that the client_credentials flow will be the standard path here) will require some amount of help to identify the client_id.\n\nOptions I can think of that solve some or all of the issue: \n1. A `client_id` claim in the JWT?\n    * Some better name for that claim that makes it clear it's the client ID in the receiving domain?\n2. Indicate that `client_ID` is required in this scenario for all flows. \n   * For scenarios that aren't client credentials (so all my GitHub scenarios), require support for a parameter that represents the client ID\n3. Mandate that the triplet of issuer/subject/audience is unique within a receiving domain - only one client_id can use a particular triplet. \n\nAll of these are problematic:\n1. Claim injection is not evenly supported in many IDPs. For example, they can be injected in Entra but only via relatively expensive [custom claims](https://learn.microsoft.com/en-us/entra/identity-platform/custom-claims-provider-reference) or fixed-format claims which would not match a standardized claim (`extn_{GUID for the client}_claimname`). \n2. This is a compat issue for existing code that wants to update from using self-signed JWTs in client_credentials flows to issued JWTs. It doesn't always fit cleanly into existing APIs either - e.g. `/app` on GitHub, do we accept a query parameter there? A bit ugly. \n3. This is a scenario blocker for users. It's reasonable that we have cardinality mismatches between the domains - i.e. one production workload in the issuing domain, but test, dev, and prod clients in the receiving domain that all need to trust the same workload's JWT. ",
       "createdAt": "2025-04-28T19:31:02Z",
-      "updatedAt": "2025-05-05T21:28:02Z",
+      "updatedAt": "2025-05-09T21:39:13Z",
       "closedAt": null,
       "comments": [
         {
@@ -249,9 +249,17 @@
       "labels": [],
       "body": "Consumers of this pattern will need to (be able to) choose between performance and security, particularly in scenarios where there are many issuing domain workloads being mapped to a single resource domain principal, or one issuing domain workload being mapped to multiple resource domain principals. \n\nIn both cases, either preference may be possible:\n* Reuse a single token across multiple exchanges for multiple principals, getting performance at the risk of worse security (due to token reuse)\n* Require a distinct token for each exchange to guarantee that tokens cannot be reused improperly. \n\nThe latter is generally preferred, and would be ensured by adding additional unique data within the federating JWT to lock down how it can be used (for instance, by extending the subject claim to reference a specific issuing domain workload, including a claim that specifies a specific resource domain principal, or resource domain specific claims that help scope the resulting token).\n\nTo support this, both the issuing IDP and the authorizing resource AS should support this pattern:\n1. The issuing IDP needs to be able to inject claims (via some unspecified configuration) in response to runtime instructions and specific subject/audience combinations. These should be able to take any (unclaimed? i.e. can't be `sub`) claim name, to ensure compatibility with resource domain AS logic. \n2. The resource domain AS should support validating multiple custom claims in the token, and establish a known way of specifying the resource domain principal ID within the JWT, which allows the AS to better ensure that tokens cannot be reused across principals. \n3. The resource domain AS should support any runtime parameters they offer (for instance, the `scopes` parameter) being included in the JWT instead, and either only obey the JWT claims if present or take the most restrictive union of outcomes from JWT claims and runtime parameters, if both are present. \n    * For instance, GitHub supports \"[scoped tokens](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app)\", where the access token being requested can be scoped down to specific permissions by the inclusion of runtime parameters (`repositories` and `permissions`). It would be beneficial for security outcomes to enable an issuing IDP to mint a JWT that contains these two claims, thus restricting the workload to just those chosen repos and permissions in a way that cannot be tampered with by the workload. \n\n\nThe other alternative is to inject these signals to the AS at runtime, via request parameters. These are not enforced by the IDP, which allows for token reuse in ways that may be desired. For instance, a workload sometimes needs a tightly scoped resource access token, and sometimes wants a full-strength access token, and would use the runtime request parameters to alter the resulting token instead of relying on its IDP to provide multiple JWTs for use with the audience. This may be required for compatibility purposes as well, if the IDP or resource AS do not adequately support claim injection and validation. ",
       "createdAt": "2025-05-07T17:21:05Z",
-      "updatedAt": "2025-05-07T17:28:14Z",
+      "updatedAt": "2025-05-08T19:58:43Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "hpsin",
+          "authorAssociation": "NONE",
+          "body": "AWS uses https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html\n\nGoogle uses https://cloud.google.com/iam/docs/workload-identity-federation#mapping which is \"[common expression language](https://github.com/google/cel-spec/blob/master/doc/intro.md#introduction)\"\n\n",
+          "createdAt": "2025-05-08T19:58:42Z",
+          "updatedAt": "2025-05-08T19:58:42Z"
+        }
+      ]
     },
     {
       "number": 11,
@@ -265,9 +273,17 @@
       "labels": [],
       "body": "Following on from conversation - addd security considerations to use uniqque keys per account when issuing a token after a successful authentication.",
       "createdAt": "2025-05-07T18:14:18Z",
-      "updatedAt": "2025-05-07T18:14:18Z",
+      "updatedAt": "2025-05-09T23:27:22Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "I've added this on to #9 ",
+          "createdAt": "2025-05-09T23:27:21Z",
+          "updatedAt": "2025-05-09T23:27:21Z"
+        }
+      ]
     },
     {
       "number": 12,
@@ -281,9 +297,95 @@
       "labels": [],
       "body": "Add security considerations on risks of transcribing new claims from a JWT that was presented.",
       "createdAt": "2025-05-07T18:15:27Z",
-      "updatedAt": "2025-05-07T18:15:27Z",
+      "updatedAt": "2025-05-09T21:38:04Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOOVtHv861xZ4R",
+      "title": "Two level trust establishment",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/13",
+      "state": "OPEN",
+      "author": "arndt-s",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Just talked to you (@heymarcel)  about this and wanted to put it into writing:\n\nI believe the trust establishment is a 2 step (parent-child if you will) process:\n\n- Issuer trust establishment:\nTelling the authorization server to trust the issuer. This is most of the time the issuer URI. (e.g. AWS Identity Provider). This step is mainly about which keys to trust.\n\n- Subject trust establishment:\nThis is eventually the mapping from subject from JWT Token Issuer to Resource Owner at the Authorization Server (e.g. AWS IAM Role Trust Policy; Resource Owner is the ARN of the IAM role).\n\nI think there's value in differentiating between these two and also add some security considerations. Both levels need to be configured out of band in my opinion and are subject to policy and configuration.\n\nFor instance, AWS split those two topics into different entities and I think that's a good thing. Azure on the other hand put it together into the \"Federated Identity Credential\". It's a problem here as there's no unified view on the trusted issuer on tenant level, you would need to go into each principal individually to see if that resource owner trust a certain issuer. Not sure about GCP, but I believe their workload identity pool differentiates too and is more similar to AWS.\n\n",
+      "createdAt": "2025-05-08T17:15:55Z",
+      "updatedAt": "2025-05-09T21:38:22Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "arndt-s",
+          "authorAssociation": "NONE",
+          "body": "Happy to provide a PR if you agree with this :) ",
+          "createdAt": "2025-05-08T17:17:05Z",
+          "updatedAt": "2025-05-08T17:17:05Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "A PR would be much appreciated. We didn't discuss it, but there's another one outstanding: #9. I don't think it touches much on our discussion, but you may want to make sure.",
+          "createdAt": "2025-05-08T17:56:00Z",
+          "updatedAt": "2025-05-08T17:56:00Z"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOOVtHv861ym2I",
+      "title": "Authentication or Authorization",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/14",
+      "state": "OPEN",
+      "author": "PieterKas",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The draft uses the term authentication throughout, but the result of using the JWT is an Access Token, so in that sense it is more like an \"assertion flow\" in RFC 7523. \n\nAre there use cases where the workload authenticates, but does not receive an Access Token in return? ",
+      "createdAt": "2025-05-08T19:47:45Z",
+      "updatedAt": "2025-05-09T22:41:54Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "In my mental model, that would be a situation where the JWT is signed by an issuer that that the Authorization Server recognizes, but where the claims in the JWT are not sufficient for the AS to provide an access token.\n\nSo that would mean that there's always an authorization check for access token provisioning. I've always thought of authorization as a different problem (i.e. on the Resource Server side), but that seems too limited, now that I think of it. ",
+          "createdAt": "2025-05-09T22:41:53Z",
+          "updatedAt": "2025-05-09T22:41:53Z"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "I_kwDOOVtHv861zJHl",
+      "title": "Hints to the Authorization Server regarding custom (or customizable) claims",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/15",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "**Note:** I'm putting this here because it grew out of discussions related to this document, but I am _not_ proposing that we add it.\n\nThis is inspired by [Avaid Hahami's presentation](https://media.defcon.org/DEF%20CON%2032/DEF%20CON%2032%20presentations/DEF%20CON%2032%20-%20Aviad%20Hahami%20-%20OH-MY-DC%20-%20Abusing%20OIDC%20all%20the%20way%20to%20your%20cloud.pdf)discussing the problem of vendor-specific JWT claims in identity federation, using GitHub as an example. Here's an example set of claims:\n\n```json\n{\n  \"jti\": \"115187f5-e36a-4dd5-844f-f5b77078a388\",\n  \"sub\": \"repo:moti-banana-zurich/dvora:ref:refs/heads/main\",\n  \"aud\": \"sts.amazonaws.com\",\n  \"ref\": \"refs/heads/main\",\n  \"sha\": \"91accfeaa3e3bc09813ad97e6c4243d834c4875d\",\n  \"repository\": \"moti-banana-zurich/dvora\",\n  \"repository_owner\": \"moti-banana-zurich\",\n  \"repository_owner_id\": \"123456789\",\n  \"run_id\": \"123456789\",\n  \"run_number\": \"53\",\n  \"run_attempt\": \"1\",\n  \"repository_visibility\": \"private\",\n  \"repository_id\": \"123456789\",\n  \"actor_id\": \"123456789\",\n  \"actor\": \"moti-banana\",\n  \"workflow\": \"my_workflow\",\n  \"head_ref\": \"\",\n  \"base_ref\": \"\",\n  \"event_name\": \"workflow_dispatch\"\n}\n```\n\nHahami demonstrates that `sub` customization combined with unsafe Authorization Server configuration, for example with the following example of IDP configuration in AWS:\n```json\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::123456123456:oidcprovider/token.actions.githubusercontent.com\"\n      },\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Condition\": {\n        \"StringEquals\": {\n          \"token.actions.githubusercontent.com:aud\": \"sts.amazonaws.com\"\n        },\n        \"StringLike\": {\n          \"token.actions.githubusercontent.com:sub\": \"workflow:reusable_workflow:repo:my_org/repo\"\n        }\n      }\n    }\n  ]\n}\n```\n\nSince the rule is `StringLike` and the attacker can control their `sub`, and there are no other constraints, any GitHub Action would suffice. Hahami has published [a detailed table discussing each claim.](https://github.com/PaloAltoNetworks/github-oidc-utils)\n\nThe problem here is not solely for GitHub or AWS to solve, and it is inherent to identity federation. Practically speaking, we can assume the following will be true, or will become true over time, in order to improve vendor interoperability:\n\n1. The JWT issuer will allow custom claims.\n2. The JWT issuer will allow `sub` claim customization.\n3. The Authorization Server will allow customized federation mapping that includes string-matching.\n4. The Authorization Server will not hard-code custom claim validation for every JWT issuer.\n\nAs a start, I'm proposing a way for the JWT issuer to provide additional information about the custom claims themselves. Essentially, let's take the intent behind that table and turn it into something machine-readable, so that the Authorization Server can use it when asserting the claims in the JWT.\n\nAs a first pass, it might look something like this:\n\n```json\n{\n\t\"version\": \"2025-05-08\",\n\t\"name\": \"id-token-claim-dictionary\"\n\t\"claims\": {\n\t\t\"required\": {\n\t\t\t\"sub\": [\"user\"], \n\t\t\t\"aud\": [\"user\"]\n\t\t},\n\t\t\"custom\": {\n\t\t\t\"workflow\": [\"user\"],\n\t\t\t\"repository\": [\"system\", \"unique\"],\n\t\t\t\"run_id\": [\"system\", \"ephemeral\"],\n\t\t\t\"job_workflow_sha\": [\"system\", \"unique\"]\n\t\t}\n\t}\n}\n```\n\nNote that the tags describing each claim don't describe the _type_ of the possible claim values. They describe the characteristics that are important to know when configuring identity federation. The Authorization Server can use these as hints to prevent misconfigurations that allow unauthorized access.\n\nThis file could go in the `/.well-known/` directory. And sure, it probably should be signed.",
+      "createdAt": "2025-05-08T21:01:42Z",
+      "updatedAt": "2025-05-09T22:31:26Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "arndt-s",
+          "authorAssociation": "NONE",
+          "body": "I believe the following conditions need to be true in order to run into this:\n \n1. An attacker needs to be able to mint custom JWTs from the JWT issuer\n2. The mapping configuration (AWS IAM Trust Policy) needs to trust claims that are in the control of the attacker\n\nTo me, neither of these conditions should exist and I believe the draft should reflect or acknowledge this. For example by stating that:\n\n* Claims that are in control of the user should not be considered trusted or handled with extreme care.\n* JWT issuers should be segregated between trust domains. Sharing keying material between trust domains relies solely on developers to correctly set up their mapping and can easily become a foot gun.\n",
+          "createdAt": "2025-05-09T08:02:23Z",
+          "updatedAt": "2025-05-09T08:02:34Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Agreed on the security recommendations for the draft. The problem itself will remain, because as Immanuel Kant pointed out, \"out of the crooked timber of humanity, no straight thing was ever made.\" \n\n(In the meantime, take a look at #9, which contains related security recommendations)\n\nIn any case, we can ignore the complicated proposal above for now. Hirsch and I met with Dick Hardt yesterday, and there's a simpler way out of this mess by recommending the use of the \"tenant\" claim as described in the [OpenID Provider Commands draft.](https://openid.github.io/openid-provider-commands/main.html).",
+          "createdAt": "2025-05-09T15:45:53Z",
+          "updatedAt": "2025-05-09T22:31:25Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -383,13 +485,13 @@
       "labels": [],
       "body": "I doubt we'll be able to address everything in the discussion, but I'd like to surface the problem in a way that opens the door for another WIMSE draft to tackle it head-on. Here's a first attempt.",
       "createdAt": "2025-05-05T21:25:18Z",
-      "updatedAt": "2025-05-07T17:59:47Z",
+      "updatedAt": "2025-05-09T23:41:28Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "2251bd51115afde3eedf38e90a24f417a4b65b3d",
       "headRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "headRefName": "marcel/interop",
-      "headRefOid": "bbd6b4829221d57fa7371bf9d07707f3e5ed8183",
+      "headRefOid": "8eddb1a0b0e8dfaf3d5b715273084bdd69492108",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -453,6 +555,86 @@
               "body": "similar to previous comment - is this a configuration, or a processing rule?",
               "createdAt": "2025-05-07T17:59:47Z",
               "updatedAt": "2025-05-07T17:59:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86oc_ev",
+          "commit": {
+            "abbreviatedOid": "0df17e3"
+          },
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-08T19:29:29Z",
+          "updatedAt": "2025-05-08T19:29:29Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "legible = known? accepted?\r\n\r\nI am a little unclear on what this means. Thinking about something like workload identity federation, the claims are used to determine the subject of the access token issued. Is that what is really happening here?",
+              "createdAt": "2025-05-08T19:29:29Z",
+              "updatedAt": "2025-05-08T19:38:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86odFjF",
+          "commit": {
+            "abbreviatedOid": "0df17e3"
+          },
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-08T19:41:59Z",
+          "updatedAt": "2025-05-08T19:41:59Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "I wonder if we can find a way to not refer to \"identity\" in this case - what is the actual artefact of importance? A credential? A subject identifier (that may indicate a service account, service principal or similar)?",
+              "createdAt": "2025-05-08T19:41:59Z",
+              "updatedAt": "2025-05-08T19:41:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86oqwzN",
+          "commit": {
+            "abbreviatedOid": "0df17e3"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-09T22:12:57Z",
+          "updatedAt": "2025-05-09T22:12:57Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "Yeah. Let me clarify.",
+              "createdAt": "2025-05-09T22:12:57Z",
+              "updatedAt": "2025-05-09T22:12:57Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86oqxF3",
+          "commit": {
+            "abbreviatedOid": "0df17e3"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-09T22:14:20Z",
+          "updatedAt": "2025-05-09T22:14:20Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "How about just \"principal\"?",
+              "createdAt": "2025-05-09T22:14:20Z",
+              "updatedAt": "2025-05-09T22:14:20Z"
             }
           ]
         }
