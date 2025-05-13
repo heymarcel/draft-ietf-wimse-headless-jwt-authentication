@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-11T00:01:39.696369+00:00",
+  "timestamp": "2025-05-13T00:02:21.413527+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -344,7 +344,7 @@
       "labels": [],
       "body": "The draft uses the term authentication throughout, but the result of using the JWT is an Access Token, so in that sense it is more like an \"assertion flow\" in RFC 7523. \n\nAre there use cases where the workload authenticates, but does not receive an Access Token in return? ",
       "createdAt": "2025-05-08T19:47:45Z",
-      "updatedAt": "2025-05-09T22:41:54Z",
+      "updatedAt": "2025-05-12T10:04:05Z",
       "closedAt": null,
       "comments": [
         {
@@ -353,6 +353,13 @@
           "body": "In my mental model, that would be a situation where the JWT is signed by an issuer that that the Authorization Server recognizes, but where the claims in the JWT are not sufficient for the AS to provide an access token.\n\nSo that would mean that there's always an authorization check for access token provisioning. I've always thought of authorization as a different problem (i.e. on the Resource Server side), but that seems too limited, now that I think of it. ",
           "createdAt": "2025-05-09T22:41:53Z",
           "updatedAt": "2025-05-09T22:41:53Z"
+        },
+        {
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "If the purpose of authentication is always to obtain an Access Token, then I think this becomes an authroization grant flow in OAuth terminology (basically RFC 7523). If there are flows where we are only using it to authenticate, but the outcome is something other than an Access Token (or Refresh Token, or other OAuth artefact), then it can be a more generic authentication flow.\n\nPerhaps the way to treat this in the spec is to have a section on \"Access Token Request using Headless JWT Authentication\" or \"Access Token Request\" which explains how this spec is used to obtain an Access Token specifically (this requires teasing authentication and authorisation apart a bit - and the opening section today does co-mingle it).\n\nIf the flow always results in an Access token, perhaps the spec should be renamed as \"Headless JWT Authorization\". Otherwise, perhaps a title of \"Headless JWT Authentication and Authorization\" with specific treatment/distinction in the speec between when it is authentication, and when it is both authentication and authorisation. ",
+          "createdAt": "2025-05-12T10:04:03Z",
+          "updatedAt": "2025-05-12T10:04:03Z"
         }
       ]
     },
