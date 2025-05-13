@@ -108,6 +108,8 @@ All terminology in this document follows [I-D.ietf-wimse-arch].
 
 {::boilerplate bcp14-tagged}
 
+## Terminology
+
 This document uses the following terms:
 
 * Workload Platform
