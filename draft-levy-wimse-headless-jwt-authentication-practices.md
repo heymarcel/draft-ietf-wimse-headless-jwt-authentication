@@ -101,6 +101,28 @@ variability in interoperability. The purpose of this document is to capture
 this common workload identity practice as an RFC in
 order to obtain consistency and promote interoperability in industry.
 
+
+# Conventions and Definitions
+
+All terminology in this document follows [I-D.ietf-wimse-arch].
+
+{::boilerplate bcp14-tagged}
+
+This document uses the following terms:
+
+* Workload Platform
+
+The underlying system which manages the deployment and scheduling of a Workload.
+This includes but is not limited to operating systems, orchestration services,
+and cloud providers.
+
+* Tenant
+
+A logically isolated entity within a Workload Platform that represents a
+distinct organizational or administrative boundary. A Workload Platform may have
+a single Tenant, or multiple Tenants. The Tenant may contain Accounts managed by
+individuals, or may contain Accounts managed by an organization.
+
 # Architecture and Message Flow {#architecture-and-message-flow}
 
 
@@ -140,10 +162,6 @@ order to obtain consistency and promote interoperability in industry.
          +------------+
 ~~~
 {: #fig-message-flow title="OIDC message flow when used in a headless environment"}
-
-# Conventions and Definitions
-
-{::boilerplate bcp14-tagged}
 
 # JWT used for Authentication {#jwt-authentication}
 
@@ -253,10 +271,10 @@ reponse from the authorization server as per Section 3.2 in [RFC7523].
 ## JWT Provisioning {#jwt-provisioning}
 
 The workload is provisioned with a JWT from a trusted source. This can be the
-underlying platform where the workload runs, or a separate issuing system.
-Regardless of the actual mechanism, JWT provisioning relies on a registration
-mechanism that establishes mutually-trusted, secure connections between the
-workload and the JWT provisioner.
+underlying Workload Platform, or a separate issuing system. Regardless of the
+actual mechanism, JWT provisioning relies on a registration mechanism that
+establishes mutually-trusted, secure connections between the workload and the
+JWT provisioner.
 
 This provisioning mechanism illustrates a key difference from flows defined in
 [RFC6749] and [OIDC.Core], in that there are no client credentials involved in
@@ -272,11 +290,10 @@ In order for the workload to access the resource,
 3. And the resulting Resource Server principal must be authorized to access the
    Resource.
 
-Step \#1 requires the configuration of an explicit trust relationship between
-the Authorization Server and the JWT Issuer. Despite previous attempts to
-standardize dynamic client registration in [RFC7591] and [OIDC.Dynamic], in
-practice this trust relationship, still depends on vendor-specific
-configuration.
+Step \#1 requires the prior configuration of an explicit trust relationship
+between the Authorization Server and the JWT Issuer, and depends on
+vendor-specific configuration. Dynamic client registration standards ([RFC7591]
+and [OIDC.Dynamic]) explicitly place it out of scope.
 
 Step \#2 is a processing rule that is also previously-configured in an
 implementation-dependent manner. As an example of current practice for
@@ -286,30 +303,31 @@ configuration of Steps \#2 and \#3, see [GitHub].
 
 This document illustrates a common pattern in trust domain federation. However,
 the "identity exchange" Step \#2 in {{interoperability-considerations}} is not
-standardized. In practice, the workload platform and the Resource Server
+standardized. In practice, the Workload Platform and the Resource Server
 platform define principals differently, and the translation mechanism between
 the two identities is implemented differently by each Resource Server platform.
 This lack of standardization is not merely inconvenient; it is a rich source of
-privilege escalation attacks. This is particularly true when both the workload
-platform and the Resource Server platform are multi-tenanted.
+privilege escalation attacks. This is particularly true when both the Workload
+Platform and the Resource Server platform are multi-tenanted.
 
 The following recommendations apply to configurations that control
 the "identity exchange" step that controls the translation of the workload JWT to a
 Resource Server identity:
 
-1. The configuration SHOULD rely on a JWT issuing key bound to a single tenant
-   of the workload platform, rather than a platform-wide JWT issuing key.
+1. When a Workload Platform contains multiple Tenants, the configuration SHOULD
+   rely on a JWT issuing key bound to a single Tenant of the workload platform,
+   rather than a single JWT issuing key for the Workload Platform.
 2. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
    the JWT Issuer from being used to impersonate any Resource Server principal.
-3. The configuration SHOULD NOT rely on JWT claims that can be controlled by an
-   attacker.
+3. When a Workload Platform contains multiple Tenants, the configuration SHOULD
+   NOT solely rely on JWT claims that can be controlled by any Tenant.
 4. The configuration SHOULD NOT permit the transcription of JWT claims to the
    Resource Server principal without performing additional validation.
 
 The security considerations in section 8 of [RFC7521] generally apply. As bearer
 tokens, stolen JWTs are particularly valuable to attackers:
 
-1. A secure channel (e.g. TLS) SHOULD be used when providing a JWT for
+1. A secure channel (e.g. TLS) MUST be used when providing a JWT for
    authentication.
 2. JWTs SHOULD be protected from unauthorized access using operating system or
    platform access controls.
