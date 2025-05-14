@@ -197,8 +197,8 @@ described in more detail in {{jwt-provisioning}}.
    the workload with an Access Token suitable for use with the Resource Server.
 6. The Workload then authenticates with the Resource Server using the Access Token.
 
-As we can see, the headless JWT authorization grant flow closely follows that of
-OIDC, but lacks the initial authentication by a user.
+The headless JWT authorization grant flow combines [RFC7523] and OIDC key
+discovery to simplify workload authentication and authorization..
 
 This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
