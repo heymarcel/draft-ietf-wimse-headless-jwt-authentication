@@ -206,7 +206,7 @@ well-known according to [RFC5785]:
 GET /.well-known/openid-configuration HTTP/1.1
 Host: example.com
 ~~~
-{: title="Example request to issuer to obtain OIDC configuration"}
+{: #example-config-request title="Example request to issuer to obtain OIDC configuration"}
 
 For OAuth 2.0, the equivalent location is
 `/.well-known/oauth-authorization-server`. In both cases, the requester expects
@@ -221,7 +221,7 @@ here:
   "token_endpoint": "https://example.com/token"
 }
 ~~~
-{: title="Example issuer configuration response"}
+{: #example-config-response title="Example issuer configuration response"}
 
 For the sake of the pattern described in this document, only the `issuer` and
 `jwks_uri` fields are relevant.
@@ -234,21 +234,21 @@ discussed further in {{interoperability-considerations}}.
 
 ## JWT Format {#jwt-format}
 
-An example JWT adhering to [RFC7523] is seen below. Although this example uses a
-WIMSE workload identifier ({{I-D.ietf-wimse-s2s-protocol}}) in the subject
-("sub") claim, this is not a requirement in practice.
+An example JWT adhering to [RFC7523] is seen in {{example-jwt}}. Although the
+example uses a WIMSE workload identifier ({{I-D.ietf-wimse-s2s-protocol}}) in
+the subject ("sub") claim, this is not a requirement.
 
 ~~~ json
 {
   "iss": "https://issuer.example.org",
-  "sub": "conversation-router-agent-customer-support",
+  "sub": "spiffe://example.org/ns/default/sa/customer-router-agent",
   "aud": "https://auth.example.com/token",
   "jti": "jwt-grant-id-x1y2z3a4",
   "exp": 1744845092,
   "iat": 1744841036
 }
 ~~~
-{: title="Example RFC7523 JWT"}
+{: #example-jwt title="Example RFC7523 JWT"}
 
 ## JWT Processsing {#jwt-processing}
 
