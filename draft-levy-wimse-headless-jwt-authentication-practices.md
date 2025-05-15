@@ -1,6 +1,6 @@
 ---
-title: "WIMSE Headless JWT Authentication"
-abbrev: "WIMSE Headless JWT Authentication"
+title: "WIMSE Headless JWT Authentication and Authorization"
+abbrev: "WIMSE Headless JWT Authentication and Authorization"
 category: info
 
 docname: draft-levy-wimse-headless-jwt-authentication-practices-latest
@@ -79,21 +79,28 @@ informative:
 
 --- abstract
 
-In workload-to-service communication, a common pattern is for a workload to present a JSON Web Token
-(JWT) to an authorization server in order to obtain an access token for the service it needs to access. It is a partial adaptation for workloads of existing flows designed for users. Implementing this pattern combines multiple existing standards from different working groups and standards bodies. Since this pattern is not
-described in a specification, it leads to variability in interoperability. The purpose
-of this document is to capture this common workload identity practice as an RFC in order to obtain consistency and promote interoperability in industry.
+In workload-to-service communication, a common pattern is for a workload to
+present a JSON Web Token (JWT) to an authorization server in order to obtain an
+access token for the service it needs to access. It is a partial adaptation for
+workloads of existing flows designed for users. Implementing this pattern
+combines multiple existing standards from different working groups and standards
+bodies. Since this pattern is not described in a specification, it leads to
+variability in interoperability. The purpose of this document is to capture this
+common workload identity practice as an RFC in order to obtain consistency and
+promote interoperability in industry.
 
 --- middle
 
 # Introduction
 
-In workload-to-service communication, a common pattern is for a workloads to use a JSON Web Token
-(JWT) to identify and authenticate itself as part of a process to obtain an access token for a service. This is done by having the workload present an asynchronously-provisioned bearer token in the form of a
-signed JWT to an Authorization Server. The Authorization Server verifies the JWT and then
-provides an OAuth access token as described in [RFC7523]. The "bootstrap" problem of
-discovering the original JWT issuer is solved by requesting a JSON configuration
-document using the process described in OpenID Connect Discovery
+In workload-to-service communication, a common pattern is for a workloads to use
+a JSON Web Token (JWT) to identify and authenticate itself as part of a process
+to obtain an access token for a service. This is done by having the workload
+present an asynchronously-provisioned bearer token in the form of a signed JWT
+to an Authorization Server. The Authorization Server verifies the JWT and then
+provides an OAuth access token as described in [RFC7523]. The "bootstrap"
+problem of discovering the original JWT issuer is solved by requesting a JSON
+configuration document using the process described in OpenID Connect Discovery
 {{OIDC.Discovery}} or OAuth 2.0 Authorization Server Metadata [RFC8414].
 
 Since this pattern is not described in a specification, it leads to
@@ -183,14 +190,15 @@ described in more detail in {{jwt-provisioning}}.
    OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
 3. The Authorization Server then retrieves the JWKs via HTTP from the `jwks_uri`
    declared in the JWT Issuer's configuration response.
-4. Using the appropiate issuer key, the Authorization Server verifies the signature
-   of the JWT Bearer Token.
-5. The Authorization Server then responds to the workload with an Access Token
-   suitable for use with the Resource Server.
+4. Using the appropiate issuer key, the Authorization Server verifies the
+   signature of the JWT Bearer Token, and validates that the workload is
+   authorized to receive an Access Token.
+5. Assuming successful verification, the Authorization Server then responds to
+   the workload with an Access Token suitable for use with the Resource Server.
 6. The Workload then authenticates with the Resource Server using the Access Token.
 
-As we can see, the headless JWT authentication pattern closely follows that of
-OIDC, but without the initial authentication by a user.
+The headless JWT authorization grant flow combines [RFC7523] and OIDC key
+discovery to simplify workload authentication and authorization..
 
 This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
