@@ -1055,7 +1055,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Levy &amp; Singhal</td>
-<td class="center">Expires 2 November 2025</td>
+<td class="center">Expires 16 November 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1068,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-levy-wimse-headless-jwt-authentication-practices-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-05-01" class="published">1 May 2025</time>
+<time datetime="2025-05-15" class="published">15 May 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-11-02">2 November 2025</time></dd>
+<dd class="expires"><time datetime="2025-11-16">16 November 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1130,7 +1130,7 @@ of this document is to capture this common workload identity practice as an RFC 
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 2 November 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 16 November 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1163,10 +1163,15 @@ of this document is to capture this common workload identity practice as an RFC 
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-architecture-and-message-fl" class="internal xref">Architecture and Message Flow</a></p>
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecture-and-message-fl" class="internal xref">Architecture and Message Flow</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-jwt-used-for-authentication" class="internal xref">JWT used for Authentication</a></p>
@@ -1244,16 +1249,53 @@ this common workload identity practice as an RFC in
 order to obtain consistency and promote interoperability in industry.<a href="#section-1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="architecture-and-message-flow">
+<div id="conventions-and-definitions">
 <section id="section-2">
-      <h2 id="name-architecture-and-message-fl">
-<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-architecture-and-message-fl" class="section-name selfRef">Architecture and Message Flow</a>
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
       </h2>
-<p id="section-2-1"><a href="#fig-message-flow" class="auto internal xref">Figure 1</a> illustrates the OIDC-based message flow described in <a href="#jwt-authentication" class="auto internal xref">Section 4</a>:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">All terminology in this document follows [I-D.ietf-wimse-arch].<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div id="terminology">
+<section id="section-2.1">
+        <h3 id="name-terminology">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+        </h3>
+<p id="section-2.1-1">This document uses the following terms:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-2.1">
+            <p id="section-2.1-2.1.1">Workload Platform<a href="#section-2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-3">The underlying system which manages the deployment and scheduling of a Workload.
+This includes but is not limited to operating systems, orchestration services,
+and cloud providers.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-4.1">
+            <p id="section-2.1-4.1.1">Tenant<a href="#section-2.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-5">A logically isolated entity within a Workload Platform that represents a
+distinct organizational or administrative boundary. A Workload Platform may have
+a single Tenant, or multiple Tenants. The Tenant may contain Accounts managed by
+individuals, or may contain Accounts managed by an organization.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="architecture-and-message-flow">
+<section id="section-3">
+      <h2 id="name-architecture-and-message-fl">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecture-and-message-fl" class="section-name selfRef">Architecture and Message Flow</a>
+      </h2>
+<p id="section-3-1"><a href="#fig-message-flow" class="auto internal xref">Figure 1</a> illustrates the OIDC-based message flow described in <a href="#jwt-authentication" class="auto internal xref">Section 4</a>:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <span id="name-oidc-message-flow-when-used"></span><div id="fig-message-flow">
 <figure id="figure-1">
-        <div id="section-2-2.1">
-          <div class="alignLeft art-svg artwork" id="section-2-2.1.1">
+        <div id="section-3-2.1">
+          <div class="alignLeft art-svg artwork" id="section-3-2.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="528" width="408" viewBox="0 0 408 528" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
               <path d="M 48,80 L 48,160" fill="none" stroke="black"></path>
               <path d="M 56,288 L 56,352" fill="none" stroke="black"></path>
@@ -1321,24 +1363,13 @@ order to obtain consistency and promote interoperability in industry.<a href="#s
                 <text x="132" y="468">Resource</text>
                 <text x="132" y="484">Server</text>
               </g>
-            </svg><a href="#section-2-2.1.1" class="pilcrow">¶</a>
+            </svg><a href="#section-3-2.1.1" class="pilcrow">¶</a>
 </div>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
 <a href="#name-oidc-message-flow-when-used" class="selfRef">OIDC message flow when used in a headless environment</a>
         </figcaption></figure>
 </div>
-</section>
-</div>
-<div id="conventions-and-definitions">
-<section id="section-3">
-      <h2 id="name-conventions-and-definitions">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
-      </h2>
-<p id="section-3-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
-"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
-described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
-appear in all capitals, as shown here.<a href="#section-3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="jwt-authentication">
@@ -1357,13 +1388,13 @@ JWT Bearer Token as specified in Section 4 of <span>[<a href="#RFC7523" class="c
 </li>
         <li id="section-4-2.2">
           <p id="section-4-2.2.1">The Authorization Server takes the value from the <code>iss</code> claim and appends
-<code>/.well-known/openid-configuration</code> to retrieve the JWT issuer's
+<code>/.well-known/openid-configuration</code> to retrieve the JWT Issuer's
 configuration via HTTP, as specified in <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. Alternatively, the
 OAuth 2.0 Authorization Server Metadata endpoint <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span> may be used.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.3">
           <p id="section-4-2.3.1">The Authorization Server then retrieves the JWKs via HTTP from the <code>jwks_uri</code>
-declared in the JWT issuer's configuration response.<a href="#section-4-2.3.1" class="pilcrow">¶</a></p>
+declared in the JWT Issuer's configuration response.<a href="#section-4-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.4">
           <p id="section-4-2.4.1">Using the appropiate issuer key, the Authorization Server verifies the signature
@@ -1392,7 +1423,8 @@ limit on their future use.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <p id="section-5-1">Issuer key discovery follows the steps outlined in Section 4 of
 <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. The Resource Server makes a request to a location that is
 well-known according to <span>[<a href="#RFC5785" class="cite xref">RFC5785</a>]</span>:<a href="#section-5-1" class="pilcrow">¶</a></p>
-<span id="name-example-request-to-issuer-t"></span><figure id="figure-2">
+<span id="name-example-request-to-issuer-t"></span><div id="example-config-request">
+<figure id="figure-2">
         <div class="lang-text sourcecode" id="section-5-2.1">
 <pre>
 GET /.well-known/openid-configuration HTTP/1.1
@@ -1402,11 +1434,13 @@ Host: example.com
 <figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
 <a href="#name-example-request-to-issuer-t" class="selfRef">Example request to issuer to obtain OIDC configuration</a>
         </figcaption></figure>
+</div>
 <p id="section-5-3">For OAuth 2.0, the equivalent location is
 <code>/.well-known/oauth-authorization-server</code>. In both cases, the requester expects
 a JSON document containing configuration information. An example is provided
 here:<a href="#section-5-3" class="pilcrow">¶</a></p>
-<span id="name-example-issuer-configuratio"></span><figure id="figure-3">
+<span id="name-example-issuer-configuratio"></span><div id="example-config-response">
+<figure id="figure-3">
         <div class="lang-json sourcecode" id="section-5-4.1">
 <pre>
 {
@@ -1420,6 +1454,7 @@ here:<a href="#section-5-3" class="pilcrow">¶</a></p>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
 <a href="#name-example-issuer-configuratio" class="selfRef">Example issuer configuration response</a>
         </figcaption></figure>
+</div>
 <p id="section-5-5">For the sake of the pattern described in this document, only the <code>issuer</code> and
 <code>jwks_uri</code> fields are relevant.<a href="#section-5-5" class="pilcrow">¶</a></p>
 <p id="section-5-6">Note that this key discovery mechanism does not address the question of whether
@@ -1437,15 +1472,16 @@ discussed further in <a href="#interoperability-considerations" class="auto inte
         <h3 id="name-jwt-format">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-jwt-format" class="section-name selfRef">JWT Format</a>
         </h3>
-<p id="section-6.1-1">An example JWT adhering to <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> is seen below. Although this example uses a
-WIMSE workload identifier (<span>[<a href="#I-D.ietf-wimse-s2s-protocol" class="cite xref">I-D.ietf-wimse-s2s-protocol</a>]</span>) in the subject
-("sub") claim, this is not a requirement in practice.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<span id="name-example-rfc7523-jwt"></span><figure id="figure-4">
+<p id="section-6.1-1">An example JWT adhering to <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> is seen in <a href="#example-jwt" class="auto internal xref">Figure 4</a>. Although the
+example uses a WIMSE workload identifier (<span>[<a href="#I-D.ietf-wimse-s2s-protocol" class="cite xref">I-D.ietf-wimse-s2s-protocol</a>]</span>) in
+the subject ("sub") claim, this is not a requirement.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<span id="name-example-rfc7523-jwt"></span><div id="example-jwt">
+<figure id="figure-4">
           <div class="lang-json sourcecode" id="section-6.1-2.1">
 <pre>
 {
   "iss": "https://issuer.example.org",
-  "sub": "spiffe://example.org/ns/default/sa/backend-job-runner",
+  "sub": "spiffe://example.org/ns/default/sa/customer-router-agent",
   "aud": "https://auth.example.com/token",
   "jti": "jwt-grant-id-x1y2z3a4",
   "exp": 1744845092,
@@ -1456,6 +1492,7 @@ WIMSE workload identifier (<span>[<a href="#I-D.ietf-wimse-s2s-protocol" class="
 <figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
 <a href="#name-example-rfc7523-jwt" class="selfRef">Example RFC7523 JWT</a>
           </figcaption></figure>
+</div>
 </section>
 </div>
 <div id="jwt-processing">
@@ -1501,10 +1538,10 @@ reponse from the authorization server as per Section 3.2 in <span>[<a href="#RFC
 <a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-jwt-provisioning" class="section-name selfRef">JWT Provisioning</a>
         </h3>
 <p id="section-6.3-1">The workload is provisioned with a JWT from a trusted source. This can be the
-underlying platform where the workload runs, or a separate issuing system.
-Regardless of the actual mechanism, JWT provisioning relies on a registration
-mechanism that establishes mutually-trusted, secure connections between the
-workload and the JWT provisioner.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+underlying Workload Platform, or a separate issuing system. Regardless of the
+actual mechanism, JWT provisioning relies on a registration mechanism that
+establishes mutually-trusted, secure connections between the workload and the
+JWT provisioner.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <p id="section-6.3-2">This provisioning mechanism illustrates a key difference from flows defined in
 <span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> and <span>[<a href="#OIDC.Core" class="cite xref">OIDC.Core</a>]</span>, in that there are no client credentials involved in
 the interaction with the Authorization Server.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
@@ -1517,11 +1554,27 @@ the interaction with the Authorization Server.<a href="#section-6.3-2" class="pi
       <h2 id="name-interoperability-considerat">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
       </h2>
-<p id="section-7-1">TODO Speak to the issue of registration/configuration, because this seems to be
-getting to the heart of the problem. The Authorization Server has a mechanism to
-get the issuer key, but how do we establish trust? Right now it seems to always
-be a manual process. <span>[<a href="#RFC7591" class="cite xref">RFC7591</a>]</span> and <span>[<a href="#OIDC.Dynamic" class="cite xref">OIDC.Dynamic</a>]</span> are popular things to say, but
-they don't seem to be what people implement.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">In order for the workload to access the resource,<a href="#section-7-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7-2">
+<li id="section-7-2.1">
+          <p id="section-7-2.1.1">The JWT Issuer must be recognized by the Authorization Server,<a href="#section-7-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-7-2.2">
+          <p id="section-7-2.2.1">Claims in the JWT are inspected and used to determine the subject, or
+principal, of the access token issued for the Resource Server,<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-7-2.3">
+          <p id="section-7-2.3.1">And the resulting Resource Server principal must be authorized to access the
+Resource.<a href="#section-7-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-7-3">Step #1 requires the prior configuration of an explicit trust relationship
+between the Authorization Server and the JWT Issuer, and depends on
+vendor-specific configuration. Dynamic client registration standards (<span>[<a href="#RFC7591" class="cite xref">RFC7591</a>]</span>
+and <span>[<a href="#OIDC.Dynamic" class="cite xref">OIDC.Dynamic</a>]</span>) explicitly place it out of scope.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">Step #2 is a processing rule that is also previously-configured in an
+implementation-dependent manner. As an example of current practice for
+configuration of Steps #2 and #3, see <span>[<a href="#GitHub" class="cite xref">GitHub</a>]</span>.<a href="#section-7-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -1529,20 +1582,49 @@ they don't seem to be what people implement.<a href="#section-7-1" class="pilcro
       <h2 id="name-security-considerations">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-8-1">The security considerations in section 8 of <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span> generally apply. As bearer
-tokens, stolen JWTs are particularly valuable to attackers:<a href="#section-8-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-8-2">
-<li id="section-8-2.1">
-          <p id="section-8-2.1.1">A secure channel (e.g. TLS) <span class="bcp14">MUST</span> be used when providing a JWT for
-authentication.<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+<p id="section-8-1">This document illustrates a common pattern in trust domain federation. However,
+the "identity exchange" Step #2 in <a href="#interoperability-considerations" class="auto internal xref">Section 7</a> is not
+standardized. In practice, the Workload Platform and the Resource Server
+platform define principals differently, and the translation mechanism between
+the two identities is implemented differently by each Resource Server platform.
+This lack of standardization is not merely inconvenient; it is a rich source of
+privilege escalation attacks. This is particularly true when both the Workload
+Platform and the Resource Server platform are multi-tenanted.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">The following recommendations apply to configurations that control
+the "identity exchange" step that controls the translation of the workload JWT to a
+Resource Server identity:<a href="#section-8-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-3">
+<li id="section-8-3.1">
+          <p id="section-8-3.1.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD</span>
+rely on a JWT issuing key bound to a single Tenant of the workload platform,
+rather than a single JWT issuing key for the Workload Platform.<a href="#section-8-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-8-2.2">
-          <p id="section-8-2.2.1">JWTs <span class="bcp14">MUST</span> be protected from unauthorized access using operating system or
-platform access controls.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+        <li id="section-8-3.2">
+          <p id="section-8-3.2.1">The configuration <span class="bcp14">SHOULD</span> use specific JWT claims to prevent any JWT signed by
+the JWT Issuer from being used to impersonate any Resource Server principal.<a href="#section-8-3.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li id="section-8-2.3">
-          <p id="section-8-2.3.1">JWT validity <span class="bcp14">SHOULD</span> be set to the shortest possible duration allowable by
-overall system availability constraints.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+        <li id="section-8-3.3">
+          <p id="section-8-3.3.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD NOT</span> solely rely on JWT claims that can be controlled by any Tenant.<a href="#section-8-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-3.4">
+          <p id="section-8-3.4.1">The configuration <span class="bcp14">SHOULD NOT</span> permit the transcription of JWT claims to the
+Resource Server principal without performing additional validation.<a href="#section-8-3.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-8-4">The security considerations in section 8 of <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span> generally apply. As bearer
+tokens, stolen JWTs are particularly valuable to attackers:<a href="#section-8-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-5">
+<li id="section-8-5.1">
+          <p id="section-8-5.1.1">A secure channel (e.g. TLS) <span class="bcp14">MUST</span> be used when providing a JWT for
+authentication.<a href="#section-8-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-5.2">
+          <p id="section-8-5.2.1">JWTs <span class="bcp14">SHOULD</span> be protected from unauthorized access using operating system or
+platform access controls.<a href="#section-8-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-5.3">
+          <p id="section-8-5.3.1">JWT validity <span class="bcp14">SHOULD</span> be set to the shortest possible duration allowable by
+overall system availability constraints.<a href="#section-8-5.3.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
 </section>
@@ -1619,6 +1701,10 @@ overall system availability constraints.<a href="#section-8-2.3.1" class="pilcro
 <a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
+<dt id="GitHub">[GitHub]</dt>
+        <dd>
+<span class="refTitle">"About security hardening with OpenID Connect"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect">https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.ietf-wimse-s2s-protocol">[I-D.ietf-wimse-s2s-protocol]</dt>
       <dd>
 <span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Salowey, J.</span>, <span class="refAuthor">Schwenkschuster, A.</span>, and <span class="refAuthor">Y. Sheffer</span>, <span class="refTitle">"WIMSE Workload to Workload Authentication"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-s2s-protocol-03</span>, <time datetime="2025-03-03" class="refDate">3 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-03">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-03</a>&gt;</span>. </dd>
