@@ -360,5 +360,6 @@ This document has no IANA actions.
 # Acknowledgments
 {:numbered="false"}
 
-The authors would like to thank Pieter Kasselman for his guidance in structuring
-this document.
+The authors would like to thank the following people for their feedback and
+reviews of the document: Evan Gilman, Pieter Kasselman, Darin McAdams, and Arndt
+Schwenkschuster.
