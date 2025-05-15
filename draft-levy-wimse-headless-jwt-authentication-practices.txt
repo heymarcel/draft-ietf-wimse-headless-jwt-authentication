@@ -9,7 +9,7 @@ Expires: 16 November 2025                                         GitHub
                                                              15 May 2025
 
 
-                   WIMSE Headless JWT Authentication
+          WIMSE Headless JWT Authentication and Authorization
      draft-levy-wimse-headless-jwt-authentication-practices-latest
 
 Abstract
@@ -207,17 +207,18 @@ Table of Contents
        the jwks_uri declared in the JWT Issuer's configuration response.
 
    4.  Using the appropiate issuer key, the Authorization Server
-       verifies the signature of the JWT Bearer Token.
+       verifies the signature of the JWT Bearer Token, and validates
+       that the workload is authorized to receive an Access Token.
 
-   5.  The Authorization Server then responds to the workload with an
-       Access Token suitable for use with the Resource Server.
+   5.  Assuming successful verification, the Authorization Server then
+       responds to the workload with an Access Token suitable for use
+       with the Resource Server.
 
    6.  The Workload then authenticates with the Resource Server using
        the Access Token.
 
-   As we can see, the headless JWT authentication pattern closely
-   follows that of OIDC, but without the initial authentication by a
-   user.
+   The headless JWT authorization grant flow combines [RFC7523] and OIDC
+   key discovery to simplify workload authentication and authorization..
 
    This document limits discussion to HTTP, as this is the protocol
    predominantly used.  Although other protocols are out of scope, this
