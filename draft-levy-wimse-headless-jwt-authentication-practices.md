@@ -70,12 +70,16 @@ normative:
       - ins: M. Jones
 
 informative:
+  I-D.ietf-wimse-arch:
   I-D.ietf-wimse-s2s-protocol:
   GitHub:
     title: About security hardening with OpenID Connect
     target: https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect
     date: 2025
-
+  OIPD:
+    title: OpenID Provider Commands 1.0
+    target: https://openid.net/specs/openid-provider-commands-1_0.html
+    date: 2025
 
 --- abstract
 
@@ -128,9 +132,9 @@ and cloud providers.
 * Tenant
 
 A logically isolated entity within a Workload Platform that represents a
-distinct organizational or administrative boundary. A Workload Platform may have
-a single Tenant, or multiple Tenants. The Tenant may contain Accounts managed by
-individuals, or may contain Accounts managed by an organization.
+distinct organizational or administrative boundary [OIPD]. A Workload Platform
+may have a single Tenant, or multiple Tenants. The Tenant may contain Accounts
+managed by individuals, or may contain Accounts managed by an organization.
 
 # Architecture and Message Flow {#architecture-and-message-flow}
 
@@ -330,7 +334,9 @@ Resource Server identity:
 2. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
    the JWT Issuer from being used to impersonate any Resource Server principal.
 3. When a Workload Platform contains multiple Tenants, the configuration SHOULD
-   NOT solely rely on JWT claims that can be controlled by any Tenant.
+   NOT solely rely on JWT claims that can be controlled by any Tenant. The
+   configuration MAY rely on a "tenant" claim, if the claim value is
+   issuer-controlled and corresponds to a single Tenant.
 4. The configuration SHOULD NOT permit the transcription of JWT claims to the
    Resource Server principal without performing additional validation.
 
