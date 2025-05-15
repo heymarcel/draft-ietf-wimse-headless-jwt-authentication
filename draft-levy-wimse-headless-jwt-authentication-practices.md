@@ -84,14 +84,14 @@ informative:
 --- abstract
 
 In workload-to-service communication, a common pattern is for a workload to
-present a JSON Web Token (JWT) to an authorization server in order to obtain an
-access token for the service it needs to access. It is a partial adaptation for
-workloads of existing flows designed for users. Implementing this pattern
-combines multiple existing standards from different working groups and standards
-bodies. Since this pattern is not described in a specification, it leads to
-variability in interoperability. The purpose of this document is to capture this
-common workload identity practice as an RFC in order to obtain consistency and
-promote interoperability in industry.
+present a JSON Web Token (JWT) to a remote endpoint in order to obtain a
+temporary credential for the service it ultimately needs to access. It is a partial
+adaptation for workloads of existing flows designed for users. Implementing this
+pattern combines multiple existing standards from different working groups and
+standards bodies. Since this pattern is not described in a specification, it
+leads to variability in interoperability. The purpose of this document is to
+capture this common workload identity practice as an RFC in order to obtain
+consistency and promote interoperability in industry.
 
 --- middle
 
@@ -99,18 +99,19 @@ promote interoperability in industry.
 
 In workload-to-service communication, a common pattern is for a workloads to use
 a JSON Web Token (JWT) to identify and authenticate itself as part of a process
-to obtain an access token for a service. This is done by having the workload
-present an asynchronously-provisioned bearer token in the form of a signed JWT
-to an Authorization Server. The Authorization Server verifies the JWT and then
-provides an OAuth access token as described in [RFC7523]. The "bootstrap"
+to obtain a temporary credential for the service it ultimately needs to access.
+This is done by having the workload present an asynchronously-provisioned bearer
+token in the form of a signed JWT to a remote endpoint that is associated with
+the target service. The remote endpoint verifies the JWT and then provides a
+temporary credential that the target service understands. The "bootstrap"
 problem of discovering the original JWT issuer is solved by requesting a JSON
 configuration document using the process described in OpenID Connect Discovery
 {{OIDC.Discovery}} or OAuth 2.0 Authorization Server Metadata [RFC8414].
 
-Since this pattern is not described in a specification, it leads to
-variability in interoperability. The purpose of this document is to capture
-this common workload identity practice as an RFC in
-order to obtain consistency and promote interoperability in industry.
+Since this pattern is not described in a specification, it leads to variability
+in interoperability. The purpose of this document is to capture this common
+workload identity practice as an RFC in order to obtain consistency and promote
+interoperability in industry.
 
 
 # Conventions and Definitions
@@ -136,6 +137,14 @@ distinct organizational or administrative boundary [OIPD]. A Workload Platform
 may have a single Tenant, or multiple Tenants. The Tenant may contain Accounts
 managed by individuals, or may contain Accounts managed by an organization.
 
+* Authentication Service
+
+A remotely-reachable endpoint responsible for authenticating the identity of its
+callers, and subsequently issuing a temporary credential that is compatible with
+other services within the authentication service's domain. Examples of an
+authentication service include an OAuth Authorization Server and AWS' Security
+Token Service.
+
 # Architecture and Message Flow {#architecture-and-message-flow}
 
 
@@ -147,30 +156,30 @@ managed by individuals, or may contain Accounts managed by an organization.
 
      +----------------+ 3) Retrieve JWKs
      |                |    from "jwks_uri"
-     | Authorization  +<----------------.
-     |    Server      |                  |
-     |                |                  |
-     +----+-------+---+                  |
-          ^       |                      |
-2) JWT    |       | 5) Provide           |
-   Bearer |       |    Access            v
-   Token  |       |    Token     +-------+------+
-          |       |              |              |
-          |       |              |  JWT Issuer  |
-          |       v              |              |
-      +---+-------+-----+        +-------+------+
-      |                 |                |
-      |    Workload     |<--------------'
+     | Authentication +<--------------------.
+     |    Service     |                     |
+     |                |                     |
+     +----+-------+---+                     |
+          ^       |                         |
+2) JWT    |       | 5) Provide              |
+   Bearer |       |    Temporary            v
+   Token  |       |    Credentials  +-------+------+
+          |       |                 |              |
+          |       |                 |  JWT Issuer  |
+          |       v                 |              |
+      +---+-------+-----+           +-------+------+
+      |                 |                   |
+      |    Workload     |<------------------'
       |                 |  1) Initial provisioning
       +--------+--------+
                |
                |  6) Authenticate with
-               |     Access Token
+               |     temporary credential
                v
          +------------+
          |            |
-         |  Resource  |
-         |   Server   |
+         |   Target   |
+         |   Service  |
          |            |
          +------------+
 ~~~
@@ -186,23 +195,21 @@ adhering to the profile specified in [RFC7523]. JWT provisioning assumptions are
 described in more detail in {{jwt-provisioning}}.
 
 
-1. The workload calls an Authorization Server's token endpoint and presents a
+1. The workload calls a remote Authentication Service that is associated with
+   the target service and presents a
    JWT Bearer Token as specified in Section 4 of [RFC7523].
-2. The Authorization Server takes the value from the `iss` claim and appends
+2. The Authentication Service takes the value from the `iss` claim and appends
    `/.well-known/openid-configuration` to retrieve the JWT Issuer's
    configuration via HTTP, as specified in [OIDC.Discovery]. Alternatively, the
    OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
-3. The Authorization Server then retrieves the JWKs via HTTP from the `jwks_uri`
+3. The Authentication Service then retrieves the JWKs via HTTP from the `jwks_uri`
    declared in the JWT Issuer's configuration response.
-4. Using the appropiate issuer key, the Authorization Server verifies the
+4. Using the appropiate issuer key, the Authentication Service verifies the
    signature of the JWT Bearer Token, and validates that the workload is
-   authorized to receive an Access Token.
-5. Assuming successful verification, the Authorization Server then responds to
-   the workload with an Access Token suitable for use with the Resource Server.
-6. The Workload then authenticates with the Resource Server using the Access Token.
-
-The headless JWT authorization grant flow combines [RFC7523] and OIDC key
-discovery to simplify workload authentication and authorization..
+   authorized to receive a temporary credential in its domain.
+5. Assuming successful verification, the Authentication Service then responds to
+   the workload with a temporary credential suitable for use with the target service.
+6. The Workload then authenticates with the target service using the temporary credential.
 
 This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
@@ -211,7 +218,7 @@ limit on their future use.
 # Key Discovery {#key-discovery}
 
 Issuer key discovery follows the steps outlined in Section 4 of
-[OIDC.Discovery]. The Resource Server makes a request to a location that is
+[OIDC.Discovery]. The Authentication Service makes a request to a location that is
 well-known according to [RFC5785]:
 
 ~~~ text
@@ -266,14 +273,14 @@ the subject ("sub") claim, this is not a requirement.
 
 ### Authorization Server Processing {#authorization-server-processing}
 
-The authorization server validates the JWT according to Section 3 in [RFC7523],
+The authentication service validates the JWT according to Section 3 in [RFC7523],
 with the following exceptions:
 
 1. The "sub" (subject) claim does not identify either a resource owner or an
    anonymous user.
 2. The "sub" claim need not correspond to the "client id" of an OAuth client.
 
-The authorization server validates the signature using the key discovered by the
+The authentication service validates the signature using the key discovered by the
 process described in {{key-discovery}}.
 
 ### Workload Processing {#workload-processing}
@@ -291,21 +298,21 @@ establishes mutually-trusted, secure connections between the workload and the
 JWT provisioner.
 
 This provisioning mechanism illustrates a key difference from flows defined in
-[RFC6749] and [OIDC.Core], in that there are no client credentials involved in
-the interaction with the Authorization Server.
+[RFC6749] and [OIDC.Core], in that there are no client credentials or other
+shared secrets required to bootstrap the flow.
 
 # Interoperability Considerations {#interoperability-considerations}
 
-In order for the workload to access the resource,
+In order for the workload to access the target service,
 
-1. The JWT Issuer must be recognized by the Authorization Server,
+1. The JWT Issuer must be recognized by the Authenticationtion Service,
 2. Claims in the JWT are inspected and used to determine the subject, or
-   principal, of the access token issued for the Resource Server,
-3. And the resulting Resource Server principal must be authorized to access the
-   Resource.
+   principal, of the temporary credential issued to access the target service,
+3. And the resulting temporary credential must be authorized to access the
+   target service.
 
 Step \#1 requires the prior configuration of an explicit trust relationship
-between the Authorization Server and the JWT Issuer, and depends on
+between the Authentication Service and the JWT Issuer, and depends on
 vendor-specific configuration. Dynamic client registration standards ([RFC7591]
 and [OIDC.Dynamic]) explicitly place it out of scope.
 
