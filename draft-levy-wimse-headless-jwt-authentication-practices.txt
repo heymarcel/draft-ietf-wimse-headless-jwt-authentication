@@ -142,10 +142,10 @@ Table of Contents
    *  Tenant
 
    A logically isolated entity within a Workload Platform that
-   represents a distinct organizational or administrative boundary.  A
-   Workload Platform may have a single Tenant, or multiple Tenants.  The
-   Tenant may contain Accounts managed by individuals, or may contain
-   Accounts managed by an organization.
+   represents a distinct organizational or administrative boundary
+   [OIPD].  A Workload Platform may have a single Tenant, or multiple
+   Tenants.  The Tenant may contain Accounts managed by individuals, or
+   may contain Accounts managed by an organization.
 
 3.  Architecture and Message Flow
 
@@ -363,7 +363,9 @@ Table of Contents
 
    3.  When a Workload Platform contains multiple Tenants, the
        configuration SHOULD NOT solely rely on JWT claims that can be
-       controlled by any Tenant.
+       controlled by any Tenant.  The configuration MAY rely on a
+       "tenant" claim, if the claim value is issuer-controlled and
+       corresponds to a single Tenant.
 
    4.  The configuration SHOULD NOT permit the transcription of JWT
        claims to the Resource Server principal without performing
@@ -453,6 +455,14 @@ Table of Contents
               actions/security-hardening-your-deployments/about-
               security-hardening-with-openid-connect>.
 
+   [I-D.ietf-wimse-arch]
+              Salowey, J. A., Rosomakho, Y., and H. Tschofenig,
+              "Workload Identity in a Multi System Environment (WIMSE)
+              Architecture", Work in Progress, Internet-Draft, draft-
+              ietf-wimse-arch-04, 2 March 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
+              arch-04>.
+
    [I-D.ietf-wimse-s2s-protocol]
               Campbell, B., Salowey, J., Schwenkschuster, A., and Y.
               Sheffer, "WIMSE Workload to Workload Authentication", Work
@@ -460,6 +470,10 @@ Table of Contents
               protocol-03, 3 March 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
               s2s-protocol-03>.
+
+   [OIPD]     "OpenID Provider Commands 1.0", 2025,
+              <https://openid.net/specs/openid-provider-commands-
+              1_0.html>.
 
 Acknowledgments
 

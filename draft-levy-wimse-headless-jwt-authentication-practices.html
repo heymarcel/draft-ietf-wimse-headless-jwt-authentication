@@ -1266,7 +1266,7 @@ order to obtain consistency and promote interoperability in industry.<a href="#s
       <h2 id="name-conventions-and-definitions">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
       </h2>
-<p id="section-2-1">All terminology in this document follows [I-D.ietf-wimse-arch].<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">All terminology in this document follows <span>[<a href="#I-D.ietf-wimse-arch" class="cite xref">I-D.ietf-wimse-arch</a>]</span>.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
@@ -1291,9 +1291,9 @@ and cloud providers.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-2.1-5">A logically isolated entity within a Workload Platform that represents a
-distinct organizational or administrative boundary. A Workload Platform may have
-a single Tenant, or multiple Tenants. The Tenant may contain Accounts managed by
-individuals, or may contain Accounts managed by an organization.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
+distinct organizational or administrative boundary <span>[<a href="#OIPD" class="cite xref">OIPD</a>]</span>. A Workload Platform
+may have a single Tenant, or multiple Tenants. The Tenant may contain Accounts
+managed by individuals, or may contain Accounts managed by an organization.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1617,7 +1617,9 @@ rather than a single JWT issuing key for the Workload Platform.<a href="#section
 the JWT Issuer from being used to impersonate any Resource Server principal.<a href="#section-8-3.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-8-3.3">
-          <p id="section-8-3.3.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD NOT</span> solely rely on JWT claims that can be controlled by any Tenant.<a href="#section-8-3.3.1" class="pilcrow">¶</a></p>
+          <p id="section-8-3.3.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD NOT</span> solely rely on JWT claims that can be controlled by any Tenant. The
+configuration <span class="bcp14">MAY</span> rely on a "tenant" claim, if the claim value is
+issuer-controlled and corresponds to a single Tenant.<a href="#section-8-3.3.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-8-3.4">
           <p id="section-8-3.4.1">The configuration <span class="bcp14">SHOULD NOT</span> permit the transcription of JWT claims to the
@@ -1718,9 +1720,17 @@ overall system availability constraints.<a href="#section-8-5.3.1" class="pilcro
         <dd>
 <span class="refTitle">"About security hardening with OpenID Connect"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect">https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="I-D.ietf-wimse-arch">[I-D.ietf-wimse-arch]</dt>
+        <dd>
+<span class="refAuthor">Salowey, J. A.</span>, <span class="refAuthor">Rosomakho, Y.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Workload Identity in a Multi System Environment (WIMSE) Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-arch-04</span>, <time datetime="2025-03-02" class="refDate">2 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-arch-04">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-arch-04</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.ietf-wimse-s2s-protocol">[I-D.ietf-wimse-s2s-protocol]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Salowey, J.</span>, <span class="refAuthor">Schwenkschuster, A.</span>, and <span class="refAuthor">Y. Sheffer</span>, <span class="refTitle">"WIMSE Workload to Workload Authentication"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-s2s-protocol-03</span>, <time datetime="2025-03-03" class="refDate">3 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-03">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="OIPD">[OIPD]</dt>
+      <dd>
+<span class="refTitle">"OpenID Provider Commands 1.0"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://openid.net/specs/openid-provider-commands-1_0.html">https://openid.net/specs/openid-provider-commands-1_0.html</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
