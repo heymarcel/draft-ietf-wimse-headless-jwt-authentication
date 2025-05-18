@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-15T00:01:51.514475+00:00",
+  "timestamp": "2025-05-18T00:01:52.815730+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -125,7 +125,7 @@
       "id": "I_kwDOOVtHv86y2tSL",
       "title": "Address the issue of client registration",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/6",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -134,8 +134,8 @@
       ],
       "body": "It's not mentioned at all in the spec, but it does need to be dealt with.",
       "createdAt": "2025-04-16T20:36:10Z",
-      "updatedAt": "2025-05-13T19:18:37Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-15T17:25:54Z",
+      "closedAt": "2025-05-15T17:25:54Z",
       "comments": [
         {
           "author": "PieterKas",
@@ -158,7 +158,7 @@
       "id": "I_kwDOOVtHv860XGa7",
       "title": "\"Client ID Context\" problem - how does the receiving domain figure out which client ID is being authenticated?",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/8",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "hpsin",
       "authorAssociation": "NONE",
       "assignees": [],
@@ -167,8 +167,8 @@
       ],
       "body": "In [RFC 6749 #3.2.1](https://datatracker.ietf.org/doc/html/rfc6749#section-3.2.1) and 4.4, we find that it doesn't appear to be mandatory for a client_credentials caller to actually specify which client_id they intend to authenticate for. The client secret is assumed to be sufficient to figure out which client_id is being authenticated. \n\nThat's not true though for these federated credentials - it's reasonable to say that a workload in the issuing domain is allowed to sign in to 3 different receiving domain `client_id`s with the same issuer/sub/aud claims. As a result, if the receiving AS gets a request with this JWT and no identifying client_id, it can't accurately deduce which client_id to issue a token for. \n\nSo... given a bare JWT and some scopes, how does the receiving domain know which client ID to sign in for?\nGitHub has this problem here: https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-the-authenticated-app\n\nAnd in general the [installation token API](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app) does not indicate which GitHub App is being signed into. Instead, we look for the `appid` in the JWT, and ensure that the installation ID is a valid installation for that app. \n\nNon-standard implementations of this pattern, and even standard implementations (assuming that the client_credentials flow will be the standard path here) will require some amount of help to identify the client_id.\n\nOptions I can think of that solve some or all of the issue: \n1. A `client_id` claim in the JWT?\n    * Some better name for that claim that makes it clear it's the client ID in the receiving domain?\n2. Indicate that `client_ID` is required in this scenario for all flows. \n   * For scenarios that aren't client credentials (so all my GitHub scenarios), require support for a parameter that represents the client ID\n3. Mandate that the triplet of issuer/subject/audience is unique within a receiving domain - only one client_id can use a particular triplet. \n\nAll of these are problematic:\n1. Claim injection is not evenly supported in many IDPs. For example, they can be injected in Entra but only via relatively expensive [custom claims](https://learn.microsoft.com/en-us/entra/identity-platform/custom-claims-provider-reference) or fixed-format claims which would not match a standardized claim (`extn_{GUID for the client}_claimname`). \n2. This is a compat issue for existing code that wants to update from using self-signed JWTs in client_credentials flows to issued JWTs. It doesn't always fit cleanly into existing APIs either - e.g. `/app` on GitHub, do we accept a query parameter there? A bit ugly. \n3. This is a scenario blocker for users. It's reasonable that we have cardinality mismatches between the domains - i.e. one production workload in the issuing domain, but test, dev, and prod clients in the receiving domain that all need to trust the same workload's JWT. \n\nMaybe something in https://datatracker.ietf.org/doc/html/rfc7523 helps here? ",
       "createdAt": "2025-04-28T19:31:02Z",
-      "updatedAt": "2025-05-14T15:19:58Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-15T17:26:11Z",
+      "closedAt": "2025-05-15T17:26:10Z",
       "comments": [
         {
           "author": "heymarcel",
@@ -229,13 +229,15 @@
       "state": "OPEN",
       "author": "hpsin",
       "authorAssociation": "NONE",
-      "assignees": [],
+      "assignees": [
+        "hpsin"
+      ],
       "labels": [
         "needs PR"
       ],
       "body": "Consumers of this pattern will need to (be able to) choose between performance and security, particularly in scenarios where there are many issuing domain workloads being mapped to a single resource domain principal, or one issuing domain workload being mapped to multiple resource domain principals. \n\nIn both cases, either preference may be possible:\n* Reuse a single token across multiple exchanges for multiple principals, getting performance at the risk of worse security (due to token reuse)\n* Require a distinct token for each exchange to guarantee that tokens cannot be reused improperly. \n\nThe latter is generally preferred, and would be ensured by adding additional unique data within the federating JWT to lock down how it can be used (for instance, by extending the subject claim to reference a specific issuing domain workload, including a claim that specifies a specific resource domain principal, or resource domain specific claims that help scope the resulting token).\n\nTo support this, both the issuing IDP and the authorizing resource AS should support this pattern:\n1. The issuing IDP needs to be able to inject claims (via some unspecified configuration) in response to runtime instructions and specific subject/audience combinations. These should be able to take any (unclaimed? i.e. can't be `sub`) claim name, to ensure compatibility with resource domain AS logic. \n2. The resource domain AS should support validating multiple custom claims in the token, and establish a known way of specifying the resource domain principal ID within the JWT, which allows the AS to better ensure that tokens cannot be reused across principals. \n3. The resource domain AS should support any runtime parameters they offer (for instance, the `scopes` parameter) being included in the JWT instead, and either only obey the JWT claims if present or take the most restrictive union of outcomes from JWT claims and runtime parameters, if both are present. \n    * For instance, GitHub supports \"[scoped tokens](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app)\", where the access token being requested can be scoped down to specific permissions by the inclusion of runtime parameters (`repositories` and `permissions`). It would be beneficial for security outcomes to enable an issuing IDP to mint a JWT that contains these two claims, thus restricting the workload to just those chosen repos and permissions in a way that cannot be tampered with by the workload. \n\n\nThe other alternative is to inject these signals to the AS at runtime, via request parameters. These are not enforced by the IDP, which allows for token reuse in ways that may be desired. For instance, a workload sometimes needs a tightly scoped resource access token, and sometimes wants a full-strength access token, and would use the runtime request parameters to alter the resulting token instead of relying on its IDP to provide multiple JWTs for use with the audience. This may be required for compatibility purposes as well, if the IDP or resource AS do not adequately support claim injection and validation. ",
       "createdAt": "2025-05-07T17:21:05Z",
-      "updatedAt": "2025-05-14T15:19:20Z",
+      "updatedAt": "2025-05-15T17:49:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -266,7 +268,7 @@
       "id": "I_kwDOOVtHv861mo0s",
       "title": "Security Considerations: Use multiple signing keys",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/11",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "PieterKas",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -275,8 +277,8 @@
       ],
       "body": "Following on from conversation - addd security considerations to use uniqque keys per account when issuing a token after a successful authentication.",
       "createdAt": "2025-05-07T18:14:18Z",
-      "updatedAt": "2025-05-13T19:20:02Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-15T17:25:45Z",
+      "closedAt": "2025-05-15T17:25:44Z",
       "comments": [
         {
           "author": "heymarcel",
@@ -292,7 +294,7 @@
       "id": "I_kwDOOVtHv861mpZ_",
       "title": "Security Considerations: Claims transcriptions",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/12",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "PieterKas",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -301,8 +303,8 @@
       ],
       "body": "Add security considerations on risks of transcribing new claims from a JWT that was presented.",
       "createdAt": "2025-05-07T18:15:27Z",
-      "updatedAt": "2025-05-13T19:19:48Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-15T17:25:35Z",
+      "closedAt": "2025-05-15T17:25:35Z",
       "comments": []
     },
     {
@@ -313,13 +315,15 @@
       "state": "OPEN",
       "author": "arndt-s",
       "authorAssociation": "NONE",
-      "assignees": [],
+      "assignees": [
+        "arndt-s"
+      ],
       "labels": [
         "needs PR"
       ],
       "body": "Just talked to you (@heymarcel)  about this and wanted to put it into writing:\n\nI believe the trust establishment is a 2 step (parent-child if you will) process:\n\n- Issuer trust establishment:\nTelling the authorization server to trust the issuer. This is most of the time the issuer URI. (e.g. AWS Identity Provider). This step is mainly about which keys to trust.\n\n- Subject trust establishment:\nThis is eventually the mapping from subject from JWT Token Issuer to Resource Owner at the Authorization Server (e.g. AWS IAM Role Trust Policy; Resource Owner is the ARN of the IAM role).\n\nI think there's value in differentiating between these two and also add some security considerations. Both levels need to be configured out of band in my opinion and are subject to policy and configuration.\n\nFor instance, AWS split those two topics into different entities and I think that's a good thing. Azure on the other hand put it together into the \"Federated Identity Credential\". It's a problem here as there's no unified view on the trusted issuer on tenant level, you would need to go into each principal individually to see if that resource owner trust a certain issuer. Not sure about GCP, but I believe their workload identity pool differentiates too and is more similar to AWS.\n\n",
       "createdAt": "2025-05-08T17:15:55Z",
-      "updatedAt": "2025-05-13T19:19:37Z",
+      "updatedAt": "2025-05-15T17:49:25Z",
       "closedAt": null,
       "comments": [
         {
@@ -350,7 +354,7 @@
       "id": "I_kwDOOVtHv861ym2I",
       "title": "Authentication or Authorization",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/14",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "PieterKas",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -359,8 +363,8 @@
       ],
       "body": "The draft uses the term authentication throughout, but the result of using the JWT is an Access Token, so in that sense it is more like an \"assertion flow\" in RFC 7523. \n\nAre there use cases where the workload authenticates, but does not receive an Access Token in return? ",
       "createdAt": "2025-05-08T19:47:45Z",
-      "updatedAt": "2025-05-13T19:18:52Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-15T17:25:25Z",
+      "closedAt": "2025-05-15T17:25:25Z",
       "comments": [
         {
           "author": "heymarcel",
@@ -390,7 +394,7 @@
       "id": "I_kwDOOVtHv861zJHl",
       "title": "Hints to the Authorization Server regarding custom (or customizable) claims",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/15",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [],
@@ -399,8 +403,8 @@
       ],
       "body": "**Note:** I'm putting this here because it grew out of discussions related to this document, but I am _not_ proposing that we add it.\n\nThis is inspired by [Avaid Hahami's presentation](https://media.defcon.org/DEF%20CON%2032/DEF%20CON%2032%20presentations/DEF%20CON%2032%20-%20Aviad%20Hahami%20-%20OH-MY-DC%20-%20Abusing%20OIDC%20all%20the%20way%20to%20your%20cloud.pdf)discussing the problem of vendor-specific JWT claims in identity federation, using GitHub as an example. Here's an example set of claims:\n\n```json\n{\n  \"jti\": \"115187f5-e36a-4dd5-844f-f5b77078a388\",\n  \"sub\": \"repo:moti-banana-zurich/dvora:ref:refs/heads/main\",\n  \"aud\": \"sts.amazonaws.com\",\n  \"ref\": \"refs/heads/main\",\n  \"sha\": \"91accfeaa3e3bc09813ad97e6c4243d834c4875d\",\n  \"repository\": \"moti-banana-zurich/dvora\",\n  \"repository_owner\": \"moti-banana-zurich\",\n  \"repository_owner_id\": \"123456789\",\n  \"run_id\": \"123456789\",\n  \"run_number\": \"53\",\n  \"run_attempt\": \"1\",\n  \"repository_visibility\": \"private\",\n  \"repository_id\": \"123456789\",\n  \"actor_id\": \"123456789\",\n  \"actor\": \"moti-banana\",\n  \"workflow\": \"my_workflow\",\n  \"head_ref\": \"\",\n  \"base_ref\": \"\",\n  \"event_name\": \"workflow_dispatch\"\n}\n```\n\nHahami demonstrates that `sub` customization combined with unsafe Authorization Server configuration, for example with the following example of IDP configuration in AWS:\n```json\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::123456123456:oidcprovider/token.actions.githubusercontent.com\"\n      },\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Condition\": {\n        \"StringEquals\": {\n          \"token.actions.githubusercontent.com:aud\": \"sts.amazonaws.com\"\n        },\n        \"StringLike\": {\n          \"token.actions.githubusercontent.com:sub\": \"workflow:reusable_workflow:repo:my_org/repo\"\n        }\n      }\n    }\n  ]\n}\n```\n\nSince the rule is `StringLike` and the attacker can control their `sub`, and there are no other constraints, any GitHub Action would suffice. Hahami has published [a detailed table discussing each claim.](https://github.com/PaloAltoNetworks/github-oidc-utils)\n\nThe problem here is not solely for GitHub or AWS to solve, and it is inherent to identity federation. Practically speaking, we can assume the following will be true, or will become true over time, in order to improve vendor interoperability:\n\n1. The JWT issuer will allow custom claims.\n2. The JWT issuer will allow `sub` claim customization.\n3. The Authorization Server will allow customized federation mapping that includes string-matching.\n4. The Authorization Server will not hard-code custom claim validation for every JWT issuer.\n\nAs a start, I'm proposing a way for the JWT issuer to provide additional information about the custom claims themselves. Essentially, let's take the intent behind that table and turn it into something machine-readable, so that the Authorization Server can use it when asserting the claims in the JWT.\n\nAs a first pass, it might look something like this:\n\n```json\n{\n\t\"version\": \"2025-05-08\",\n\t\"name\": \"id-token-claim-dictionary\"\n\t\"claims\": {\n\t\t\"required\": {\n\t\t\t\"sub\": [\"user\"], \n\t\t\t\"aud\": [\"user\"]\n\t\t},\n\t\t\"custom\": {\n\t\t\t\"workflow\": [\"user\"],\n\t\t\t\"repository\": [\"system\", \"unique\"],\n\t\t\t\"run_id\": [\"system\", \"ephemeral\"],\n\t\t\t\"job_workflow_sha\": [\"system\", \"unique\"]\n\t\t}\n\t}\n}\n```\n\nNote that the tags describing each claim don't describe the _type_ of the possible claim values. They describe the characteristics that are important to know when configuring identity federation. The Authorization Server can use these as hints to prevent misconfigurations that allow unauthorized access.\n\nThis file could go in the `/.well-known/` directory. And sure, it probably should be signed.",
       "createdAt": "2025-05-08T21:01:42Z",
-      "updatedAt": "2025-05-13T19:20:19Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-15T17:49:49Z",
+      "closedAt": "2025-05-15T17:49:48Z",
       "comments": [
         {
           "author": "arndt-s",
@@ -415,6 +419,41 @@
           "body": "Agreed on the security recommendations for the draft. The problem itself will remain, because as Immanuel Kant pointed out, \"out of the crooked timber of humanity, no straight thing was ever made.\" \n\n(In the meantime, take a look at #9, which contains related security recommendations)\n\nIn any case, we can ignore the complicated proposal above for now. Hirsch and I met with Dick Hardt yesterday, and there's a simpler way out of this mess by recommending the use of the \"tenant\" claim as described in the [OpenID Provider Commands draft.](https://openid.github.io/openid-provider-commands/main.html).",
           "createdAt": "2025-05-09T15:45:53Z",
           "updatedAt": "2025-05-09T22:31:25Z"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "I_kwDOOVtHv862zqgJ",
+      "title": "Avoid excessive OAuth specificity",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/18",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "heymarcel"
+      ],
+      "labels": [
+        "needs PR"
+      ],
+      "body": "In a discussion with @evan2645, he brought up the point that not every implementation may follow the pattern _exactly_ as presented here. A client may not send a JWT to an Authorization Server directly. In that case, token acquisition would be decoupled from the authorization server. Also, the document uses the term \"Access Token\", and that may create too much of an assumption that this token is also JWT -- something it isn't in most cases. He also recommended adding some examples (e.g. AWS, GCP, Azure, Confluent Cloud). \n ",
+      "createdAt": "2025-05-15T17:48:56Z",
+      "updatedAt": "2025-05-15T19:41:56Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "evan2645",
+          "authorAssociation": "NONE",
+          "body": "> A client may not send a JWT to an Authorization Server directly. In that case, token acquisition would be decoupled from the authorization server.\n\n\"Authorization server\" also carries specific meaning in OAuth , and implies use of e.g. OAuth token endpoint. That's not the case for many existing usages, for example AWS, where the authentication happens against AWS STS and not an OAuth Authorization Server.\n\nGenerally speaking, the majority of headless usages in the wild today occur without any OAuth in the picture. As such, I feel we should examine the use OAuth-specific terminology (e.g. \"resource server\") throughout the document. I see that some progress is being made on terminology definition here in this doc, that is awesome to see and I think we should continue in that direction. I'd be happy to send a draft PR with some alternatives for consideration if useful.",
+          "createdAt": "2025-05-15T18:37:44Z",
+          "updatedAt": "2025-05-15T18:37:44Z"
+        },
+        {
+          "author": "evan2645",
+          "authorAssociation": "NONE",
+          "body": "You mentioned to me in Slack that a PR would be useful so I put one up [here](https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/19) for reference",
+          "createdAt": "2025-05-15T19:41:54Z",
+          "updatedAt": "2025-05-15T19:41:54Z"
         }
       ]
     }
@@ -509,24 +548,26 @@
       "id": "PR_kwDOOVtHv86VAIE6",
       "title": "Initial proposal for addressing questions in #8",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/9",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "I doubt we'll be able to address everything in the discussion, but I'd like to surface the problem in a way that opens the door for another WIMSE draft to tackle it head-on. Here's a first attempt.",
       "createdAt": "2025-05-05T21:25:18Z",
-      "updatedAt": "2025-05-14T16:34:10Z",
+      "updatedAt": "2025-05-15T17:17:41Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "2251bd51115afde3eedf38e90a24f417a4b65b3d",
       "headRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "headRefName": "marcel/interop",
       "headRefOid": "635fe1d1804e802263f22bb59ce38c223cffdd40",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-05-15T17:17:41Z",
+      "mergedAt": "2025-05-15T17:17:41Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "e1eeed3c5bd39e84dc26ea0e83140f40b7798c62"
+      },
       "comments": [],
       "reviews": [
         {
@@ -839,6 +880,19 @@
               "updatedAt": "2025-05-14T16:34:02Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86pe_Ha",
+          "commit": {
+            "abbreviatedOid": "635fe1d"
+          },
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-15T12:15:43Z",
+          "updatedAt": "2025-05-15T12:15:43Z",
+          "comments": []
         }
       ]
     },
@@ -847,24 +901,26 @@
       "id": "PR_kwDOOVtHv86WDS4E",
       "title": "Update title to include \"Authorization\" in the spec",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/16",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Proposal to address #14:\r\n- Add authorization validation step in the flow description\r\n- Clarify language around the JWT authorization grant flow\r\n- Fix typos and improve phrasing",
       "createdAt": "2025-05-13T19:14:51Z",
-      "updatedAt": "2025-05-14T15:59:38Z",
+      "updatedAt": "2025-05-15T17:19:25Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "marcel/interop",
       "baseRefOid": "4c70f3ae8e414d8c5b76fc3b259bfd599e766020",
       "headRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "headRefName": "marcel/authn-vs-authz",
       "headRefOid": "36d88bfbded41d8ee94e8809530106144451802b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-05-15T17:19:25Z",
+      "mergedAt": "2025-05-15T17:19:25Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "446387040cfc61b7f5d9bf9359c40d9bdbdea1b3"
+      },
       "comments": [],
       "reviews": [
         {
@@ -904,6 +960,135 @@
               "body": "Perfect. Thanks.",
               "createdAt": "2025-05-14T15:59:20Z",
               "updatedAt": "2025-05-14T15:59:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86pe-sW",
+          "commit": {
+            "abbreviatedOid": "36d88bf"
+          },
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-15T12:15:07Z",
+          "updatedAt": "2025-05-15T12:15:07Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "id": "PR_kwDOOVtHv86WXabq",
+      "title": "Update title to include authorization and clarify flow",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/17",
+      "state": "MERGED",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "- Update title and abbreviation in metadata to include \"and Authorization\"\r\n- Reformat abstract paragraph for better readability\r\n- Add authorization check step in the authentication flow\r\n- Clarify the final summary paragraph about the flow purpose",
+      "createdAt": "2025-05-15T17:24:18Z",
+      "updatedAt": "2025-05-15T17:24:44Z",
+      "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "e1eeed3c5bd39e84dc26ea0e83140f40b7798c62",
+      "headRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "headRefName": "marcel/interop",
+      "headRefOid": "d0f67c400b9a0a8d759791e9cbb207daef462461",
+      "closedAt": "2025-05-15T17:24:44Z",
+      "mergedAt": "2025-05-15T17:24:44Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "fe9b1076f00f61b3ed98235cdf1072af4343c953"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOOVtHv86WYYvi",
+      "title": "Clarify that OAuth is but one target auth realm (#18)",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/19",
+      "state": "OPEN",
+      "author": "evan2645",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This commit includes a quick pass I made over the document in relation to #18 to serve as an example on how we could be more general about the pattern, acknowledging that OAuth may or may not be involved in these flows. This more closely matches real world usage in cloud services like AWS and GCP.\r\n\r\nI didn't put a ton of thought into the naming, and I also noticed lots of other spots that felt funny along the way, but refrained from further changes to keep the scope of this sample tight. It will have some knock-on effects as other parts of the text reference e.g. RFC 7523. I stopped short of suggesting changes in the security considerations section for that reason. Happy to continue work in this direction if useful.",
+      "createdAt": "2025-05-15T19:41:05Z",
+      "updatedAt": "2025-05-16T17:05:12Z",
+      "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "8d1be244950872c825e52f56baf5f4123896158d",
+      "headRepository": "evan2645/draft-ietf-wimse-headless-jwt-authentication",
+      "headRefName": "oauth-is-but-one-target-realm",
+      "headRefOid": "4ba3b51991f4df19dbe2bffbd12d86ccad6407d4",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "evan2645",
+          "authorAssociation": "NONE",
+          "body": "Thanks for the comments Marcel \ud83d\ude4f \r\n\r\nMy intention with this PR was to illustrate an example solution for the original issue #18. That said, I'd be very happy to go a level or two deeper to address your comments and prepare this PR for acceptance if there's consensus that it's a step in the right direction. Also happy to just close this or leave it as draft for a while , I'm up for whatever , just let me know what's most helpful \ud83d\ude0a ",
+          "createdAt": "2025-05-15T21:08:51Z",
+          "updatedAt": "2025-05-15T21:08:51Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Oh, I thought the PR was pretty close to perfect as it stands. I am curious to know what Pieter thinks, so we can leave it up for another day.",
+          "createdAt": "2025-05-15T23:08:14Z",
+          "updatedAt": "2025-05-15T23:08:14Z"
+        },
+        {
+          "author": "PieterKas",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I like the generalisation of talking about a \"temporary credential\" and \"remote endpoint\" instead of an OAuth access token and OAuth Authorization Server as a way to abstract the flow. \r\n\r\n1. Conceptually that temporary credential is just a token - so somwhere there has to be a section that talks about different types of temporary credentials and a nod to OAuth, which is all about a very common type of token.\r\n\r\n2. RFC7523 often forms the basis for flows like this - not just in terms of JWT processing, but also in specific binding to present it - perhaps there is a section in the doc that talks about using this pattern with OAuth authorization servers? We will need to provide some transport protocol bindings - to HTTP , Kafka etc for whatever the pattern/protocol ends up being. Another option is to introduce a \"framework spec\" and then let other profile it for different transports and so on.\r\n\r\n3. The terminology around \"Authentication Server\" feels like it does not actually describe what that \"remote endpoint\" or server does. The workload authenticates itself, but the \"remote endpoint\" it is authenticating too makes an authorization decision. It's function is not authentication, but authorization. The purpose of authenticating is not be authenticated, but to be authorized. If there is concern with calling it an authorization server because it becomes limiting, I would suggest we re-use the language innovation in the abstract of \"Remote Endpoint\" and define \"Remote Endpoint\" as an endpoint too which the workload authenticates and issues a temporary credential in response, based on an authorization decision.  That just feels like a long winded way to say \"authorization server\". An alternative is to use \"authorization server\" and then have a seperate section in the document to talk about different types of authorization servers, including an OAuth Authorization Server - which could be used as an example. In the initial draft, It may be as simple as \"The authroization server may support a wide range of protocols and credential formats. These may include a combination of proprietary as well as standardised protocols. OAuth is an example of a widely deployed and popular protocol commonly supported by authorization servers.\"",
+          "createdAt": "2025-05-16T10:26:32Z",
+          "updatedAt": "2025-05-16T10:26:32Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "@PieterKas and I discussed this some more, and we're thinking that \"token server\" or \"token service\" is closer to the truth. The flow is about taking in a JWT, _authenticating_ it, and then performing an _authorization_ check to determine whether a resource server-specific token gets issued to the workload.",
+          "createdAt": "2025-05-16T17:05:10Z",
+          "updatedAt": "2025-05-16T17:05:10Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOVtHv86pkbts",
+          "commit": {
+            "abbreviatedOid": "4ba3b51"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2025-05-15T20:28:37Z",
+          "updatedAt": "2025-05-15T20:29:26Z",
+          "comments": [
+            {
+              "originalPosition": 161,
+              "body": "Let's capitalize on all references",
+              "createdAt": "2025-05-15T20:28:38Z",
+              "updatedAt": "2025-05-15T20:29:26Z"
+            },
+            {
+              "originalPosition": 158,
+              "body": "Authentication Service?",
+              "createdAt": "2025-05-15T20:28:53Z",
+              "updatedAt": "2025-05-15T20:29:26Z"
+            },
+            {
+              "originalPosition": 188,
+              "body": "Typo",
+              "createdAt": "2025-05-15T20:29:12Z",
+              "updatedAt": "2025-05-15T20:29:26Z"
             }
           ]
         }
