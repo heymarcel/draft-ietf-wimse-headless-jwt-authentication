@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-18T00:01:52.815730+00:00",
+  "timestamp": "2025-05-22T00:01:39.958491+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -1089,6 +1089,59 @@
               "body": "Typo",
               "createdAt": "2025-05-15T20:29:12Z",
               "updatedAt": "2025-05-15T20:29:26Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDOOVtHv86XF5_V",
+      "title": "Two level trust relationship",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/20",
+      "state": "OPEN",
+      "author": "arndt-s",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This is my first attempt to describe the two level trust relationship required for headless JWT.\r\n\r\nI feel like there's additional content that needs to go into the security considerations, especially talking about the downsides when the 2 levels are combined into one (like Azure does with Federated identity credentials).\r\n\r\nResolves #13 ",
+      "createdAt": "2025-05-21T16:20:43Z",
+      "updatedAt": "2025-05-21T17:53:15Z",
+      "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "8d1be244950872c825e52f56baf5f4123896158d",
+      "headRepository": "arndt-s/draft-ietf-wimse-headless-jwt-authentication",
+      "headRefName": "arndt/two-level-trust",
+      "headRefOid": "8681f134789fb5bc75d0ccdbe0dcc5ed5aa77562",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOVtHv86qYZtI",
+          "commit": {
+            "abbreviatedOid": "8681f13"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-21T17:02:30Z",
+          "updatedAt": "2025-05-21T17:53:15Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "\"token\"",
+              "createdAt": "2025-05-21T17:02:30Z",
+              "updatedAt": "2025-05-21T17:53:15Z"
+            },
+            {
+              "originalPosition": 6,
+              "body": "It seems like multi-tenancy is the root of the issue here, right? ",
+              "createdAt": "2025-05-21T17:52:47Z",
+              "updatedAt": "2025-05-21T17:53:15Z"
             }
           ]
         }
