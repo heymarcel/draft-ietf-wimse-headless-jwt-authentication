@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-22T00:01:39.958491+00:00",
+  "timestamp": "2025-05-25T00:01:49.721817+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -1106,7 +1106,7 @@
       "labels": [],
       "body": "This is my first attempt to describe the two level trust relationship required for headless JWT.\r\n\r\nI feel like there's additional content that needs to go into the security considerations, especially talking about the downsides when the 2 levels are combined into one (like Azure does with Federated identity credentials).\r\n\r\nResolves #13 ",
       "createdAt": "2025-05-21T16:20:43Z",
-      "updatedAt": "2025-05-21T17:53:15Z",
+      "updatedAt": "2025-05-22T17:16:00Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "8d1be244950872c825e52f56baf5f4123896158d",
@@ -1142,6 +1142,46 @@
               "body": "It seems like multi-tenancy is the root of the issue here, right? ",
               "createdAt": "2025-05-21T17:52:47Z",
               "updatedAt": "2025-05-21T17:53:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86qf_vE",
+          "commit": {
+            "abbreviatedOid": "8681f13"
+          },
+          "author": "arndt-s",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-22T09:35:44Z",
+          "updatedAt": "2025-05-22T09:35:44Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Depends what you consider as multi tenancy.\r\n\r\nIf each workload would have its own JWT issuer (aka self-signed) the 2 level trust wouldn't exist. Because the JWT issuer is \"multi-tenanted\" (as in represents multiple workloads) we need to trust the JWT issuer and workload separately.\r\n\r\nIf you mean multi-tenancy as in a JWT issuer issues credentials for multiple organizations then the first level (JWT Issuer trust) is eventually a very very broad trust. Not sure if trust is even the correct word here \ud83d\ude01 . The actual trust is happening at the workload trust level and it's the \"only line of defense\" - if you mess up here you mess up big time.",
+              "createdAt": "2025-05-22T09:35:44Z",
+              "updatedAt": "2025-05-22T09:35:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86qlsP3",
+          "commit": {
+            "abbreviatedOid": "8681f13"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-22T17:16:00Z",
+          "updatedAt": "2025-05-22T17:16:00Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "It's a pretty common pattern for issuers to be broadly trusted. Think of WebPKI, IMDS, code signing, etc. We rely on the issuer to perform some kind of attestation/registration in order to validate claims in the document. Those claims are then used by others to make their own authorization decisions. As an example, in the US a driver's license is the default ID card, and a bouncer at a bar uses the birthdate \"claim\" to determine if someone gets in. That bouncer may not care about the expiration if the photo matches. In another context, the expiration does matter.\r\n\r\nWhen it comes to custom claims -- heck, even when it comes to standard claims like \"sub\" -- we don't have reliable agreement as to what they mean, or how they've been attested on the issuer side. A per-workload issuer sidesteps the problem at the expense of introducing a new one, because now we're \"pinning\" the workload to an issuer in a 1:1 mapping. The validating party has to maintain that mapping, and incur the long-term maintenance of rotating the issuer for every workload. It seems expensive and rigid.",
+              "createdAt": "2025-05-22T17:16:00Z",
+              "updatedAt": "2025-05-22T17:16:00Z"
             }
           ]
         }
