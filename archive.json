@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-25T00:01:49.721817+00:00",
+  "timestamp": "2025-06-17T00:01:53.548869+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -237,7 +237,7 @@
       ],
       "body": "Consumers of this pattern will need to (be able to) choose between performance and security, particularly in scenarios where there are many issuing domain workloads being mapped to a single resource domain principal, or one issuing domain workload being mapped to multiple resource domain principals. \n\nIn both cases, either preference may be possible:\n* Reuse a single token across multiple exchanges for multiple principals, getting performance at the risk of worse security (due to token reuse)\n* Require a distinct token for each exchange to guarantee that tokens cannot be reused improperly. \n\nThe latter is generally preferred, and would be ensured by adding additional unique data within the federating JWT to lock down how it can be used (for instance, by extending the subject claim to reference a specific issuing domain workload, including a claim that specifies a specific resource domain principal, or resource domain specific claims that help scope the resulting token).\n\nTo support this, both the issuing IDP and the authorizing resource AS should support this pattern:\n1. The issuing IDP needs to be able to inject claims (via some unspecified configuration) in response to runtime instructions and specific subject/audience combinations. These should be able to take any (unclaimed? i.e. can't be `sub`) claim name, to ensure compatibility with resource domain AS logic. \n2. The resource domain AS should support validating multiple custom claims in the token, and establish a known way of specifying the resource domain principal ID within the JWT, which allows the AS to better ensure that tokens cannot be reused across principals. \n3. The resource domain AS should support any runtime parameters they offer (for instance, the `scopes` parameter) being included in the JWT instead, and either only obey the JWT claims if present or take the most restrictive union of outcomes from JWT claims and runtime parameters, if both are present. \n    * For instance, GitHub supports \"[scoped tokens](https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app)\", where the access token being requested can be scoped down to specific permissions by the inclusion of runtime parameters (`repositories` and `permissions`). It would be beneficial for security outcomes to enable an issuing IDP to mint a JWT that contains these two claims, thus restricting the workload to just those chosen repos and permissions in a way that cannot be tampered with by the workload. \n\n\nThe other alternative is to inject these signals to the AS at runtime, via request parameters. These are not enforced by the IDP, which allows for token reuse in ways that may be desired. For instance, a workload sometimes needs a tightly scoped resource access token, and sometimes wants a full-strength access token, and would use the runtime request parameters to alter the resulting token instead of relying on its IDP to provide multiple JWTs for use with the audience. This may be required for compatibility purposes as well, if the IDP or resource AS do not adequately support claim injection and validation. ",
       "createdAt": "2025-05-07T17:21:05Z",
-      "updatedAt": "2025-05-15T17:49:33Z",
+      "updatedAt": "2025-06-16T19:08:24Z",
       "closedAt": null,
       "comments": [
         {
@@ -260,6 +260,13 @@
           "body": "Yes, definitely! ",
           "createdAt": "2025-05-14T15:19:19Z",
           "updatedAt": "2025-05-14T15:19:19Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Discussed this offline. We're going with the more specific approach. The crux is passing the principal id to the resource server. [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.html) looks helpful. I'm going to put together a PR and @hpsin will provide feedback.",
+          "createdAt": "2025-06-16T19:08:24Z",
+          "updatedAt": "2025-06-16T19:08:24Z"
         }
       ]
     },
@@ -456,6 +463,26 @@
           "updatedAt": "2025-05-15T19:41:54Z"
         }
       ]
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOOVtHv867z69M",
+      "title": "Accounts are not defined",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/21",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "heymarcel"
+      ],
+      "labels": [
+        "needs PR"
+      ],
+      "body": "In the \"Terminology\" section, the document defines \"Tenant\", but this definition also refers to \"Account\", which is not defined.",
+      "createdAt": "2025-06-16T18:44:19Z",
+      "updatedAt": "2025-06-16T18:44:25Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
