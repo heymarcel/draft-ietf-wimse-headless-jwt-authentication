@@ -5,8 +5,8 @@
 Workload Identity in Multi System Environments                   M. Levy
 Internet-Draft                                                     SPIRL
 Intended status: Informational                                H. Singhal
-Expires: 16 November 2025                                         GitHub
-                                                             15 May 2025
+Expires: 21 December 2025                                         GitHub
+                                                            19 June 2025
 
 
           WIMSE Headless JWT Authentication and Authorization
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 November 2025.
+   This Internet-Draft will expire on 21 December 2025.
 
 Copyright Notice
 
@@ -144,8 +144,7 @@ Table of Contents
    A logically isolated entity within a Workload Platform that
    represents a distinct organizational or administrative boundary
    [OIPD].  A Workload Platform may have a single Tenant, or multiple
-   Tenants.  The Tenant may contain Accounts managed by individuals, or
-   may contain Accounts managed by an organization.
+   Tenants.
 
 3.  Architecture and Message Flow
 
@@ -467,9 +466,9 @@ Table of Contents
               Campbell, B., Salowey, J., Schwenkschuster, A., and Y.
               Sheffer, "WIMSE Workload to Workload Authentication", Work
               in Progress, Internet-Draft, draft-ietf-wimse-s2s-
-              protocol-03, 3 March 2025,
+              protocol-05, 19 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
-              s2s-protocol-03>.
+              s2s-protocol-05>.
 
    [OIPD]     "OpenID Provider Commands 1.0", 2025,
               <https://openid.net/specs/openid-provider-commands-
