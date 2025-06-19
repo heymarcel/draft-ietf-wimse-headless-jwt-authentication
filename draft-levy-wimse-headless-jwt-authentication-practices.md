@@ -323,15 +323,18 @@ This lack of standardization is not merely inconvenient; it is a rich source of
 privilege escalation attacks. This is particularly true when both the Workload
 Platform and the Resource Server platform are multi-tenanted.
 
-The following recommendations apply to configurations that control
-the "identity exchange" step that controls the translation of the workload JWT to a
-Resource Server identity:
+The following recommendations apply to configurations that control the
+"identity exchange" step that controls the translation of the workload
+JWT to a Resource Server identity:
 
 1. When a Workload Platform contains multiple Tenants, the configuration SHOULD
-   rely on a JWT issuing key bound to a single Tenant of the workload platform,
+   rely on a JWT issuing key bound to a single Tenant of the Workload Platform,
    rather than a single JWT issuing key for the Workload Platform.
-2. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
-   the JWT Issuer from being used to impersonate any Resource Server principal.
+2. The configuration SHOULD use specific JWT claims prevent any JWT
+   signed by the JWT Issuer from being used to impersonate any
+   Resource Server principal. As examples, this could be achieved with
+   (1) a unique combination of "sub", "issuer", and "audience", or (2)
+   custom claims as defined by the Resource Server.
 3. When a Workload Platform contains multiple Tenants, the configuration SHOULD
    NOT solely rely on JWT claims that can be controlled by any Tenant. The
    configuration MAY rely on a "tenant" claim, if the claim value is
