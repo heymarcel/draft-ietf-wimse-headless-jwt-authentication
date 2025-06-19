@@ -133,8 +133,7 @@ and cloud providers.
 
 A logically isolated entity within a Workload Platform that represents a
 distinct organizational or administrative boundary [OIPD]. A Workload Platform
-may have a single Tenant, or multiple Tenants. The Tenant may contain Accounts
-managed by individuals, or may contain Accounts managed by an organization.
+may have a single Tenant, or multiple Tenants.
 
 # Architecture and Message Flow {#architecture-and-message-flow}
 
