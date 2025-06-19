@@ -70,6 +70,7 @@ normative:
       - ins: M. Jones
 
 informative:
+  RFC8707:
   I-D.ietf-wimse-arch:
   I-D.ietf-wimse-s2s-protocol:
   GitHub:
@@ -309,8 +310,11 @@ vendor-specific configuration. Dynamic client registration standards ([RFC7591]
 and [OIDC.Dynamic]) explicitly place it out of scope.
 
 Step \#2 is a processing rule that is also previously-configured in an
-implementation-dependent manner. As an example of current practice for
-configuration of Steps \#2 and \#3, see [GitHub].
+implementation-dependent manner. Aside from the claims in the JWT, it
+is also possible to indicate information about the Resource Server
+principal in the request as specified in [RFC8707], where the
+principal is treated as a resource. As an example of current practice
+for configuration of Steps \#2 and \#3, see [GitHub].
 
 # Security Considerations {#security-considerations}
 
