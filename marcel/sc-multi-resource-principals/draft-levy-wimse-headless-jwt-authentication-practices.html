@@ -1585,8 +1585,11 @@ between the Authorization Server and the JWT Issuer, and depends on
 vendor-specific configuration. Dynamic client registration standards (<span>[<a href="#RFC7591" class="cite xref">RFC7591</a>]</span>
 and <span>[<a href="#OIDC.Dynamic" class="cite xref">OIDC.Dynamic</a>]</span>) explicitly place it out of scope.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">Step #2 is a processing rule that is also previously-configured in an
-implementation-dependent manner. As an example of current practice for
-configuration of Steps #2 and #3, see <span>[<a href="#GitHub" class="cite xref">GitHub</a>]</span>.<a href="#section-7-4" class="pilcrow">¶</a></p>
+implementation-dependent manner. Aside from the claims in the JWT, it
+is also possible to indicate information about the Resource Server
+principal in the request as specified in <span>[<a href="#RFC8707" class="cite xref">RFC8707</a>]</span>, where the
+principal is treated as a resource. As an example of current practice
+for configuration of Steps #2 and #3, see <span>[<a href="#GitHub" class="cite xref">GitHub</a>]</span>.<a href="#section-7-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="security-considerations">
@@ -1731,8 +1734,12 @@ overall system availability constraints.<a href="#section-8-5.3.1" class="pilcro
 <span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Salowey, J.</span>, <span class="refAuthor">Schwenkschuster, A.</span>, and <span class="refAuthor">Y. Sheffer</span>, <span class="refTitle">"WIMSE Workload to Workload Authentication"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-s2s-protocol-05</span>, <time datetime="2025-06-19" class="refDate">19 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-05">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-05</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="OIPD">[OIPD]</dt>
-      <dd>
+        <dd>
 <span class="refTitle">"OpenID Provider Commands 1.0"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://openid.net/specs/openid-provider-commands-1_0.html">https://openid.net/specs/openid-provider-commands-1_0.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8707">[RFC8707]</dt>
+      <dd>
+<span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Resource Indicators for OAuth 2.0"</span>, <span class="seriesInfo">RFC 8707</span>, <span class="seriesInfo">DOI 10.17487/RFC8707</span>, <time datetime="2020-02" class="refDate">February 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8707">https://www.rfc-editor.org/rfc/rfc8707</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
