@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-17T00:01:53.548869+00:00",
+  "timestamp": "2025-06-22T00:02:00.560174+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -469,7 +469,7 @@
       "id": "I_kwDOOVtHv867z69M",
       "title": "Accounts are not defined",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/21",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -480,9 +480,17 @@
       ],
       "body": "In the \"Terminology\" section, the document defines \"Tenant\", but this definition also refers to \"Account\", which is not defined.",
       "createdAt": "2025-06-16T18:44:19Z",
-      "updatedAt": "2025-06-16T18:44:25Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-06-19T22:21:59Z",
+      "closedAt": "2025-06-19T22:21:58Z",
+      "comments": [
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "Removed the reference to \"account\" for now.",
+          "createdAt": "2025-06-19T22:21:59Z",
+          "updatedAt": "2025-06-19T22:21:59Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -1213,6 +1221,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOOVtHv86bUu81",
+      "title": "Clarifying principal exchange at runtime vs issuance",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/22",
+      "state": "OPEN",
+      "author": "heymarcel",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This is meant to address #10. I'm treating specificity at runtime as an interoperability concern, and adding more detail (by way of examples) to the security concern item for JWT claim specificity.",
+      "createdAt": "2025-06-19T23:50:36Z",
+      "updatedAt": "2025-06-19T23:50:36Z",
+      "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "1ec0368806cc322e5d4aa11d5bc93b8ca0200e9f",
+      "headRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
+      "headRefName": "marcel/sc-multi-resource-principals",
+      "headRefOid": "bd99e7f0b7e678e37a69680ecaeb37b1fc8d9f86",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
