@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-22T00:02:00.560174+00:00",
+  "timestamp": "2025-06-24T00:01:35.411402+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -1234,7 +1234,7 @@
       "labels": [],
       "body": "This is meant to address #10. I'm treating specificity at runtime as an interoperability concern, and adding more detail (by way of examples) to the security concern item for JWT claim specificity.",
       "createdAt": "2025-06-19T23:50:36Z",
-      "updatedAt": "2025-06-19T23:50:36Z",
+      "updatedAt": "2025-06-23T23:21:55Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "1ec0368806cc322e5d4aa11d5bc93b8ca0200e9f",
