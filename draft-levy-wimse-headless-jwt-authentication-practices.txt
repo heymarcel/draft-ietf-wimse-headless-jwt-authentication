@@ -5,8 +5,8 @@
 Workload Identity in Multi System Environments                   M. Levy
 Internet-Draft                                                     SPIRL
 Intended status: Informational                                H. Singhal
-Expires: 21 December 2025                                         GitHub
-                                                            19 June 2025
+Expires: 26 December 2025                                         GitHub
+                                                            24 June 2025
 
 
           WIMSE Headless JWT Authentication and Authorization
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 21 December 2025.
+   This Internet-Draft will expire on 26 December 2025.
 
 Copyright Notice
 
@@ -91,12 +91,15 @@ Table of Contents
        6.2.1.  Authorization Server Processing
        6.2.2.  Workload Processing
      6.3.  JWT Provisioning
-   7.  Interoperability Considerations
-   8.  Security Considerations
-   9.  IANA Considerations
-   10. References
-     10.1.  Normative References
-     10.2.  Informative References
+   7.  Trust Relationships
+     7.1.  Issuer Trust Relationship
+     7.2.  Workload Trust Relationship
+   8.  Interoperability Considerations
+   9.  Security Considerations
+   10. IANA Considerations
+   11. References
+     11.1.  Normative References
+     11.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -253,7 +256,7 @@ Table of Contents
 
    Note that this key discovery mechanism does not address the question
    of whether the key itself should be trusted.  This is a registration
-   problem, and is discussed further in Section 7.
+   problem, and is discussed further in Section 8.
 
 6.  JWT Format and Processing Requirements
 
@@ -311,7 +314,88 @@ Table of Contents
    credentials involved in the interaction with the Authorization
    Server.
 
-7.  Interoperability Considerations
+7.  Trust Relationships
+
+   For functional headless JWT authentication, trust must be established
+   at multiple levels for the authentication flow to function.  For an
+   authorization server to issue an access token to a workload, two
+   distinct trust relationships must exist:
+
+   1.  The authorization server MUST trust the JWT issuer.
+
+   2.  The authorization server MUST trust the specific workload based
+       on claims within the JWT bearer token.
+
+   These two trust relationships serve different purposes and SHOULD be
+   managed independently as outlined below.
+
+   An example of the differences between issuer and workload trust
+   relationships are three workload instances (A, B and C) that are all
+   presenting JWT Bearer Tokens issued from the same JWT Issuer.  This
+   means that they build upon the trust relationship between the JWT
+   issuer and authorization server.  One workload instance has a
+   specific workload trust relationship with the authorization server
+   based on its subject identifier (the sub claim).  It requires a very
+   specific identifier which needs to match exactly.  Another one makes
+   use of a hierarchy within the subject identifier and the last one
+   uses a combination of subject, audience and a custom claim as a basis
+   for the trust relationship.
+
+              ┌──────────────────────┐
+              │                      │
+              │ Authorization Server │◄─────────────────┐
+              │                      │                  │
+              └──────────────────────┘        Issuer trust relationship
+                   ▲     ▲     ▲                        │
+                   │     │     │                        │
+                   │     │     │                        ▼
+                Individual workload              ┌─────────────┐
+                trust relationships              │             │
+                   │     │     │                 │ JWT Issuer  │
+          ┌────────┘     │     └─────────┐       │             │
+          │              │               │       └──────┬──────┘
+          │              │               │              │
+          │              │               │              │
+          ▼              ▼               ▼              │
+   ┌────────────┐  ┌────────────┐  ┌────────────┐   Issue JWT
+   │            │  │            │  │            │  Bearer Tokens
+   │ Workload A │  │ Workload B │  │ Workload C │       │
+   │            │  │            │  │            │       │
+   └────────────┘  └────────────┘  └────────────┘       │
+          ▲              ▲                ▲             │
+          └──────────────┴────────────────┴─────────────┘
+
+7.1.  Issuer Trust Relationship
+
+   This trust relationship is between the Authorization Server and the
+   JWT Issuer only.  It represents the foundational level of trust and
+   determines if the JWT Bearer Token a workload presents is accepted.
+
+   How this relationship is established is out of scope for this
+   document.  A possible approach for this implementation is maintaining
+   a list of OAuth Authorization Server Metadata endpoints which
+   instruct the authorization server to trust a specific issuer
+   including the discovery of valid keys for that issuer via jwks.
+
+   This trust is typically established at a global or tenant-wide level,
+   is subject to organizational policy and governance controls.  Changes
+   to issuer trust affect all workloads associated with that issuer
+   simultaneously.
+
+7.2.  Workload Trust Relationship
+
+   Workload trust establishment builds upon issuer trust and focuses
+   specifically on the relationship between the authorization server and
+   individual workloads.  Once the Bearer JWT token is authenticated the
+   authorization server must determine if the specific workload
+   identified in the JWT claims should be authorized.
+
+   The specifics of the claims are described in Section 6.1.
+
+   This trust is typically established individually and subject to
+   different policy and governance controls.
+
+8.  Interoperability Considerations
 
    In order for the workload to access the resource,
 
@@ -334,10 +418,10 @@ Table of Contents
    implementation-dependent manner.  As an example of current practice
    for configuration of Steps #2 and #3, see [GitHub].
 
-8.  Security Considerations
+9.  Security Considerations
 
    This document illustrates a common pattern in trust domain
-   federation.  However, the "identity exchange" Step #2 in Section 7 is
+   federation.  However, the "identity exchange" Step #2 in Section 8 is
    not standardized.  In practice, the Workload Platform and the
    Resource Server platform define principals differently, and the
    translation mechanism between the two identities is implemented
@@ -383,13 +467,13 @@ Table of Contents
    3.  JWT validity SHOULD be set to the shortest possible duration
        allowable by overall system availability constraints.
 
-9.  IANA Considerations
+10.  IANA Considerations
 
    This document has no IANA actions.
 
-10.  References
+11.  References
 
-10.1.  Normative References
+11.1.  Normative References
 
    [OIDC.Core]
               Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., and
@@ -447,7 +531,7 @@ Table of Contents
               DOI 10.17487/RFC8414, June 2018,
               <https://www.rfc-editor.org/rfc/rfc8414>.
 
-10.2.  Informative References
+11.2.  Informative References
 
    [GitHub]   "About security hardening with OpenID Connect", 2025,
               <https://docs.github.com/en/actions/security-for-github-
