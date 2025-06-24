@@ -293,6 +293,59 @@ This provisioning mechanism illustrates a key difference from flows defined in
 [RFC6749] and [OIDC.Core], in that there are no client credentials involved in
 the interaction with the Authorization Server.
 
+# Trust Relationships
+
+For functional headless JWT authentication, trust must be established at multiple levels for the authentication flow to function. For an authorization server to issue an access token to a workload, two distinct trust relationships must exist:
+
+1. The authorization server MUST trust the JWT issuer.
+2. The authorization server MUST trust the specific workload based on claims within the JWT bearer token.
+
+These two trust relationships serve different purposes and SHOULD be managed independently as outlined below.
+
+An example of the differences between issuer and workload trust relationships are three workload instances (A, B and C) that are all presenting JWT Bearer Tokens issued from the same JWT Issuer. This means that they build upon the trust relationship between the JWT issuer and authorization server. One workload instance has a specific workload trust relationship with the authorization server based on its subject identifier (the `sub` claim). It requires a very specific identifier which needs to match exactly. Another one makes use of a hierarchy within the subject identifier and the last one uses a combination of subject, audience and a custom claim as a basis for the trust relationship.
+
+~~~
+           ┌──────────────────────┐
+           │                      │
+           │ Authorization Server │◄─────────────────┐
+           │                      │                  │
+           └──────────────────────┘        Issuer trust relationship
+                ▲     ▲     ▲                        │
+                │     │     │                        │
+                │     │     │                        ▼
+             Individual workload              ┌─────────────┐
+             trust relationships              │             │
+                │     │     │                 │ JWT Issuer  │
+       ┌────────┘     │     └─────────┐       │             │
+       │              │               │       └──────┬──────┘
+       │              │               │              │
+       │              │               │              │
+       ▼              ▼               ▼              │
+┌────────────┐  ┌────────────┐  ┌────────────┐   Issue JWT
+│            │  │            │  │            │  Bearer Tokens
+│ Workload A │  │ Workload B │  │ Workload C │       │
+│            │  │            │  │            │       │
+└────────────┘  └────────────┘  └────────────┘       │
+       ▲              ▲                ▲             │
+       └──────────────┴────────────────┴─────────────┘
+~~~
+
+## Issuer Trust Relationship
+
+This trust relationship is between the Authorization Server and the JWT Issuer only. It represents the foundational level of trust and determines if the JWT Bearer Token a workload presents is accepted.
+
+How this relationship is established is out of scope for this document. A possible approach for this implementation is maintaining a list of OAuth Authorization Server Metadata endpoints which instruct the authorization server to trust a specific issuer including the discovery of valid keys for that issuer via `jwks`.
+
+This trust is typically established at a global or tenant-wide level, is subject to organizational policy and governance controls. Changes to issuer trust affect all workloads associated with that issuer simultaneously.
+
+## Workload Trust Relationship
+
+Workload trust establishment builds upon issuer trust and focuses specifically on the relationship between the authorization server and individual workloads. Once the Bearer JWT token is authenticated the authorization server must determine if the specific workload identified in the JWT claims should be authorized.
+
+The specifics of the claims are described in {{jwt-format}}.
+
+This trust is typically established individually and subject to different policy and governance controls.
+
 # Interoperability Considerations {#interoperability-considerations}
 
 In order for the workload to access the resource,
