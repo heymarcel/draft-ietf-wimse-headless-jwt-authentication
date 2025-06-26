@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-24T00:01:35.411402+00:00",
+  "timestamp": "2025-06-26T00:01:52.277807+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -319,9 +319,9 @@
       "id": "I_kwDOOVtHv861xZ4R",
       "title": "Two level trust establishment",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/13",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "arndt-s",
-      "authorAssociation": "NONE",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [
         "arndt-s"
       ],
@@ -330,12 +330,12 @@
       ],
       "body": "Just talked to you (@heymarcel)  about this and wanted to put it into writing:\n\nI believe the trust establishment is a 2 step (parent-child if you will) process:\n\n- Issuer trust establishment:\nTelling the authorization server to trust the issuer. This is most of the time the issuer URI. (e.g. AWS Identity Provider). This step is mainly about which keys to trust.\n\n- Subject trust establishment:\nThis is eventually the mapping from subject from JWT Token Issuer to Resource Owner at the Authorization Server (e.g. AWS IAM Role Trust Policy; Resource Owner is the ARN of the IAM role).\n\nI think there's value in differentiating between these two and also add some security considerations. Both levels need to be configured out of band in my opinion and are subject to policy and configuration.\n\nFor instance, AWS split those two topics into different entities and I think that's a good thing. Azure on the other hand put it together into the \"Federated Identity Credential\". It's a problem here as there's no unified view on the trusted issuer on tenant level, you would need to go into each principal individually to see if that resource owner trust a certain issuer. Not sure about GCP, but I believe their workload identity pool differentiates too and is more similar to AWS.\n\n",
       "createdAt": "2025-05-08T17:15:55Z",
-      "updatedAt": "2025-05-15T17:49:25Z",
-      "closedAt": null,
+      "updatedAt": "2025-06-24T17:02:14Z",
+      "closedAt": "2025-06-24T17:02:13Z",
       "comments": [
         {
           "author": "arndt-s",
-          "authorAssociation": "NONE",
+          "authorAssociation": "COLLABORATOR",
           "body": "Happy to provide a PR if you agree with this :) ",
           "createdAt": "2025-05-08T17:17:05Z",
           "updatedAt": "2025-05-08T17:17:05Z"
@@ -349,7 +349,7 @@
         },
         {
           "author": "arndt-s",
-          "authorAssociation": "NONE",
+          "authorAssociation": "COLLABORATOR",
           "body": "I'll wait providing the PR until #9 is merged - as you mentioned it covers this topic a bit.",
           "createdAt": "2025-05-13T11:15:31Z",
           "updatedAt": "2025-05-13T11:15:31Z"
@@ -1134,24 +1134,26 @@
       "id": "PR_kwDOOVtHv86XF5_V",
       "title": "Two level trust relationship",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/20",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "arndt-s",
-      "authorAssociation": "NONE",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This is my first attempt to describe the two level trust relationship required for headless JWT.\r\n\r\nI feel like there's additional content that needs to go into the security considerations, especially talking about the downsides when the 2 levels are combined into one (like Azure does with Federated identity credentials).\r\n\r\nResolves #13 ",
       "createdAt": "2025-05-21T16:20:43Z",
-      "updatedAt": "2025-05-22T17:16:00Z",
+      "updatedAt": "2025-06-24T17:03:04Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "8d1be244950872c825e52f56baf5f4123896158d",
       "headRepository": "arndt-s/draft-ietf-wimse-headless-jwt-authentication",
       "headRefName": "arndt/two-level-trust",
-      "headRefOid": "8681f134789fb5bc75d0ccdbe0dcc5ed5aa77562",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "88c4e8c2d8da40f4bf9d46e7895822259e2cd980",
+      "closedAt": "2025-06-24T17:02:12Z",
+      "mergedAt": "2025-06-24T17:02:12Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "033162c05f1c3220f3b2bffe631bda7c8a96bdf8"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1186,7 +1188,7 @@
             "abbreviatedOid": "8681f13"
           },
           "author": "arndt-s",
-          "authorAssociation": "NONE",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-05-22T09:35:44Z",
@@ -1219,6 +1221,19 @@
               "updatedAt": "2025-05-22T17:16:00Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86wHFbA",
+          "commit": {
+            "abbreviatedOid": "88c4e8c"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-24T17:01:16Z",
+          "updatedAt": "2025-06-24T17:01:16Z",
+          "comments": []
         }
       ]
     },
@@ -1234,7 +1249,7 @@
       "labels": [],
       "body": "This is meant to address #10. I'm treating specificity at runtime as an interoperability concern, and adding more detail (by way of examples) to the security concern item for JWT claim specificity.",
       "createdAt": "2025-06-19T23:50:36Z",
-      "updatedAt": "2025-06-23T23:21:55Z",
+      "updatedAt": "2025-06-25T21:19:45Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "1ec0368806cc322e5d4aa11d5bc93b8ca0200e9f",
@@ -1246,7 +1261,74 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOVtHv86wHLjt",
+          "commit": {
+            "abbreviatedOid": "bd99e7f"
+          },
+          "author": "arndt-s",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-24T17:11:24Z",
+          "updatedAt": "2025-06-24T17:12:59Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "Is this the workload explicitly telling the JWT issuer which identity it wants?\r\nIf yes, I wonder if we should required that. It creates ambiguity if multiple identities are possible. From the top of my head every headless jwt auth requires one to specify the identity explicitly. ",
+              "createdAt": "2025-06-24T17:11:25Z",
+              "updatedAt": "2025-06-24T17:12:59Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "Now seeing RFC8707 I'm confused, is this about indicating the resource so the JWT issuer knows how to scope the token (OAuth2 aud claim) or about the resource owner (OAuth2 sub claim)?",
+              "createdAt": "2025-06-24T17:12:51Z",
+              "updatedAt": "2025-06-24T17:12:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86waWtN",
+          "commit": {
+            "abbreviatedOid": "bd99e7f"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-25T21:18:28Z",
+          "updatedAt": "2025-06-25T21:18:28Z",
+          "comments": [
+            {
+              "originalPosition": 15,
+              "body": "Maybe not explicitly naming the principal, but we want to avoid \"supertokens\" that can acquire multiple identities.",
+              "createdAt": "2025-06-25T21:18:28Z",
+              "updatedAt": "2025-06-25T21:18:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86waXf-",
+          "commit": {
+            "abbreviatedOid": "bd99e7f"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-25T21:19:45Z",
+          "updatedAt": "2025-06-25T21:19:45Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "In this context, we're proposing that a principal is treated as a resource.",
+              "createdAt": "2025-06-25T21:19:45Z",
+              "updatedAt": "2025-06-25T21:19:45Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
