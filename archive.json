@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-26T00:01:52.277807+00:00",
+  "timestamp": "2025-06-29T00:01:49.851551+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -1053,7 +1053,7 @@
       "labels": [],
       "body": "This commit includes a quick pass I made over the document in relation to #18 to serve as an example on how we could be more general about the pattern, acknowledging that OAuth may or may not be involved in these flows. This more closely matches real world usage in cloud services like AWS and GCP.\r\n\r\nI didn't put a ton of thought into the naming, and I also noticed lots of other spots that felt funny along the way, but refrained from further changes to keep the scope of this sample tight. It will have some knock-on effects as other parts of the text reference e.g. RFC 7523. I stopped short of suggesting changes in the security considerations section for that reason. Happy to continue work in this direction if useful.",
       "createdAt": "2025-05-15T19:41:05Z",
-      "updatedAt": "2025-05-16T17:05:12Z",
+      "updatedAt": "2025-06-27T23:57:38Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
       "baseRefOid": "8d1be244950872c825e52f56baf5f4123896158d",
@@ -1092,6 +1092,13 @@
           "body": "@PieterKas and I discussed this some more, and we're thinking that \"token server\" or \"token service\" is closer to the truth. The flow is about taking in a JWT, _authenticating_ it, and then performing an _authorization_ check to determine whether a resource server-specific token gets issued to the workload.",
           "createdAt": "2025-05-16T17:05:10Z",
           "updatedAt": "2025-05-16T17:05:10Z"
+        },
+        {
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "body": "As per our offline discussion, this should also add an appendix with examples (e.g. OAuth, AWS).\r\n",
+          "createdAt": "2025-06-27T23:57:38Z",
+          "updatedAt": "2025-06-27T23:57:38Z"
         }
       ],
       "reviews": [
