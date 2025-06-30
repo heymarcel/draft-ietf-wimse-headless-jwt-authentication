@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>WIMSE Headless JWT Authentication and Authorization</title>
+<meta content="Marcel Levy" name="author">
+<meta content="Hirsch Singhal" name="author">
+<meta content="
+       In workload-to-service communication, a common pattern is for a
+workload to present a JSON Web Token (JWT) to a remote endpoint in
+order to obtain a temporary credential for the service it ultimately
+needs to access. It is a partial adaptation for workloads of existing
+flows designed for users. Implementing this pattern combines multiple
+existing standards from different working groups and standards
+bodies. Since this pattern is not described in a specification, it
+leads to variability in interoperability. The purpose of this document
+is to capture this common workload identity practice as an RFC in
+order to obtain consistency and promote interoperability in industry. 
+    " name="description">
+<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="workload" name="keyword">
+<meta content="identity" name="keyword">
+<meta content="credential" name="keyword">
+<meta content="exchange" name="keyword">
+<meta content="draft-levy-wimse-headless-jwt-authentication-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.29.0
+    Python 3.12.11
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.6
+    lxml 5.3.1
+    platformdirs 4.3.8
+    pycountry 24.6.1
+    PyYAML 6.0.2
+    requests 2.32.4
+    setuptools 80.9.0
+    wcwidth 0.2.13
+-->
+<link href="draft-levy-wimse-headless-jwt-authentication.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+}
+dl:not(.dlNewline) > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+}
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* Comments */
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:is(:link, :focus, :hover),
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin: 2px 0.5em 0;
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">WIMSE Headless JWT Authentication and Au</td>
+<td class="right">June 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Levy &amp; Singhal</td>
+<td class="center">Expires 1 January 2026</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Workload Identity in Multi System Environments</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-levy-wimse-headless-jwt-authentication-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-06-30" class="published">30 June 2025</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2026-01-01">1 January 2026</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">M. Levy</div>
+<div class="org">SPIRL</div>
+</div>
+<div class="author">
+      <div class="author-name">H. Singhal</div>
+<div class="org">GitHub</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">WIMSE Headless JWT Authentication and Authorization</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">In workload-to-service communication, a common pattern is for a
+workload to present a JSON Web Token (JWT) to a remote endpoint in
+order to obtain a temporary credential for the service it ultimately
+needs to access. It is a partial adaptation for workloads of existing
+flows designed for users. Implementing this pattern combines multiple
+existing standards from different working groups and standards
+bodies. Since this pattern is not described in a specification, it
+leads to variability in interoperability. The purpose of this document
+is to capture this common workload identity practice as an RFC in
+order to obtain consistency and promote interoperability in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://heymarcel.github.io/draft-ietf-wimse-headless-jwt-authentication/draft-levy-wimse-headless-jwt-authentication-practices.html">https://heymarcel.github.io/draft-ietf-wimse-headless-jwt-authentication/draft-levy-wimse-headless-jwt-authentication-practices.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-levy-wimse-headless-jwt-authentication/">https://datatracker.ietf.org/doc/draft-levy-wimse-headless-jwt-authentication/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        Workload Identity in Multi System Environments  mailing list (<span><a href="mailto:wimse@ietf.org">mailto:wimse@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/wimse/">https://mailarchive.ietf.org/arch/browse/wimse/</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/wimse/">https://www.ietf.org/mailman/listinfo/wimse/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication">https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 1 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecture-and-message-fl" class="internal xref">Architecture and Message Flow</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-jwt-used-for-authentication" class="internal xref">JWT used for Authentication</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-key-discovery" class="internal xref">Key Discovery</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-jwt-format-and-processing-r" class="internal xref">JWT Format and Processing Requirements</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-jwt-format" class="internal xref">JWT Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-jwt-processsing" class="internal xref">JWT Processsing</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.1">
+                    <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-exchange-service-processing" class="internal xref">Exchange Service Processing</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.2">
+                    <p id="section-toc.1-1.6.2.2.2.2.1"><a href="#section-6.2.2" class="auto internal xref">6.2.2</a>.  <a href="#name-workload-processing" class="internal xref">Workload Processing</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-jwt-provisioning" class="internal xref">JWT Provisioning</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-trust-relationships" class="internal xref">Trust Relationships</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-issuer-trust-relationship" class="internal xref">Issuer Trust Relationship</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-workload-trust-relationship" class="internal xref">Workload Trust Relationship</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-interoperability-considerat" class="internal xref">Interoperability Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-examples" class="internal xref">Examples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-oauth-resource-server" class="internal xref">OAuth Resource Server</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-aws-service-eg-s3" class="internal xref">AWS Service (e.g. S3)</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">In workload-to-service communication, a common pattern is for a workload to use
+a JSON Web Token (JWT) to identify and authenticate itself as part of a process
+to obtain a temporary credential for the service it ultimately needs to access.
+This is done by having the workload present an asynchronously-provisioned bearer
+token in the form of a signed JWT to a remote endpoint that is associated with
+the target service. The remote endpoint verifies the JWT and then provides a
+temporary credential that the target service understands. The "bootstrap"
+problem of discovering the original JWT issuer is solved by requesting a JSON
+configuration document using the process described in OpenID Connect Discovery
+<span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span> or OAuth 2.0 Authorization Server Metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Since this pattern is not described in a specification, it leads to variability
+in interoperability. The purpose of this document is to capture this common
+workload identity practice as an RFC in order to obtain consistency and promote
+interoperability in industry.<a href="#section-1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">All terminology in this document follows <span>[<a href="#I-D.ietf-wimse-arch" class="cite xref">I-D.ietf-wimse-arch</a>]</span>.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div id="terminology">
+<section id="section-2.1">
+        <h3 id="name-terminology">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+        </h3>
+<p id="section-2.1-1">This document uses the following terms:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-2.1">
+            <p id="section-2.1-2.1.1">Workload Platform<a href="#section-2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-3">The underlying system which manages the deployment and scheduling of a Workload.
+This includes but is not limited to operating systems, orchestration services,
+and cloud providers.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-4.1">
+            <p id="section-2.1-4.1.1">Tenant<a href="#section-2.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-5">A logically isolated entity within a Workload Platform that represents a
+distinct organizational or administrative boundary <span>[<a href="#OIPD" class="cite xref">OIPD</a>]</span>. A Workload Platform
+may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-6.1">
+            <p id="section-2.1-6.1.1">Exchange Service<a href="#section-2.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-7">A remote endpoint responsible for authenticating the identity of its
+callers, and subsequently issuing a temporary credential that is compatible with
+other services within the exchange service's domain. Examples of an
+exchange service include an OAuth Authorization Server and AWS Security
+Token Service.<a href="#section-2.1-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-8.1">
+            <p id="section-2.1-8.1.1">Target Service<a href="#section-2.1-8.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-9">The service that the workload ultimately wants to access. The target service
+accepts temporary credentials issued to the workload by the exchange service.
+Examples include an OAuth resource server or AWS S3.<a href="#section-2.1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="architecture-and-message-flow">
+<section id="section-3">
+      <h2 id="name-architecture-and-message-fl">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecture-and-message-fl" class="section-name selfRef">Architecture and Message Flow</a>
+      </h2>
+<p id="section-3-1"><a href="#fig-message-flow" class="auto internal xref">Figure 1</a> illustrates the OIDC-based message flow described in <a href="#jwt-authentication" class="auto internal xref">Section 4</a>:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<span id="name-oidc-message-flow-when-used"></span><div id="fig-message-flow">
+<figure id="figure-1">
+        <div id="section-3-2.1">
+          <div class="alignLeft art-svg artwork" id="section-3-2.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="528" width="424" viewBox="0 0 424 528" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 48,80 L 48,160" fill="none" stroke="black"></path>
+              <path d="M 56,288 L 56,352" fill="none" stroke="black"></path>
+              <path d="M 80,432 L 80,512" fill="none" stroke="black"></path>
+              <path d="M 88,168 L 88,288" fill="none" stroke="black"></path>
+              <path d="M 128,352 L 128,424" fill="none" stroke="black"></path>
+              <path d="M 152,160 L 152,280" fill="none" stroke="black"></path>
+              <path d="M 184,80 L 184,160" fill="none" stroke="black"></path>
+              <path d="M 184,432 L 184,512" fill="none" stroke="black"></path>
+              <path d="M 200,288 L 200,352" fill="none" stroke="black"></path>
+              <path d="M 296,224 L 296,288" fill="none" stroke="black"></path>
+              <path d="M 360,112 L 360,216" fill="none" stroke="black"></path>
+              <path d="M 360,288 L 360,320" fill="none" stroke="black"></path>
+              <path d="M 416,224 L 416,288" fill="none" stroke="black"></path>
+              <path d="M 48,80 L 184,80" fill="none" stroke="black"></path>
+              <path d="M 192,112 L 360,112" fill="none" stroke="black"></path>
+              <path d="M 48,160 L 184,160" fill="none" stroke="black"></path>
+              <path d="M 296,224 L 416,224" fill="none" stroke="black"></path>
+              <path d="M 56,288 L 200,288" fill="none" stroke="black"></path>
+              <path d="M 296,288 L 416,288" fill="none" stroke="black"></path>
+              <path d="M 208,320 L 360,320" fill="none" stroke="black"></path>
+              <path d="M 56,352 L 200,352" fill="none" stroke="black"></path>
+              <path d="M 80,432 L 184,432" fill="none" stroke="black"></path>
+              <path d="M 80,512 L 184,512" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="368,216 356,210.4 356,221.6" fill="black" transform="rotate(90,360,216)"></polygon>
+              <polygon class="arrowhead" points="216,320 204,314.4 204,325.6" fill="black" transform="rotate(180,208,320)"></polygon>
+              <polygon class="arrowhead" points="200,112 188,106.4 188,117.6" fill="black" transform="rotate(180,192,112)"></polygon>
+              <polygon class="arrowhead" points="160,280 148,274.4 148,285.6" fill="black" transform="rotate(90,152,280)"></polygon>
+              <polygon class="arrowhead" points="136,424 124,418.4 124,429.6" fill="black" transform="rotate(90,128,424)"></polygon>
+              <polygon class="arrowhead" points="96,168 84,162.4 84,173.6" fill="black" transform="rotate(270,88,168)"></polygon>
+              <g class="text">
+                <text x="60" y="36">4)</text>
+                <text x="100" y="36">Verify</text>
+                <text x="168" y="36">signature</text>
+                <text x="96" y="52">using</text>
+                <text x="136" y="52">JWK</text>
+                <text x="204" y="84">3)</text>
+                <text x="252" y="84">Retrieve</text>
+                <text x="308" y="84">JWKs</text>
+                <text x="236" y="100">from</text>
+                <text x="300" y="100">"jwks_uri"</text>
+                <text x="116" y="116">Exchange</text>
+                <text x="112" y="132">Service</text>
+                <text x="12" y="196">2)</text>
+                <text x="40" y="196">JWT</text>
+                <text x="172" y="196">5)</text>
+                <text x="216" y="196">Provide</text>
+                <text x="52" y="212">Bearer</text>
+                <text x="224" y="212">Temporary</text>
+                <text x="48" y="228">Token</text>
+                <text x="232" y="228">Credentials</text>
+                <text x="328" y="260">JWT</text>
+                <text x="372" y="260">Issuer</text>
+                <text x="124" y="324">Workload</text>
+                <text x="228" y="340">1)</text>
+                <text x="272" y="340">Initial</text>
+                <text x="356" y="340">provisioning</text>
+                <text x="156" y="388">6)</text>
+                <text x="220" y="388">Authenticate</text>
+                <text x="292" y="388">with</text>
+                <text x="208" y="404">temporary</text>
+                <text x="292" y="404">credential</text>
+                <text x="132" y="468">Target</text>
+                <text x="136" y="484">Service</text>
+              </g>
+            </svg><a href="#section-3-2.1.1" class="pilcrow">¶</a>
+</div>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-oidc-message-flow-when-used" class="selfRef">OIDC message flow when used in a headless environment</a>
+        </figcaption></figure>
+</div>
+</section>
+</div>
+<div id="jwt-authentication">
+<section id="section-4">
+      <h2 id="name-jwt-used-for-authentication">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-jwt-used-for-authentication" class="section-name selfRef">JWT used for Authentication</a>
+      </h2>
+<p id="section-4-1">The overall message flow is seen in <a href="#fig-message-flow" class="auto internal xref">Figure 1</a>, and this
+section explains it in more detail. It assumes the workload has
+previously acquired a JWT adhering to the profile specified in
+<span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. JWT provisioning assumptions are described in more detail
+in <a href="#jwt-provisioning" class="auto internal xref">Section 6.3</a>.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4-2">
+<li id="section-4-2.1">
+          <p id="section-4-2.1.1">The workload calls a remote Exchange Service that is associated with
+the target service and presents a JWT Bearer Token as specified in Section 4
+of <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-4-2.2">
+          <p id="section-4-2.2.1">The Exchange Service takes the value from the <code>iss</code> claim and appends
+<code>/.well-known/openid-configuration</code> to retrieve the JWT Issuer's
+configuration via HTTP, as specified in <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. Alternatively, the
+OAuth 2.0 Authorization Server Metadata endpoint <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span> may be used.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-4-2.3">
+          <p id="section-4-2.3.1">The Exchange Service then retrieves the JWKs via HTTP from the <code>jwks_uri</code>
+declared in the JWT Issuer's configuration response.<a href="#section-4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-4-2.4">
+          <p id="section-4-2.4.1">Using the appropiate issuer key, the Exchange Service verifies the
+signature of the JWT Bearer Token, and validates that the workload is
+authorized to receive a temporary credential in its domain.<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-4-2.5">
+          <p id="section-4-2.5.1">Assuming successful verification, the Exchange Service then
+responds to the workload with a temporary credential suitable for
+use with the target service.<a href="#section-4-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-4-2.6">
+          <p id="section-4-2.6.1">The Workload then authenticates with the target service using the
+temporary credential.<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-4-3">This document limits discussion to HTTP, as this is the protocol predominantly
+used. Although other protocols are out of scope, this should not be read as a
+limit on their future use.<a href="#section-4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="key-discovery">
+<section id="section-5">
+      <h2 id="name-key-discovery">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-key-discovery" class="section-name selfRef">Key Discovery</a>
+      </h2>
+<p id="section-5-1">Issuer key discovery follows the steps outlined in Section 4 of
+<span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. The Exchange Service makes a request to a location that is
+well-known according to <span>[<a href="#RFC5785" class="cite xref">RFC5785</a>]</span>:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<span id="name-example-request-to-issuer-t"></span><div id="example-config-request">
+<figure id="figure-2">
+        <div class="lang-text sourcecode" id="section-5-2.1">
+<pre>
+GET /.well-known/openid-configuration HTTP/1.1
+Host: example.com
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-example-request-to-issuer-t" class="selfRef">Example request to issuer to obtain OIDC configuration</a>
+        </figcaption></figure>
+</div>
+<p id="section-5-3">For OAuth 2.0, the equivalent location is
+<code>/.well-known/oauth-authorization-server</code>. In both cases, the requester expects
+a JSON document containing configuration information. An example is provided
+here:<a href="#section-5-3" class="pilcrow">¶</a></p>
+<span id="name-example-issuer-configuratio"></span><div id="example-config-response">
+<figure id="figure-3">
+        <div class="lang-json sourcecode" id="section-5-4.1">
+<pre>
+{
+  "issuer": "https://example.com",
+  "jwks_uri": "https://example.com/.well-known/jwks.json",
+  "authorization_endpoint": "https://example.com/auth",
+  "token_endpoint": "https://example.com/token"
+}
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-example-issuer-configuratio" class="selfRef">Example issuer configuration response</a>
+        </figcaption></figure>
+</div>
+<p id="section-5-5">For the sake of the pattern described in this document, only the <code>issuer</code> and
+<code>jwks_uri</code> fields are relevant.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">Note that this key discovery mechanism does not address the question of whether
+the key itself should be trusted. This is a registration problem, and is
+discussed further in <a href="#interoperability-considerations" class="auto internal xref">Section 8</a>.<a href="#section-5-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="jwt-format-and-processing">
+<section id="section-6">
+      <h2 id="name-jwt-format-and-processing-r">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-jwt-format-and-processing-r" class="section-name selfRef">JWT Format and Processing Requirements</a>
+      </h2>
+<div id="jwt-format">
+<section id="section-6.1">
+        <h3 id="name-jwt-format">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-jwt-format" class="section-name selfRef">JWT Format</a>
+        </h3>
+<p id="section-6.1-1">An example JWT adhering to <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> is seen in <a href="#example-jwt" class="auto internal xref">Figure 4</a>. Although the
+example uses a WIMSE workload identifier (<span>[<a href="#I-D.ietf-wimse-s2s-protocol" class="cite xref">I-D.ietf-wimse-s2s-protocol</a>]</span>) in
+the subject ("sub") claim, this is not a requirement.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<span id="name-example-rfc7523-jwt"></span><div id="example-jwt">
+<figure id="figure-4">
+          <div class="lang-json sourcecode" id="section-6.1-2.1">
+<pre>
+{
+  "iss": "https://issuer.example.org",
+  "sub": "spiffe://example.org/ns/default/sa/customer-router-agent",
+  "aud": "https://auth.example.com/token",
+  "jti": "jwt-grant-id-x1y2z3a4",
+  "exp": 1744845092,
+  "iat": 1744841036
+}
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-example-rfc7523-jwt" class="selfRef">Example RFC7523 JWT</a>
+          </figcaption></figure>
+</div>
+</section>
+</div>
+<div id="jwt-processing">
+<section id="section-6.2">
+        <h3 id="name-jwt-processsing">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-jwt-processsing" class="section-name selfRef">JWT Processsing</a>
+        </h3>
+<div id="exchange-service-processing">
+<section id="section-6.2.1">
+          <h4 id="name-exchange-service-processing">
+<a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-exchange-service-processing" class="section-name selfRef">Exchange Service Processing</a>
+          </h4>
+<p id="section-6.2.1-1">The Exchange Service validates the JWT according to Section 3 in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>,
+with the following exceptions:<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.2.1-2">
+<li id="section-6.2.1-2.1">
+              <p id="section-6.2.1-2.1.1">The "sub" (subject) claim does not identify either a resource owner or an
+anonymous user.<a href="#section-6.2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-6.2.1-2.2">
+              <p id="section-6.2.1-2.2.1">The "sub" claim need not correspond to the "client id" of an OAuth client.<a href="#section-6.2.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-6.2.1-3">The Exchange Service validates the signature using the key discovered by the
+process described in <a href="#key-discovery" class="auto internal xref">Section 5</a>.<a href="#section-6.2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="workload-processing">
+<section id="section-6.2.2">
+          <h4 id="name-workload-processing">
+<a href="#section-6.2.2" class="section-number selfRef">6.2.2. </a><a href="#name-workload-processing" class="section-name selfRef">Workload Processing</a>
+          </h4>
+<p id="section-6.2.2-1">The workload is considered the client in this interaction. It can treat the JWT
+acquired during provisioning as an opaque token. It must handle any error
+reponse from the exchange service as per Section 3.2 in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="jwt-provisioning">
+<section id="section-6.3">
+        <h3 id="name-jwt-provisioning">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-jwt-provisioning" class="section-name selfRef">JWT Provisioning</a>
+        </h3>
+<p id="section-6.3-1">The workload is provisioned with a JWT from a trusted source. This can be the
+underlying Workload Platform, or a separate issuing system. Regardless of the
+actual mechanism, JWT provisioning relies on a registration mechanism that
+establishes mutually-trusted, secure connections between the workload and the
+JWT provisioner.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3-2">This provisioning mechanism illustrates a key difference from flows defined in
+<span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> and <span>[<a href="#OIDC.Core" class="cite xref">OIDC.Core</a>]</span>, in that there are no client credentials or other
+shared secrets required to bootstrap the flow.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="trust-relationships">
+<section id="section-7">
+      <h2 id="name-trust-relationships">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-trust-relationships" class="section-name selfRef">Trust Relationships</a>
+      </h2>
+<p id="section-7-1">For functional headless JWT authentication, trust must be established
+at multiple levels for the authentication flow to function. For an
+authorization server to issue an access token to a workload, two
+distinct trust relationships must exist:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7-2">
+<li id="section-7-2.1">
+          <p id="section-7-2.1.1">The authorization server <span class="bcp14">MUST</span> trust the JWT issuer.<a href="#section-7-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-7-2.2">
+          <p id="section-7-2.2.1">The authorization server <span class="bcp14">MUST</span> trust the specific workload based on
+claims within the JWT bearer token.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-7-3">These two trust relationships serve different purposes and <span class="bcp14">SHOULD</span> be
+managed independently as outlined below.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">An example of the differences between issuer and workload trust
+relationships are three workload instances (A, B and C) that are all
+presenting JWT Bearer Tokens issued from the same JWT Issuer. This
+means that they build upon the trust relationship between the JWT
+issuer and authorization server. One workload instance has a specific
+workload trust relationship with the authorization server based on its
+subject identifier (the <code>sub</code> claim). It requires a very specific
+identifier which needs to match exactly. Another one makes use of a
+hierarchy within the subject identifier and the last one uses a
+combination of subject, audience and a custom claim as a basis for the
+trust relationship.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7-5">
+<pre>
+           ┌──────────────────────┐
+           │                      │
+           │ Authorization Server │◄─────────────────┐
+           │                      │                  │
+           └──────────────────────┘        Issuer trust relationship
+                ▲     ▲     ▲                        │
+                │     │     │                        │
+                │     │     │                        ▼
+             Individual workload              ┌─────────────┐
+             trust relationships              │             │
+                │     │     │                 │ JWT Issuer  │
+       ┌────────┘     │     └─────────┐       │             │
+       │              │               │       └──────┬──────┘
+       │              │               │              │
+       │              │               │              │
+       ▼              ▼               ▼              │
+┌────────────┐  ┌────────────┐  ┌────────────┐   Issue JWT
+│            │  │            │  │            │  Bearer Tokens
+│ Workload A │  │ Workload B │  │ Workload C │       │
+│            │  │            │  │            │       │
+└────────────┘  └────────────┘  └────────────┘       │
+       ▲              ▲                ▲             │
+       └──────────────┴────────────────┴─────────────┘
+</pre><a href="#section-7-5" class="pilcrow">¶</a>
+</div>
+<div id="issuer-trust-relationship">
+<section id="section-7.1">
+        <h3 id="name-issuer-trust-relationship">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-issuer-trust-relationship" class="section-name selfRef">Issuer Trust Relationship</a>
+        </h3>
+<p id="section-7.1-1">This trust relationship is between the Authorization Server and the
+JWT Issuer only. It represents the foundational level of trust and
+determines if the JWT Bearer Token a workload presents is accepted.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">How this relationship is established is out of scope for this
+document. A possible approach for this implementation is maintaining a
+list of OAuth Authorization Server Metadata endpoints which instruct
+the authorization server to trust a specific issuer including the
+discovery of valid keys for that issuer via <code>jwks</code>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">This trust is typically established at a global or tenant-wide level,
+is subject to organizational policy and governance controls. Changes
+to issuer trust affect all workloads associated with that issuer
+simultaneously.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="workload-trust-relationship">
+<section id="section-7.2">
+        <h3 id="name-workload-trust-relationship">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-workload-trust-relationship" class="section-name selfRef">Workload Trust Relationship</a>
+        </h3>
+<p id="section-7.2-1">Workload trust establishment builds upon issuer trust and focuses
+specifically on the relationship between the authorization server and
+individual workloads. Once the Bearer JWT token is authenticated the
+authorization server must determine if the specific workload
+identified in the JWT claims should be authorized.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">The specifics of the claims are described in <a href="#jwt-format" class="auto internal xref">Section 6.1</a>.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<p id="section-7.2-3">This trust is typically established individually and subject to
+different policy and governance controls.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="interoperability-considerations">
+<section id="section-8">
+      <h2 id="name-interoperability-considerat">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
+      </h2>
+<p id="section-8-1">In order for the workload to access the target service,<a href="#section-8-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-2">
+<li id="section-8-2.1">
+          <p id="section-8-2.1.1">The JWT Issuer must be recognized by the Exchange Service,<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.2">
+          <p id="section-8-2.2.1">Claims in the JWT are inspected and used to determine the subject, or
+principal, of the temporary credential issued to access the target service,<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.3">
+          <p id="section-8-2.3.1">And the resulting temporary credential must be authorized to access the
+target service.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-8-3">Step #1 requires the prior configuration of an explicit trust relationship
+between the Exchange Service and the JWT Issuer, and depends on
+vendor-specific configuration. Dynamic client registration standards (<span>[<a href="#RFC7591" class="cite xref">RFC7591</a>]</span>
+and <span>[<a href="#OIDC.Dynamic" class="cite xref">OIDC.Dynamic</a>]</span>) explicitly place it out of scope.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">Step #2 is a processing rule that is also previously-configured in an
+implementation-dependent manner. As an example of current practice for
+configuration of Steps #2 and #3, see <span>[<a href="#GitHub" class="cite xref">GitHub</a>]</span>.<a href="#section-8-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-9-1">This document illustrates a common pattern in trust domain federation. However,
+the "identity exchange" Step #2 in <a href="#interoperability-considerations" class="auto internal xref">Section 8</a> is not
+standardized. In practice, the Workload Platform and the Resource Server
+platform define principals differently, and the translation mechanism between
+the two identities is implemented differently by each Resource Server platform.
+This lack of standardization is not merely inconvenient; it is a rich source of
+privilege escalation attacks. This is particularly true when both the Workload
+Platform and the Resource Server platform are multi-tenanted.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">The following recommendations apply to configurations that control the
+"identity exchange" step that controls the translation of the workload
+JWT to a Resource Server identity:<a href="#section-9-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-9-3">
+<li id="section-9-3.1">
+          <p id="section-9-3.1.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD</span>
+rely on a JWT issuing key bound to a single Tenant of the workload platform,
+rather than a single JWT issuing key for the Workload Platform.<a href="#section-9-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-9-3.2">
+          <p id="section-9-3.2.1">The configuration <span class="bcp14">SHOULD</span> use specific JWT claims to prevent any JWT signed by
+the JWT Issuer from being used to impersonate any Resource Server principal.<a href="#section-9-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-9-3.3">
+          <p id="section-9-3.3.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD NOT</span> solely rely on JWT claims that can be controlled by any Tenant. The
+configuration <span class="bcp14">MAY</span> rely on a "tenant" claim, if the claim value is
+issuer-controlled and corresponds to a single Tenant.<a href="#section-9-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-9-3.4">
+          <p id="section-9-3.4.1">The configuration <span class="bcp14">SHOULD NOT</span> permit the transcription of JWT claims to the
+Resource Server principal without performing additional validation.<a href="#section-9-3.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-9-4">The security considerations in section 8 of <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span> generally apply. As bearer
+tokens, stolen JWTs are particularly valuable to attackers:<a href="#section-9-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-9-5">
+<li id="section-9-5.1">
+          <p id="section-9-5.1.1">A secure channel (e.g. TLS) <span class="bcp14">MUST</span> be used when providing a JWT for
+authentication.<a href="#section-9-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-9-5.2">
+          <p id="section-9-5.2.1">JWTs <span class="bcp14">SHOULD</span> be protected from unauthorized access using operating system or
+platform access controls.<a href="#section-9-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-9-5.3">
+          <p id="section-9-5.3.1">JWT validity <span class="bcp14">SHOULD</span> be set to the shortest possible duration allowable by
+overall system availability constraints.<a href="#section-9-5.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-10">
+      <h2 id="name-iana-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-10-1">This document has no IANA actions.<a href="#section-10-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="examples">
+<section id="section-11">
+      <h2 id="name-examples">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<p id="section-11-1">This section documents examples of the JWT headless authentication and
+authorization pattern in use with various target service types.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<div id="oauth-resource-server">
+<section id="section-11.1">
+        <h3 id="name-oauth-resource-server">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-oauth-resource-server" class="section-name selfRef">OAuth Resource Server</a>
+        </h3>
+<p id="section-11.1-1">To use headless JWT authentication and authorization with a protected resource,
+workloads use the following steps to obtain a suitable access token:<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-11.1-2">
+<li id="section-11.1-2.1">
+            <p id="section-11.1-2.1.1">The workload calls an authorization server's token endpoint and presents a
+JWT bearer token as specified in Section 4 of <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-11.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.1-2.2">
+            <p id="section-11.1-2.2.1">The authorization server verifies the signature of the JWT bearer token
+following the procedure specified in this document, and validates that the
+workload is authorized to receive an access token.<a href="#section-11.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.1-2.3">
+            <p id="section-11.1-2.3.1">Assuming successful verification, the authorization server then responds to
+the workload with an access token suitable for use with the resource server.<a href="#section-11.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="aws-service-eg-s3">
+<section id="section-11.2">
+        <h3 id="name-aws-service-eg-s3">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-aws-service-eg-s3" class="section-name selfRef">AWS Service (e.g. S3)</a>
+        </h3>
+<p id="section-11.2-1">To use headless JWT authentication and authorization with an AWS service such
+as S3, workloads use the following steps to obtain a suitable access token:<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-11.2-2">
+<li id="section-11.2-2.1">
+            <p id="section-11.2-2.1.1">The workload makes an AssumeRoleWithWebIdentity call to the AWS STS
+service and presents a JWT bearer token in addition to the ARN of the role
+that the workload wishes to assume.<a href="#section-11.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.2-2.2">
+            <p id="section-11.2-2.2.1">AWS STS verifies the signature of the JWT bearer token following the
+procedure specified in this document, and validates that the workload is
+authorized to assume the requested role.<a href="#section-11.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.2-2.3">
+            <p id="section-11.2-2.3.1">Assuming successful verification, AWS STS then responds to the workload with
+temporary credentials, including a secret access key, for use with any
+further AWS service.<a href="#section-11.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-12">
+      <h2 id="name-references">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-12.1">
+        <h3 id="name-normative-references">
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="OIDC.Core">[OIDC.Core]</dt>
+        <dd>
+<span class="refAuthor">Sakimura, N.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">de Medeiros, B.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"OpenID Connect Core 1.0 incorporating errata set 2"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="OIDC.Discovery">[OIDC.Discovery]</dt>
+        <dd>
+<span class="refAuthor">Sakimura, N.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Jones, M.</span>, and <span class="refAuthor">E. Jay</span>, <span class="refTitle">"OpenID Connect Discovery 1.0 incorporating errata set 2"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-discovery-1_0.html">https://openid.net/specs/openid-connect-discovery-1_0.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="OIDC.Dynamic">[OIDC.Dynamic]</dt>
+        <dd>
+<span class="refAuthor">Sakimura, N.</span>, <span class="refAuthor">Bradley, J.</span>, and <span class="refAuthor">M. Jones</span>, <span class="refTitle">"OpenID Connect Dynamic Client Registration 1.0 incorporating errata set 2"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://openid.net/specs/openid-connect-registration-1_0.html">https://openid.net/specs/openid-connect-registration-1_0.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5785">[RFC5785]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">E. Hammer-Lahav</span>, <span class="refTitle">"Defining Well-Known Uniform Resource Identifiers (URIs)"</span>, <span class="seriesInfo">RFC 5785</span>, <span class="seriesInfo">DOI 10.17487/RFC5785</span>, <time datetime="2010-04" class="refDate">April 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5785">https://www.rfc-editor.org/rfc/rfc5785</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6749">[RFC6749]</dt>
+        <dd>
+<span class="refAuthor">Hardt, D., Ed.</span>, <span class="refTitle">"The OAuth 2.0 Authorization Framework"</span>, <span class="seriesInfo">RFC 6749</span>, <span class="seriesInfo">DOI 10.17487/RFC6749</span>, <time datetime="2012-10" class="refDate">October 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6749">https://www.rfc-editor.org/rfc/rfc6749</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7521">[RFC7521]</dt>
+        <dd>
+<span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Mortimore, C.</span>, <span class="refAuthor">Jones, M.</span>, and <span class="refAuthor">Y. Goland</span>, <span class="refTitle">"Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants"</span>, <span class="seriesInfo">RFC 7521</span>, <span class="seriesInfo">DOI 10.17487/RFC7521</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7521">https://www.rfc-editor.org/rfc/rfc7521</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7523">[RFC7523]</dt>
+        <dd>
+<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Campbell, B.</span>, and <span class="refAuthor">C. Mortimore</span>, <span class="refTitle">"JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants"</span>, <span class="seriesInfo">RFC 7523</span>, <span class="seriesInfo">DOI 10.17487/RFC7523</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7523">https://www.rfc-editor.org/rfc/rfc7523</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7591">[RFC7591]</dt>
+        <dd>
+<span class="refAuthor">Richer, J., Ed.</span>, <span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Bradley, J.</span>, <span class="refAuthor">Machulak, M.</span>, and <span class="refAuthor">P. Hunt</span>, <span class="refTitle">"OAuth 2.0 Dynamic Client Registration Protocol"</span>, <span class="seriesInfo">RFC 7591</span>, <span class="seriesInfo">DOI 10.17487/RFC7591</span>, <time datetime="2015-07" class="refDate">July 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7591">https://www.rfc-editor.org/rfc/rfc7591</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8414">[RFC8414]</dt>
+      <dd>
+<span class="refAuthor">Jones, M.</span>, <span class="refAuthor">Sakimura, N.</span>, and <span class="refAuthor">J. Bradley</span>, <span class="refTitle">"OAuth 2.0 Authorization Server Metadata"</span>, <span class="seriesInfo">RFC 8414</span>, <span class="seriesInfo">DOI 10.17487/RFC8414</span>, <time datetime="2018-06" class="refDate">June 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8414">https://www.rfc-editor.org/rfc/rfc8414</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-12.2">
+        <h3 id="name-informative-references">
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="GitHub">[GitHub]</dt>
+        <dd>
+<span class="refTitle">"About security hardening with OpenID Connect"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect">https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-wimse-arch">[I-D.ietf-wimse-arch]</dt>
+        <dd>
+<span class="refAuthor">Salowey, J. A.</span>, <span class="refAuthor">Rosomakho, Y.</span>, and <span class="refAuthor">H. Tschofenig</span>, <span class="refTitle">"Workload Identity in a Multi System Environment (WIMSE) Architecture"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-arch-04</span>, <time datetime="2025-03-02" class="refDate">2 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-arch-04">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-arch-04</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-wimse-s2s-protocol">[I-D.ietf-wimse-s2s-protocol]</dt>
+        <dd>
+<span class="refAuthor">Campbell, B.</span>, <span class="refAuthor">Salowey, J.</span>, <span class="refAuthor">Schwenkschuster, A.</span>, and <span class="refAuthor">Y. Sheffer</span>, <span class="refTitle">"WIMSE Workload to Workload Authentication"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wimse-s2s-protocol-05</span>, <time datetime="2025-06-19" class="refDate">19 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-05">https://datatracker.ietf.org/doc/html/draft-ietf-wimse-s2s-protocol-05</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="OIPD">[OIPD]</dt>
+      <dd>
+<span class="refTitle">"OpenID Provider Commands 1.0"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://openid.net/specs/openid-provider-commands-1_0.html">https://openid.net/specs/openid-provider-commands-1_0.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">The authors would like to thank the following people for contributions
+to this document: Evan Gilman, Pieter Kasselman, Darin McAdams, and
+Arndt Schwenkschuster.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Marcel Levy</span></div>
+<div dir="auto" class="left"><span class="org">SPIRL</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:heymarcel@gmail.com" class="email">heymarcel@gmail.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Hirsch Singhal</span></div>
+<div dir="auto" class="left"><span class="org">GitHub</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:hpsin@github.com" class="email">hpsin@github.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
