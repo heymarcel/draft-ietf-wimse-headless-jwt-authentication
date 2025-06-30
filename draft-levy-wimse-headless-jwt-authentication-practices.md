@@ -277,7 +277,7 @@ the subject ("sub") claim, this is not a requirement.
 
 ## JWT Processsing {#jwt-processing}
 
-### Exchange Service Processing {#authorization-server-processing}
+### Exchange Service Processing {#exchange-service-processing}
 
 The Exchange Service validates the JWT according to Section 3 in [RFC7523],
 with the following exceptions:
@@ -293,7 +293,7 @@ process described in {{key-discovery}}.
 
 The workload is considered the client in this interaction. It can treat the JWT
 acquired during provisioning as an opaque token. It must handle any error
-reponse from the authorization server as per Section 3.2 in [RFC7523].
+reponse from the exchange service as per Section 3.2 in [RFC7523].
 
 ## JWT Provisioning {#jwt-provisioning}
 
@@ -376,3 +376,33 @@ This document has no IANA actions.
 The authors would like to thank the following people for their feedback and
 reviews of the document: Evan Gilman, Pieter Kasselman, Darin McAdams, and Arndt
 Schwenkschuster.
+
+# Examples
+This section documents examples of the JWT headless authentication and
+authorization pattern in use with various target service types.
+
+## OAuth Resource Server
+To use headless JWT authentication and authorization with a protected resource,
+workloads use the following steps to obtain a suitable access token:
+
+1. The workload calls an authorization server's token endpoint and presents a
+   JWT bearer token as specified in Section 4 of [RFC7523].
+2. The authorization server verifies the signature of the JWT bearer token
+   following the procedure specified in this document, and validates that the
+   workload is authorized to receive an access token.
+3. Assuming successful verification, the authorization server then responds to
+   the workload with an access token suitable for use with the resource server.
+
+## AWS Service (e.g. S3)
+To use headless JWT authentication and authorization with an AWS service such
+as S3, workloads use the following steps to obtain a suitable access token:
+
+1. The workload calls the AssumeRoleWithWebIdentity endpoint on the AWS STS
+   service and presents a JWT bearer token in addition to the ARN of the role
+   that the workload wishes to assume.
+2. AWS STS verifies the signature of the JWT bearer token following the
+   procedure specified in this document, and validates that the workload is
+   authorized to assume the requested role.
+3. Assuming successful verification, AWS STS then responds to the workload with
+   temporary credentials, including a secret access key, for use with any
+   further AWS service.
