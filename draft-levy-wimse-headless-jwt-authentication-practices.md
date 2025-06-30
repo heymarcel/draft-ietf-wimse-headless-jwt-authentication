@@ -70,6 +70,7 @@ normative:
       - ins: M. Jones
 
 informative:
+  RFC8707:
   I-D.ietf-wimse-arch:
   I-D.ietf-wimse-s2s-protocol:
   GitHub:
@@ -406,8 +407,11 @@ vendor-specific configuration. Dynamic client registration standards ([RFC7591]
 and [OIDC.Dynamic]) explicitly place it out of scope.
 
 Step \#2 is a processing rule that is also previously-configured in an
-implementation-dependent manner. As an example of current practice for
-configuration of Steps \#2 and \#3, see [GitHub].
+implementation-dependent manner. Aside from the claims in the JWT, it
+is also possible to indicate information about the Resource Server
+principal in the request as specified in [RFC8707], where the
+principal is treated as a resource. As an example of current practice
+for configuration of Steps \#2 and \#3, see [GitHub].
 
 # Security Considerations {#security-considerations}
 
@@ -425,10 +429,13 @@ The following recommendations apply to configurations that control the
 JWT to a Resource Server identity:
 
 1. When a Workload Platform contains multiple Tenants, the configuration SHOULD
-   rely on a JWT issuing key bound to a single Tenant of the workload platform,
+   rely on a JWT issuing key bound to a single Tenant of the Workload Platform,
    rather than a single JWT issuing key for the Workload Platform.
-2. The configuration SHOULD use specific JWT claims to prevent any JWT signed by
-   the JWT Issuer from being used to impersonate any Resource Server principal.
+2. The configuration SHOULD use specific JWT claims prevent any JWT
+   signed by the JWT Issuer from being used to impersonate any
+   Resource Server principal. As examples, this could be achieved with
+   (1) a unique combination of "sub", "issuer", and "audience", or (2)
+   custom claims as defined by the Resource Server.
 3. When a Workload Platform contains multiple Tenants, the configuration SHOULD
    NOT solely rely on JWT claims that can be controlled by any Tenant. The
    configuration MAY rely on a "tenant" claim, if the claim value is
