@@ -10,7 +10,7 @@ Expires: 1 January 2026                                           GitHub
 
 
           WIMSE Headless JWT Authentication and Authorization
-     draft-levy-wimse-headless-jwt-authentication-practices-latest
+          draft-levy-wimse-headless-jwt-authentication-latest
 
 Abstract
 
@@ -35,7 +35,7 @@ About This Document
    authentication/draft-levy-wimse-headless-jwt-authentication-
    practices.html.  Status information for this document may be found at
    https://datatracker.ietf.org/doc/draft-levy-wimse-headless-jwt-
-   authentication-practices/.
+   authentication/.
 
    Discussion of this document takes place on the Workload Identity in
    Multi System Environments mailing list (mailto:wimse@ietf.org), which
