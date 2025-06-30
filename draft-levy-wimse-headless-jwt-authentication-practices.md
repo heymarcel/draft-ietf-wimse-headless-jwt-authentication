@@ -97,7 +97,7 @@ consistency and promote interoperability in industry.
 
 # Introduction
 
-In workload-to-service communication, a common pattern is for a workloads to use
+In workload-to-service communication, a common pattern is for a workload to use
 a JSON Web Token (JWT) to identify and authenticate itself as part of a process
 to obtain a temporary credential for the service it ultimately needs to access.
 This is done by having the workload present an asynchronously-provisioned bearer
@@ -137,13 +137,19 @@ distinct organizational or administrative boundary [OIPD]. A Workload Platform
 may have a single Tenant, or multiple Tenants. The Tenant may contain Accounts
 managed by individuals, or may contain Accounts managed by an organization.
 
-* Authentication Service
+* Exchange Service
 
-A remotely-reachable endpoint responsible for authenticating the identity of its
+A remote endpoint responsible for authenticating the identity of its
 callers, and subsequently issuing a temporary credential that is compatible with
-other services within the authentication service's domain. Examples of an
-authentication service include an OAuth Authorization Server and AWS' Security
+other services within the exchange service's domain. Examples of an
+exchange service include an OAuth Authorization Server and AWS' Security
 Token Service.
+
+* Target Service
+
+The service that the workload ultimately wants to access. The target service
+accepts temporary credentials issued to the workload by the exchange service.
+Examples include an OAuth resource server or AWS' S3.
 
 # Architecture and Message Flow {#architecture-and-message-flow}
 
@@ -156,7 +162,7 @@ Token Service.
 
      +----------------+ 3) Retrieve JWKs
      |                |    from "jwks_uri"
-     | Authentication +<--------------------.
+     |    Exchange    +<--------------------.
      |    Service     |                     |
      |                |                     |
      +----+-------+---+                     |
@@ -195,19 +201,19 @@ adhering to the profile specified in [RFC7523]. JWT provisioning assumptions are
 described in more detail in {{jwt-provisioning}}.
 
 
-1. The workload calls a remote Authentication Service that is associated with
-   the target service and presents a
-   JWT Bearer Token as specified in Section 4 of [RFC7523].
-2. The Authentication Service takes the value from the `iss` claim and appends
+1. The workload calls a remote Exchange Service that is associated with
+   the target service and presents a JWT Bearer Token as specified in Section 4
+   of [RFC7523].
+2. The Exchange Service takes the value from the `iss` claim and appends
    `/.well-known/openid-configuration` to retrieve the JWT Issuer's
    configuration via HTTP, as specified in [OIDC.Discovery]. Alternatively, the
    OAuth 2.0 Authorization Server Metadata endpoint [RFC8414] may be used.
-3. The Authentication Service then retrieves the JWKs via HTTP from the `jwks_uri`
+3. The Exchange Service then retrieves the JWKs via HTTP from the `jwks_uri`
    declared in the JWT Issuer's configuration response.
-4. Using the appropiate issuer key, the Authentication Service verifies the
+4. Using the appropiate issuer key, the Exchange Service verifies the
    signature of the JWT Bearer Token, and validates that the workload is
    authorized to receive a temporary credential in its domain.
-5. Assuming successful verification, the Authentication Service then responds to
+5. Assuming successful verification, the Exchange Service then responds to
    the workload with a temporary credential suitable for use with the target service.
 6. The Workload then authenticates with the target service using the temporary credential.
 
@@ -218,7 +224,7 @@ limit on their future use.
 # Key Discovery {#key-discovery}
 
 Issuer key discovery follows the steps outlined in Section 4 of
-[OIDC.Discovery]. The Authentication Service makes a request to a location that is
+[OIDC.Discovery]. The Exchange Service makes a request to a location that is
 well-known according to [RFC5785]:
 
 ~~~ text
@@ -271,16 +277,16 @@ the subject ("sub") claim, this is not a requirement.
 
 ## JWT Processsing {#jwt-processing}
 
-### Authorization Server Processing {#authorization-server-processing}
+### Exchange Service Processing {#authorization-server-processing}
 
-The authentication service validates the JWT according to Section 3 in [RFC7523],
+The Exchange Service validates the JWT according to Section 3 in [RFC7523],
 with the following exceptions:
 
 1. The "sub" (subject) claim does not identify either a resource owner or an
    anonymous user.
 2. The "sub" claim need not correspond to the "client id" of an OAuth client.
 
-The authentication service validates the signature using the key discovered by the
+The Exchange Service validates the signature using the key discovered by the
 process described in {{key-discovery}}.
 
 ### Workload Processing {#workload-processing}
@@ -305,14 +311,14 @@ shared secrets required to bootstrap the flow.
 
 In order for the workload to access the target service,
 
-1. The JWT Issuer must be recognized by the Authenticationtion Service,
+1. The JWT Issuer must be recognized by the Exchange Service,
 2. Claims in the JWT are inspected and used to determine the subject, or
    principal, of the temporary credential issued to access the target service,
 3. And the resulting temporary credential must be authorized to access the
    target service.
 
 Step \#1 requires the prior configuration of an explicit trust relationship
-between the Authentication Service and the JWT Issuer, and depends on
+between the Exchange Service and the JWT Issuer, and depends on
 vendor-specific configuration. Dynamic client registration standards ([RFC7591]
 and [OIDC.Dynamic]) explicitly place it out of scope.
 
