@@ -142,14 +142,14 @@ managed by individuals, or may contain Accounts managed by an organization.
 A remote endpoint responsible for authenticating the identity of its
 callers, and subsequently issuing a temporary credential that is compatible with
 other services within the exchange service's domain. Examples of an
-exchange service include an OAuth Authorization Server and AWS' Security
+exchange service include an OAuth Authorization Server and AWS Security
 Token Service.
 
 * Target Service
 
 The service that the workload ultimately wants to access. The target service
 accepts temporary credentials issued to the workload by the exchange service.
-Examples include an OAuth resource server or AWS' S3.
+Examples include an OAuth resource server or AWS S3.
 
 # Architecture and Message Flow {#architecture-and-message-flow}
 
@@ -397,7 +397,7 @@ workloads use the following steps to obtain a suitable access token:
 To use headless JWT authentication and authorization with an AWS service such
 as S3, workloads use the following steps to obtain a suitable access token:
 
-1. The workload calls the AssumeRoleWithWebIdentity endpoint on the AWS STS
+1. The workload makes an AssumeRoleWithWebIdentity call to the AWS STS
    service and presents a JWT bearer token in addition to the ARN of the role
    that the workload wishes to assume.
 2. AWS STS verifies the signature of the JWT bearer token following the
