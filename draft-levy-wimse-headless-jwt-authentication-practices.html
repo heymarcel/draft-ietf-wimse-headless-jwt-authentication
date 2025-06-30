@@ -8,15 +8,16 @@
 <meta content="Marcel Levy" name="author">
 <meta content="Hirsch Singhal" name="author">
 <meta content="
-       In workload-to-service communication, a common pattern is for a workload to
-present a JSON Web Token (JWT) to an authorization server in order to obtain an
-access token for the service it needs to access. It is a partial adaptation for
-workloads of existing flows designed for users. Implementing this pattern
-combines multiple existing standards from different working groups and standards
-bodies. Since this pattern is not described in a specification, it leads to
-variability in interoperability. The purpose of this document is to capture this
-common workload identity practice as an RFC in order to obtain consistency and
-promote interoperability in industry. 
+       In workload-to-service communication, a common pattern is for a
+workload to present a JSON Web Token (JWT) to a remote endpoint in
+order to obtain a temporary credential for the service it ultimately
+needs to access. It is a partial adaptation for workloads of existing
+flows designed for users. Implementing this pattern combines multiple
+existing standards from different working groups and standards
+bodies. Since this pattern is not described in a specification, it
+leads to variability in interoperability. The purpose of this document
+is to capture this common workload identity practice as an RFC in
+order to obtain consistency and promote interoperability in industry. 
     " name="description">
 <meta content="xml2rfc 3.29.0" name="generator">
 <meta content="workload" name="keyword">
@@ -1060,7 +1061,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Levy &amp; Singhal</td>
-<td class="center">Expires 26 December 2025</td>
+<td class="center">Expires 1 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1074,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-levy-wimse-headless-jwt-authentication-practices-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-24" class="published">24 June 2025</time>
+<time datetime="2025-06-30" class="published">30 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-26">26 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-01-01">1 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1095,15 +1096,16 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">WIMSE Headless JWT Authentication and Authorization</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">In workload-to-service communication, a common pattern is for a workload to
-present a JSON Web Token (JWT) to an authorization server in order to obtain an
-access token for the service it needs to access. It is a partial adaptation for
-workloads of existing flows designed for users. Implementing this pattern
-combines multiple existing standards from different working groups and standards
-bodies. Since this pattern is not described in a specification, it leads to
-variability in interoperability. The purpose of this document is to capture this
-common workload identity practice as an RFC in order to obtain consistency and
-promote interoperability in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">In workload-to-service communication, a common pattern is for a
+workload to present a JSON Web Token (JWT) to a remote endpoint in
+order to obtain a temporary credential for the service it ultimately
+needs to access. It is a partial adaptation for workloads of existing
+flows designed for users. Implementing this pattern combines multiple
+existing standards from different working groups and standards
+bodies. Since this pattern is not described in a specification, it
+leads to variability in interoperability. The purpose of this document
+is to capture this common workload identity practice as an RFC in
+order to obtain consistency and promote interoperability in industry.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1140,7 +1142,7 @@ promote interoperability in industry.<a href="#section-abstract-1" class="pilcro
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1199,7 +1201,7 @@ promote interoperability in industry.<a href="#section-abstract-1" class="pilcro
                 <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-jwt-processsing" class="internal xref">JWT Processsing</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.1">
-                    <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-authorization-server-proces" class="internal xref">Authorization Server Processing</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-exchange-service-processing" class="internal xref">Exchange Service Processing</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.2">
                     <p id="section-toc.1-1.6.2.2.2.2.1"><a href="#section-6.2.2" class="auto internal xref">6.2.2</a>.  <a href="#name-workload-processing" class="internal xref">Workload Processing</a></p>
@@ -1232,21 +1234,32 @@ promote interoperability in industry.<a href="#section-abstract-1" class="pilcro
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-examples" class="internal xref">Examples</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-oauth-resource-server" class="internal xref">OAuth Resource Server</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-aws-service-eg-s3" class="internal xref">AWS Service (e.g. S3)</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1257,19 +1270,20 @@ promote interoperability in industry.<a href="#section-abstract-1" class="pilcro
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">In workload-to-service communication, a common pattern is for a workloads to use
+<p id="section-1-1">In workload-to-service communication, a common pattern is for a workload to use
 a JSON Web Token (JWT) to identify and authenticate itself as part of a process
-to obtain an access token for a service. This is done by having the workload
-present an asynchronously-provisioned bearer token in the form of a signed JWT
-to an Authorization Server. The Authorization Server verifies the JWT and then
-provides an OAuth access token as described in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. The "bootstrap"
+to obtain a temporary credential for the service it ultimately needs to access.
+This is done by having the workload present an asynchronously-provisioned bearer
+token in the form of a signed JWT to a remote endpoint that is associated with
+the target service. The remote endpoint verifies the JWT and then provides a
+temporary credential that the target service understands. The "bootstrap"
 problem of discovering the original JWT issuer is solved by requesting a JSON
 configuration document using the process described in OpenID Connect Discovery
 <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span> or OAuth 2.0 Authorization Server Metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span>.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Since this pattern is not described in a specification, it leads to
-variability in interoperability. The purpose of this document is to capture
-this common workload identity practice as an RFC in
-order to obtain consistency and promote interoperability in industry.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-2">Since this pattern is not described in a specification, it leads to variability
+in interoperability. The purpose of this document is to capture this common
+workload identity practice as an RFC in order to obtain consistency and promote
+interoperability in industry.<a href="#section-1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1304,6 +1318,24 @@ and cloud providers.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 <p id="section-2.1-5">A logically isolated entity within a Workload Platform that represents a
 distinct organizational or administrative boundary <span>[<a href="#OIPD" class="cite xref">OIPD</a>]</span>. A Workload Platform
 may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-6.1">
+            <p id="section-2.1-6.1.1">Exchange Service<a href="#section-2.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-7">A remote endpoint responsible for authenticating the identity of its
+callers, and subsequently issuing a temporary credential that is compatible with
+other services within the exchange service's domain. Examples of an
+exchange service include an OAuth Authorization Server and AWS Security
+Token Service.<a href="#section-2.1-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.1-8.1">
+            <p id="section-2.1-8.1.1">Target Service<a href="#section-2.1-8.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-9">The service that the workload ultimately wants to access. The target service
+accepts temporary credentials issued to the workload by the exchange service.
+Examples include an OAuth resource server or AWS S3.<a href="#section-2.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1318,7 +1350,7 @@ may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pi
 <figure id="figure-1">
         <div id="section-3-2.1">
           <div class="alignLeft art-svg artwork" id="section-3-2.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="528" width="408" viewBox="0 0 408 528" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="528" width="424" viewBox="0 0 424 528" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
               <path d="M 48,80 L 48,160" fill="none" stroke="black"></path>
               <path d="M 56,288 L 56,352" fill="none" stroke="black"></path>
               <path d="M 80,432 L 80,512" fill="none" stroke="black"></path>
@@ -1328,23 +1360,21 @@ may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pi
               <path d="M 184,80 L 184,160" fill="none" stroke="black"></path>
               <path d="M 184,432 L 184,512" fill="none" stroke="black"></path>
               <path d="M 200,288 L 200,352" fill="none" stroke="black"></path>
-              <path d="M 272,224 L 272,288" fill="none" stroke="black"></path>
-              <path d="M 336,128 L 336,216" fill="none" stroke="black"></path>
-              <path d="M 336,288 L 336,304" fill="none" stroke="black"></path>
-              <path d="M 392,224 L 392,288" fill="none" stroke="black"></path>
+              <path d="M 296,224 L 296,288" fill="none" stroke="black"></path>
+              <path d="M 360,112 L 360,216" fill="none" stroke="black"></path>
+              <path d="M 360,288 L 360,320" fill="none" stroke="black"></path>
+              <path d="M 416,224 L 416,288" fill="none" stroke="black"></path>
               <path d="M 48,80 L 184,80" fill="none" stroke="black"></path>
-              <path d="M 192,112 L 320,112" fill="none" stroke="black"></path>
+              <path d="M 192,112 L 360,112" fill="none" stroke="black"></path>
               <path d="M 48,160 L 184,160" fill="none" stroke="black"></path>
-              <path d="M 272,224 L 392,224" fill="none" stroke="black"></path>
+              <path d="M 296,224 L 416,224" fill="none" stroke="black"></path>
               <path d="M 56,288 L 200,288" fill="none" stroke="black"></path>
-              <path d="M 272,288 L 392,288" fill="none" stroke="black"></path>
-              <path d="M 208,320 L 320,320" fill="none" stroke="black"></path>
+              <path d="M 296,288 L 416,288" fill="none" stroke="black"></path>
+              <path d="M 208,320 L 360,320" fill="none" stroke="black"></path>
               <path d="M 56,352 L 200,352" fill="none" stroke="black"></path>
               <path d="M 80,432 L 184,432" fill="none" stroke="black"></path>
               <path d="M 80,512 L 184,512" fill="none" stroke="black"></path>
-              <path d="M 320,112 C 328.83064,112 336,119.16936 336,128" fill="none" stroke="black"></path>
-              <path d="M 320,320 C 328.83064,320 336,312.83064 336,304" fill="none" stroke="black"></path>
-              <polygon class="arrowhead" points="344,216 332,210.4 332,221.6" fill="black" transform="rotate(90,336,216)"></polygon>
+              <polygon class="arrowhead" points="368,216 356,210.4 356,221.6" fill="black" transform="rotate(90,360,216)"></polygon>
               <polygon class="arrowhead" points="216,320 204,314.4 204,325.6" fill="black" transform="rotate(180,208,320)"></polygon>
               <polygon class="arrowhead" points="200,112 188,106.4 188,117.6" fill="black" transform="rotate(180,192,112)"></polygon>
               <polygon class="arrowhead" points="160,280 148,274.4 148,285.6" fill="black" transform="rotate(90,152,280)"></polygon>
@@ -1361,18 +1391,18 @@ may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pi
                 <text x="308" y="84">JWKs</text>
                 <text x="236" y="100">from</text>
                 <text x="300" y="100">"jwks_uri"</text>
-                <text x="112" y="116">Authorization</text>
-                <text x="108" y="132">Server</text>
+                <text x="116" y="116">Exchange</text>
+                <text x="112" y="132">Service</text>
                 <text x="12" y="196">2)</text>
                 <text x="40" y="196">JWT</text>
                 <text x="172" y="196">5)</text>
                 <text x="216" y="196">Provide</text>
                 <text x="52" y="212">Bearer</text>
-                <text x="212" y="212">Access</text>
+                <text x="224" y="212">Temporary</text>
                 <text x="48" y="228">Token</text>
-                <text x="208" y="228">Token</text>
-                <text x="304" y="260">JWT</text>
-                <text x="348" y="260">Issuer</text>
+                <text x="232" y="228">Credentials</text>
+                <text x="328" y="260">JWT</text>
+                <text x="372" y="260">Issuer</text>
                 <text x="124" y="324">Workload</text>
                 <text x="228" y="340">1)</text>
                 <text x="272" y="340">Initial</text>
@@ -1380,10 +1410,10 @@ may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pi
                 <text x="156" y="388">6)</text>
                 <text x="220" y="388">Authenticate</text>
                 <text x="292" y="388">with</text>
-                <text x="196" y="404">Access</text>
-                <text x="248" y="404">Token</text>
-                <text x="132" y="468">Resource</text>
-                <text x="132" y="484">Server</text>
+                <text x="208" y="404">temporary</text>
+                <text x="292" y="404">credential</text>
+                <text x="132" y="468">Target</text>
+                <text x="136" y="484">Service</text>
               </g>
             </svg><a href="#section-3-2.1.1" class="pilcrow">¶</a>
 </div>
@@ -1399,43 +1429,45 @@ may have a single Tenant, or multiple Tenants.<a href="#section-2.1-5" class="pi
       <h2 id="name-jwt-used-for-authentication">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-jwt-used-for-authentication" class="section-name selfRef">JWT used for Authentication</a>
       </h2>
-<p id="section-4-1">The overall message flow is seen in <a href="#fig-message-flow" class="auto internal xref">Figure 1</a>, and this section explains
-it in more detail. It assumes the workload has previously acquired a JWT
-adhering to the profile specified in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. JWT provisioning assumptions are
-described in more detail in <a href="#jwt-provisioning" class="auto internal xref">Section 6.3</a>.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-1">The overall message flow is seen in <a href="#fig-message-flow" class="auto internal xref">Figure 1</a>, and this
+section explains it in more detail. It assumes the workload has
+previously acquired a JWT adhering to the profile specified in
+<span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. JWT provisioning assumptions are described in more detail
+in <a href="#jwt-provisioning" class="auto internal xref">Section 6.3</a>.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4-2">
 <li id="section-4-2.1">
-          <p id="section-4-2.1.1">The workload calls an Authorization Server's token endpoint and presents a
-JWT Bearer Token as specified in Section 4 of <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-4-2.1.1">The workload calls a remote Exchange Service that is associated with
+the target service and presents a JWT Bearer Token as specified in Section 4
+of <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.2">
-          <p id="section-4-2.2.1">The Authorization Server takes the value from the <code>iss</code> claim and appends
+          <p id="section-4-2.2.1">The Exchange Service takes the value from the <code>iss</code> claim and appends
 <code>/.well-known/openid-configuration</code> to retrieve the JWT Issuer's
 configuration via HTTP, as specified in <span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. Alternatively, the
 OAuth 2.0 Authorization Server Metadata endpoint <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span> may be used.<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.3">
-          <p id="section-4-2.3.1">The Authorization Server then retrieves the JWKs via HTTP from the <code>jwks_uri</code>
+          <p id="section-4-2.3.1">The Exchange Service then retrieves the JWKs via HTTP from the <code>jwks_uri</code>
 declared in the JWT Issuer's configuration response.<a href="#section-4-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.4">
-          <p id="section-4-2.4.1">Using the appropiate issuer key, the Authorization Server verifies the
+          <p id="section-4-2.4.1">Using the appropiate issuer key, the Exchange Service verifies the
 signature of the JWT Bearer Token, and validates that the workload is
-authorized to receive an Access Token.<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
+authorized to receive a temporary credential in its domain.<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.5">
-          <p id="section-4-2.5.1">Assuming successful verification, the Authorization Server then responds to
-the workload with an Access Token suitable for use with the Resource Server.<a href="#section-4-2.5.1" class="pilcrow">¶</a></p>
+          <p id="section-4-2.5.1">Assuming successful verification, the Exchange Service then
+responds to the workload with a temporary credential suitable for
+use with the target service.<a href="#section-4-2.5.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-2.6">
-          <p id="section-4-2.6.1">The Workload then authenticates with the Resource Server using the Access Token.<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
+          <p id="section-4-2.6.1">The Workload then authenticates with the target service using the
+temporary credential.<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-4-3">The headless JWT authorization grant flow combines <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> and OIDC key
-discovery to simplify workload authentication and authorization..<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">This document limits discussion to HTTP, as this is the protocol predominantly
+<p id="section-4-3">This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
-limit on their future use.<a href="#section-4-4" class="pilcrow">¶</a></p>
+limit on their future use.<a href="#section-4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="key-discovery">
@@ -1444,7 +1476,7 @@ limit on their future use.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-key-discovery" class="section-name selfRef">Key Discovery</a>
       </h2>
 <p id="section-5-1">Issuer key discovery follows the steps outlined in Section 4 of
-<span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. The Resource Server makes a request to a location that is
+<span>[<a href="#OIDC.Discovery" class="cite xref">OIDC.Discovery</a>]</span>. The Exchange Service makes a request to a location that is
 well-known according to <span>[<a href="#RFC5785" class="cite xref">RFC5785</a>]</span>:<a href="#section-5-1" class="pilcrow">¶</a></p>
 <span id="name-example-request-to-issuer-t"></span><div id="example-config-request">
 <figure id="figure-2">
@@ -1523,12 +1555,12 @@ the subject ("sub") claim, this is not a requirement.<a href="#section-6.1-1" cl
         <h3 id="name-jwt-processsing">
 <a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-jwt-processsing" class="section-name selfRef">JWT Processsing</a>
         </h3>
-<div id="authorization-server-processing">
+<div id="exchange-service-processing">
 <section id="section-6.2.1">
-          <h4 id="name-authorization-server-proces">
-<a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-authorization-server-proces" class="section-name selfRef">Authorization Server Processing</a>
+          <h4 id="name-exchange-service-processing">
+<a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-exchange-service-processing" class="section-name selfRef">Exchange Service Processing</a>
           </h4>
-<p id="section-6.2.1-1">The authorization server validates the JWT according to Section 3 in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>,
+<p id="section-6.2.1-1">The Exchange Service validates the JWT according to Section 3 in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>,
 with the following exceptions:<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-6.2.1-2">
 <li id="section-6.2.1-2.1">
@@ -1539,7 +1571,7 @@ anonymous user.<a href="#section-6.2.1-2.1.1" class="pilcrow">¶</a></p>
               <p id="section-6.2.1-2.2.1">The "sub" claim need not correspond to the "client id" of an OAuth client.<a href="#section-6.2.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
-<p id="section-6.2.1-3">The authorization server validates the signature using the key discovered by the
+<p id="section-6.2.1-3">The Exchange Service validates the signature using the key discovered by the
 process described in <a href="#key-discovery" class="auto internal xref">Section 5</a>.<a href="#section-6.2.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1550,7 +1582,7 @@ process described in <a href="#key-discovery" class="auto internal xref">Section
           </h4>
 <p id="section-6.2.2-1">The workload is considered the client in this interaction. It can treat the JWT
 acquired during provisioning as an opaque token. It must handle any error
-reponse from the authorization server as per Section 3.2 in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
+reponse from the exchange service as per Section 3.2 in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1566,8 +1598,8 @@ actual mechanism, JWT provisioning relies on a registration mechanism that
 establishes mutually-trusted, secure connections between the workload and the
 JWT provisioner.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <p id="section-6.3-2">This provisioning mechanism illustrates a key difference from flows defined in
-<span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> and <span>[<a href="#OIDC.Core" class="cite xref">OIDC.Core</a>]</span>, in that there are no client credentials involved in
-the interaction with the Authorization Server.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
+<span>[<a href="#RFC6749" class="cite xref">RFC6749</a>]</span> and <span>[<a href="#OIDC.Core" class="cite xref">OIDC.Core</a>]</span>, in that there are no client credentials or other
+shared secrets required to bootstrap the flow.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1577,17 +1609,32 @@ the interaction with the Authorization Server.<a href="#section-6.3-2" class="pi
       <h2 id="name-trust-relationships">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-trust-relationships" class="section-name selfRef">Trust Relationships</a>
       </h2>
-<p id="section-7-1">For functional headless JWT authentication, trust must be established at multiple levels for the authentication flow to function. For an authorization server to issue an access token to a workload, two distinct trust relationships must exist:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">For functional headless JWT authentication, trust must be established
+at multiple levels for the authentication flow to function. For an
+authorization server to issue an access token to a workload, two
+distinct trust relationships must exist:<a href="#section-7-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7-2">
 <li id="section-7-2.1">
           <p id="section-7-2.1.1">The authorization server <span class="bcp14">MUST</span> trust the JWT issuer.<a href="#section-7-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-7-2.2">
-          <p id="section-7-2.2.1">The authorization server <span class="bcp14">MUST</span> trust the specific workload based on claims within the JWT bearer token.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-7-2.2.1">The authorization server <span class="bcp14">MUST</span> trust the specific workload based on
+claims within the JWT bearer token.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-7-3">These two trust relationships serve different purposes and <span class="bcp14">SHOULD</span> be managed independently as outlined below.<a href="#section-7-3" class="pilcrow">¶</a></p>
-<p id="section-7-4">An example of the differences between issuer and workload trust relationships are three workload instances (A, B and C) that are all presenting JWT Bearer Tokens issued from the same JWT Issuer. This means that they build upon the trust relationship between the JWT issuer and authorization server. One workload instance has a specific workload trust relationship with the authorization server based on its subject identifier (the <code>sub</code> claim). It requires a very specific identifier which needs to match exactly. Another one makes use of a hierarchy within the subject identifier and the last one uses a combination of subject, audience and a custom claim as a basis for the trust relationship.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-3">These two trust relationships serve different purposes and <span class="bcp14">SHOULD</span> be
+managed independently as outlined below.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">An example of the differences between issuer and workload trust
+relationships are three workload instances (A, B and C) that are all
+presenting JWT Bearer Tokens issued from the same JWT Issuer. This
+means that they build upon the trust relationship between the JWT
+issuer and authorization server. One workload instance has a specific
+workload trust relationship with the authorization server based on its
+subject identifier (the <code>sub</code> claim). It requires a very specific
+identifier which needs to match exactly. Another one makes use of a
+hierarchy within the subject identifier and the last one uses a
+combination of subject, audience and a custom claim as a basis for the
+trust relationship.<a href="#section-7-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-7-5">
 <pre>
            ┌──────────────────────┐
@@ -1620,9 +1667,18 @@ the interaction with the Authorization Server.<a href="#section-6.3-2" class="pi
         <h3 id="name-issuer-trust-relationship">
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-issuer-trust-relationship" class="section-name selfRef">Issuer Trust Relationship</a>
         </h3>
-<p id="section-7.1-1">This trust relationship is between the Authorization Server and the JWT Issuer only. It represents the foundational level of trust and determines if the JWT Bearer Token a workload presents is accepted.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">How this relationship is established is out of scope for this document. A possible approach for this implementation is maintaining a list of OAuth Authorization Server Metadata endpoints which instruct the authorization server to trust a specific issuer including the discovery of valid keys for that issuer via <code>jwks</code>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
-<p id="section-7.1-3">This trust is typically established at a global or tenant-wide level, is subject to organizational policy and governance controls. Changes to issuer trust affect all workloads associated with that issuer simultaneously.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">This trust relationship is between the Authorization Server and the
+JWT Issuer only. It represents the foundational level of trust and
+determines if the JWT Bearer Token a workload presents is accepted.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">How this relationship is established is out of scope for this
+document. A possible approach for this implementation is maintaining a
+list of OAuth Authorization Server Metadata endpoints which instruct
+the authorization server to trust a specific issuer including the
+discovery of valid keys for that issuer via <code>jwks</code>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">This trust is typically established at a global or tenant-wide level,
+is subject to organizational policy and governance controls. Changes
+to issuer trust affect all workloads associated with that issuer
+simultaneously.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="workload-trust-relationship">
@@ -1630,9 +1686,14 @@ the interaction with the Authorization Server.<a href="#section-6.3-2" class="pi
         <h3 id="name-workload-trust-relationship">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-workload-trust-relationship" class="section-name selfRef">Workload Trust Relationship</a>
         </h3>
-<p id="section-7.2-1">Workload trust establishment builds upon issuer trust and focuses specifically on the relationship between the authorization server and individual workloads. Once the Bearer JWT token is authenticated the authorization server must determine if the specific workload identified in the JWT claims should be authorized.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-1">Workload trust establishment builds upon issuer trust and focuses
+specifically on the relationship between the authorization server and
+individual workloads. Once the Bearer JWT token is authenticated the
+authorization server must determine if the specific workload
+identified in the JWT claims should be authorized.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.2-2">The specifics of the claims are described in <a href="#jwt-format" class="auto internal xref">Section 6.1</a>.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
-<p id="section-7.2-3">This trust is typically established individually and subject to different policy and governance controls.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+<p id="section-7.2-3">This trust is typically established individually and subject to
+different policy and governance controls.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1642,22 +1703,22 @@ the interaction with the Authorization Server.<a href="#section-6.3-2" class="pi
       <h2 id="name-interoperability-considerat">
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-interoperability-considerat" class="section-name selfRef">Interoperability Considerations</a>
       </h2>
-<p id="section-8-1">In order for the workload to access the resource,<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">In order for the workload to access the target service,<a href="#section-8-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-8-2">
 <li id="section-8-2.1">
-          <p id="section-8-2.1.1">The JWT Issuer must be recognized by the Authorization Server,<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-8-2.1.1">The JWT Issuer must be recognized by the Exchange Service,<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-8-2.2">
           <p id="section-8-2.2.1">Claims in the JWT are inspected and used to determine the subject, or
-principal, of the access token issued for the Resource Server,<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+principal, of the temporary credential issued to access the target service,<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-8-2.3">
-          <p id="section-8-2.3.1">And the resulting Resource Server principal must be authorized to access the
-Resource.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+          <p id="section-8-2.3.1">And the resulting temporary credential must be authorized to access the
+target service.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
 <p id="section-8-3">Step #1 requires the prior configuration of an explicit trust relationship
-between the Authorization Server and the JWT Issuer, and depends on
+between the Exchange Service and the JWT Issuer, and depends on
 vendor-specific configuration. Dynamic client registration standards (<span>[<a href="#RFC7591" class="cite xref">RFC7591</a>]</span>
 and <span>[<a href="#OIDC.Dynamic" class="cite xref">OIDC.Dynamic</a>]</span>) explicitly place it out of scope.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">Step #2 is a processing rule that is also previously-configured in an
@@ -1678,9 +1739,9 @@ the two identities is implemented differently by each Resource Server platform.
 This lack of standardization is not merely inconvenient; it is a rich source of
 privilege escalation attacks. This is particularly true when both the Workload
 Platform and the Resource Server platform are multi-tenanted.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<p id="section-9-2">The following recommendations apply to configurations that control
-the "identity exchange" step that controls the translation of the workload JWT to a
-Resource Server identity:<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-2">The following recommendations apply to configurations that control the
+"identity exchange" step that controls the translation of the workload
+JWT to a Resource Server identity:<a href="#section-9-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-9-3">
 <li id="section-9-3.1">
           <p id="section-9-3.1.1">When a Workload Platform contains multiple Tenants, the configuration <span class="bcp14">SHOULD</span>
@@ -1727,15 +1788,74 @@ overall system availability constraints.<a href="#section-9-5.3.1" class="pilcro
 <p id="section-10-1">This document has no IANA actions.<a href="#section-10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-combined-references">
+<div id="examples">
 <section id="section-11">
+      <h2 id="name-examples">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<p id="section-11-1">This section documents examples of the JWT headless authentication and
+authorization pattern in use with various target service types.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<div id="oauth-resource-server">
+<section id="section-11.1">
+        <h3 id="name-oauth-resource-server">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-oauth-resource-server" class="section-name selfRef">OAuth Resource Server</a>
+        </h3>
+<p id="section-11.1-1">To use headless JWT authentication and authorization with a protected resource,
+workloads use the following steps to obtain a suitable access token:<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-11.1-2">
+<li id="section-11.1-2.1">
+            <p id="section-11.1-2.1.1">The workload calls an authorization server's token endpoint and presents a
+JWT bearer token as specified in Section 4 of <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-11.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.1-2.2">
+            <p id="section-11.1-2.2.1">The authorization server verifies the signature of the JWT bearer token
+following the procedure specified in this document, and validates that the
+workload is authorized to receive an access token.<a href="#section-11.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.1-2.3">
+            <p id="section-11.1-2.3.1">Assuming successful verification, the authorization server then responds to
+the workload with an access token suitable for use with the resource server.<a href="#section-11.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="aws-service-eg-s3">
+<section id="section-11.2">
+        <h3 id="name-aws-service-eg-s3">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-aws-service-eg-s3" class="section-name selfRef">AWS Service (e.g. S3)</a>
+        </h3>
+<p id="section-11.2-1">To use headless JWT authentication and authorization with an AWS service such
+as S3, workloads use the following steps to obtain a suitable access token:<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-11.2-2">
+<li id="section-11.2-2.1">
+            <p id="section-11.2-2.1.1">The workload makes an AssumeRoleWithWebIdentity call to the AWS STS
+service and presents a JWT bearer token in addition to the ARN of the role
+that the workload wishes to assume.<a href="#section-11.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.2-2.2">
+            <p id="section-11.2-2.2.1">AWS STS verifies the signature of the JWT bearer token following the
+procedure specified in this document, and validates that the workload is
+authorized to assume the requested role.<a href="#section-11.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-11.2-2.3">
+            <p id="section-11.2-2.3.1">Assuming successful verification, AWS STS then responds to the workload with
+temporary credentials, including a secret access key, for use with any
+further AWS service.<a href="#section-11.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-12">
       <h2 id="name-references">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-11.1">
+<section id="section-12.1">
         <h3 id="name-normative-references">
-<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="OIDC.Core">[OIDC.Core]</dt>
@@ -1786,9 +1906,9 @@ overall system availability constraints.<a href="#section-9-5.3.1" class="pilcro
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-11.2">
+<section id="section-12.2">
         <h3 id="name-informative-references">
-<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="GitHub">[GitHub]</dt>
@@ -1817,9 +1937,9 @@ overall system availability constraints.<a href="#section-9-5.3.1" class="pilcro
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">The authors would like to thank the following people for their feedback and
-reviews of the document: Evan Gilman, Pieter Kasselman, Darin McAdams, and Arndt
-Schwenkschuster.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">The authors would like to thank the following people for contributions
+to this document: Evan Gilman, Pieter Kasselman, Darin McAdams, and
+Arndt Schwenkschuster.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
