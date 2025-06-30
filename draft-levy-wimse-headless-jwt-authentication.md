@@ -3,7 +3,7 @@ title: "WIMSE Headless JWT Authentication and Authorization"
 abbrev: "WIMSE Headless JWT Authentication and Authorization"
 category: info
 
-docname: draft-levy-wimse-headless-jwt-authentication-latest
+docname: draft-levy-wimse-headless-jwt-authentication
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
