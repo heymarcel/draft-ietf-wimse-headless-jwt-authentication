@@ -83,15 +83,16 @@ informative:
 
 --- abstract
 
-In workload-to-service communication, a common pattern is for a workload to
-present a JSON Web Token (JWT) to a remote endpoint in order to obtain a
-temporary credential for the service it ultimately needs to access. It is a partial
-adaptation for workloads of existing flows designed for users. Implementing this
-pattern combines multiple existing standards from different working groups and
-standards bodies. Since this pattern is not described in a specification, it
-leads to variability in interoperability. The purpose of this document is to
-capture this common workload identity practice as an RFC in order to obtain
-consistency and promote interoperability in industry.
+In workload-to-service communication, a common pattern is for a
+workload to present a JSON Web Token (JWT) to a remote endpoint in
+order to obtain a temporary credential for the service it ultimately
+needs to access. It is a partial adaptation for workloads of existing
+flows designed for users. Implementing this pattern combines multiple
+existing standards from different working groups and standards
+bodies. Since this pattern is not described in a specification, it
+leads to variability in interoperability. The purpose of this document
+is to capture this common workload identity practice as an RFC in
+order to obtain consistency and promote interoperability in industry.
 
 --- middle
 
@@ -192,12 +193,11 @@ Examples include an OAuth resource server or AWS S3.
 
 # JWT used for Authentication {#jwt-authentication}
 
-
-
-The overall message flow is seen in {{fig-message-flow}}, and this section explains
-it in more detail. It assumes the workload has previously acquired a JWT
-adhering to the profile specified in [RFC7523]. JWT provisioning assumptions are
-described in more detail in {{jwt-provisioning}}.
+The overall message flow is seen in {{fig-message-flow}}, and this
+section explains it in more detail. It assumes the workload has
+previously acquired a JWT adhering to the profile specified in
+[RFC7523]. JWT provisioning assumptions are described in more detail
+in {{jwt-provisioning}}.
 
 
 1. The workload calls a remote Exchange Service that is associated with
@@ -212,9 +212,11 @@ described in more detail in {{jwt-provisioning}}.
 4. Using the appropiate issuer key, the Exchange Service verifies the
    signature of the JWT Bearer Token, and validates that the workload is
    authorized to receive a temporary credential in its domain.
-5. Assuming successful verification, the Exchange Service then responds to
-   the workload with a temporary credential suitable for use with the target service.
-6. The Workload then authenticates with the target service using the temporary credential.
+5. Assuming successful verification, the Exchange Service then
+   responds to the workload with a temporary credential suitable for
+   use with the target service.
+6. The Workload then authenticates with the target service using the
+   temporary credential.
 
 This document limits discussion to HTTP, as this is the protocol predominantly
 used. Although other protocols are out of scope, this should not be read as a
@@ -308,14 +310,29 @@ shared secrets required to bootstrap the flow.
 
 # Trust Relationships
 
-For functional headless JWT authentication, trust must be established at multiple levels for the authentication flow to function. For an authorization server to issue an access token to a workload, two distinct trust relationships must exist:
+For functional headless JWT authentication, trust must be established
+at multiple levels for the authentication flow to function. For an
+authorization server to issue an access token to a workload, two
+distinct trust relationships must exist:
 
 1. The authorization server MUST trust the JWT issuer.
-2. The authorization server MUST trust the specific workload based on claims within the JWT bearer token.
+2. The authorization server MUST trust the specific workload based on
+   claims within the JWT bearer token.
 
-These two trust relationships serve different purposes and SHOULD be managed independently as outlined below.
+These two trust relationships serve different purposes and SHOULD be
+managed independently as outlined below.
 
-An example of the differences between issuer and workload trust relationships are three workload instances (A, B and C) that are all presenting JWT Bearer Tokens issued from the same JWT Issuer. This means that they build upon the trust relationship between the JWT issuer and authorization server. One workload instance has a specific workload trust relationship with the authorization server based on its subject identifier (the `sub` claim). It requires a very specific identifier which needs to match exactly. Another one makes use of a hierarchy within the subject identifier and the last one uses a combination of subject, audience and a custom claim as a basis for the trust relationship.
+An example of the differences between issuer and workload trust
+relationships are three workload instances (A, B and C) that are all
+presenting JWT Bearer Tokens issued from the same JWT Issuer. This
+means that they build upon the trust relationship between the JWT
+issuer and authorization server. One workload instance has a specific
+workload trust relationship with the authorization server based on its
+subject identifier (the `sub` claim). It requires a very specific
+identifier which needs to match exactly. Another one makes use of a
+hierarchy within the subject identifier and the last one uses a
+combination of subject, audience and a custom claim as a basis for the
+trust relationship.
 
 ~~~
            ┌──────────────────────┐
@@ -345,19 +362,33 @@ An example of the differences between issuer and workload trust relationships ar
 
 ## Issuer Trust Relationship
 
-This trust relationship is between the Authorization Server and the JWT Issuer only. It represents the foundational level of trust and determines if the JWT Bearer Token a workload presents is accepted.
+This trust relationship is between the Authorization Server and the
+JWT Issuer only. It represents the foundational level of trust and
+determines if the JWT Bearer Token a workload presents is accepted.
 
-How this relationship is established is out of scope for this document. A possible approach for this implementation is maintaining a list of OAuth Authorization Server Metadata endpoints which instruct the authorization server to trust a specific issuer including the discovery of valid keys for that issuer via `jwks`.
+How this relationship is established is out of scope for this
+document. A possible approach for this implementation is maintaining a
+list of OAuth Authorization Server Metadata endpoints which instruct
+the authorization server to trust a specific issuer including the
+discovery of valid keys for that issuer via `jwks`.
 
-This trust is typically established at a global or tenant-wide level, is subject to organizational policy and governance controls. Changes to issuer trust affect all workloads associated with that issuer simultaneously.
+This trust is typically established at a global or tenant-wide level,
+is subject to organizational policy and governance controls. Changes
+to issuer trust affect all workloads associated with that issuer
+simultaneously.
 
 ## Workload Trust Relationship
 
-Workload trust establishment builds upon issuer trust and focuses specifically on the relationship between the authorization server and individual workloads. Once the Bearer JWT token is authenticated the authorization server must determine if the specific workload identified in the JWT claims should be authorized.
+Workload trust establishment builds upon issuer trust and focuses
+specifically on the relationship between the authorization server and
+individual workloads. Once the Bearer JWT token is authenticated the
+authorization server must determine if the specific workload
+identified in the JWT claims should be authorized.
 
 The specifics of the claims are described in {{jwt-format}}.
 
-This trust is typically established individually and subject to different policy and governance controls.
+This trust is typically established individually and subject to
+different policy and governance controls.
 
 # Interoperability Considerations {#interoperability-considerations}
 
@@ -389,9 +420,9 @@ This lack of standardization is not merely inconvenient; it is a rich source of
 privilege escalation attacks. This is particularly true when both the Workload
 Platform and the Resource Server platform are multi-tenanted.
 
-The following recommendations apply to configurations that control
-the "identity exchange" step that controls the translation of the workload JWT to a
-Resource Server identity:
+The following recommendations apply to configurations that control the
+"identity exchange" step that controls the translation of the workload
+JWT to a Resource Server identity:
 
 1. When a Workload Platform contains multiple Tenants, the configuration SHOULD
    rely on a JWT issuing key bound to a single Tenant of the workload platform,
@@ -418,16 +449,6 @@ tokens, stolen JWTs are particularly valuable to attackers:
 # IANA Considerations
 
 This document has no IANA actions.
-
-
---- back
-
-# Acknowledgments
-{:numbered="false"}
-
-The authors would like to thank the following people for their feedback and
-reviews of the document: Evan Gilman, Pieter Kasselman, Darin McAdams, and Arndt
-Schwenkschuster.
 
 # Examples
 This section documents examples of the JWT headless authentication and
@@ -458,3 +479,12 @@ as S3, workloads use the following steps to obtain a suitable access token:
 3. Assuming successful verification, AWS STS then responds to the workload with
    temporary credentials, including a secret access key, for use with any
    further AWS service.
+
+--- back
+
+# Acknowledgments
+{:numbered="false"}
+
+The authors would like to thank the following people for contributions
+to this document: Evan Gilman, Pieter Kasselman, Darin McAdams, and
+Arndt Schwenkschuster.
