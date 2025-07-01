@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-29T00:01:49.851551+00:00",
+  "timestamp": "2025-07-01T00:01:48.550375+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -434,7 +434,7 @@
       "id": "I_kwDOOVtHv862zqgJ",
       "title": "Avoid excessive OAuth specificity",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/18",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "heymarcel",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -445,19 +445,19 @@
       ],
       "body": "In a discussion with @evan2645, he brought up the point that not every implementation may follow the pattern _exactly_ as presented here. A client may not send a JWT to an Authorization Server directly. In that case, token acquisition would be decoupled from the authorization server. Also, the document uses the term \"Access Token\", and that may create too much of an assumption that this token is also JWT -- something it isn't in most cases. He also recommended adding some examples (e.g. AWS, GCP, Azure, Confluent Cloud). \n ",
       "createdAt": "2025-05-15T17:48:56Z",
-      "updatedAt": "2025-05-15T19:41:56Z",
-      "closedAt": null,
+      "updatedAt": "2025-06-30T20:10:16Z",
+      "closedAt": "2025-06-30T20:10:16Z",
       "comments": [
         {
           "author": "evan2645",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> A client may not send a JWT to an Authorization Server directly. In that case, token acquisition would be decoupled from the authorization server.\n\n\"Authorization server\" also carries specific meaning in OAuth , and implies use of e.g. OAuth token endpoint. That's not the case for many existing usages, for example AWS, where the authentication happens against AWS STS and not an OAuth Authorization Server.\n\nGenerally speaking, the majority of headless usages in the wild today occur without any OAuth in the picture. As such, I feel we should examine the use OAuth-specific terminology (e.g. \"resource server\") throughout the document. I see that some progress is being made on terminology definition here in this doc, that is awesome to see and I think we should continue in that direction. I'd be happy to send a draft PR with some alternatives for consideration if useful.",
           "createdAt": "2025-05-15T18:37:44Z",
           "updatedAt": "2025-05-15T18:37:44Z"
         },
         {
           "author": "evan2645",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "You mentioned to me in Slack that a PR would be useful so I put one up [here](https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/19) for reference",
           "createdAt": "2025-05-15T19:41:54Z",
           "updatedAt": "2025-05-15T19:41:54Z"
@@ -1046,28 +1046,30 @@
       "id": "PR_kwDOOVtHv86WYYvi",
       "title": "Clarify that OAuth is but one target auth realm (#18)",
       "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/pull/19",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "evan2645",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This commit includes a quick pass I made over the document in relation to #18 to serve as an example on how we could be more general about the pattern, acknowledging that OAuth may or may not be involved in these flows. This more closely matches real world usage in cloud services like AWS and GCP.\r\n\r\nI didn't put a ton of thought into the naming, and I also noticed lots of other spots that felt funny along the way, but refrained from further changes to keep the scope of this sample tight. It will have some knock-on effects as other parts of the text reference e.g. RFC 7523. I stopped short of suggesting changes in the security considerations section for that reason. Happy to continue work in this direction if useful.",
       "createdAt": "2025-05-15T19:41:05Z",
-      "updatedAt": "2025-06-27T23:57:38Z",
+      "updatedAt": "2025-06-30T23:46:59Z",
       "baseRepository": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
       "baseRefName": "main",
-      "baseRefOid": "8d1be244950872c825e52f56baf5f4123896158d",
+      "baseRefOid": "033162c05f1c3220f3b2bffe631bda7c8a96bdf8",
       "headRepository": "evan2645/draft-ietf-wimse-headless-jwt-authentication",
       "headRefName": "oauth-is-but-one-target-realm",
-      "headRefOid": "4ba3b51991f4df19dbe2bffbd12d86ccad6407d4",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "ac07bf9d66e5238d5266d972de873d58e062e1b5",
+      "closedAt": "2025-06-30T20:06:11Z",
+      "mergedAt": "2025-06-30T20:06:11Z",
+      "mergedBy": "heymarcel",
+      "mergeCommit": {
+        "oid": "35cde07f80069ea341e09af3a2478124a0ed576c"
+      },
       "comments": [
         {
           "author": "evan2645",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Thanks for the comments Marcel \ud83d\ude4f \r\n\r\nMy intention with this PR was to illustrate an example solution for the original issue #18. That said, I'd be very happy to go a level or two deeper to address your comments and prepare this PR for acceptance if there's consensus that it's a step in the right direction. Also happy to just close this or leave it as draft for a while , I'm up for whatever , just let me know what's most helpful \ud83d\ude0a ",
           "createdAt": "2025-05-15T21:08:51Z",
           "updatedAt": "2025-05-15T21:08:51Z"
@@ -1099,6 +1101,20 @@
           "body": "As per our offline discussion, this should also add an appendix with examples (e.g. OAuth, AWS).\r\n",
           "createdAt": "2025-06-27T23:57:38Z",
           "updatedAt": "2025-06-27T23:57:38Z"
+        },
+        {
+          "author": "evan2645",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for all the feedback folks , sounds like this was useful so I went ahead and flipped it to PR, and added the examples as discussed. A couple things to note:\r\n* OAuth is still a bit hazy for me so there may be some accuracy issues in the OAuth example\r\n* I see Pieter's point on the terminology and agree that \"remote endpoint\" is better ... but I also feel that too is vague, can mean many things, how is it different than the target service, etc ... so I took a shot at changing it to \"Exchange Service\" ... I hope that doesn't carry too much baggage.\r\n* I don't know if I did the formatting right or not with regards to appendix items. I tried to look at some other drafts for guidance but they were slightly different.",
+          "createdAt": "2025-06-30T17:54:33Z",
+          "updatedAt": "2025-06-30T17:54:33Z"
+        },
+        {
+          "author": "evan2645",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@heymarcel addressed your feedback",
+          "createdAt": "2025-06-30T18:20:04Z",
+          "updatedAt": "2025-06-30T18:20:04Z"
         }
       ],
       "reviews": [
@@ -1133,6 +1149,51 @@
               "updatedAt": "2025-05-15T20:29:26Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86xKELW",
+          "commit": {
+            "abbreviatedOid": "ff80f3c"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2025-06-30T18:11:39Z",
+          "updatedAt": "2025-06-30T18:13:42Z",
+          "comments": [
+            {
+              "originalPosition": 248,
+              "body": "It feels more correct to say that the \"workload makes an `AssumeRoleWithIdentity` call to the AWS STS service\"",
+              "createdAt": "2025-06-30T18:11:39Z",
+              "updatedAt": "2025-06-30T18:13:43Z"
+            },
+            {
+              "originalPosition": 68,
+              "body": "\"or AWS S3\" (just remove the apostrophe)",
+              "createdAt": "2025-06-30T18:12:06Z",
+              "updatedAt": "2025-06-30T18:13:43Z"
+            },
+            {
+              "originalPosition": 61,
+              "body": "Remove the apostrophe after \"AWS\"",
+              "createdAt": "2025-06-30T18:12:25Z",
+              "updatedAt": "2025-06-30T18:13:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOVtHv86xLIAX",
+          "commit": {
+            "abbreviatedOid": "ac07bf9"
+          },
+          "author": "heymarcel",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T20:05:15Z",
+          "updatedAt": "2025-06-30T20:05:15Z",
+          "comments": []
         }
       ]
     },
