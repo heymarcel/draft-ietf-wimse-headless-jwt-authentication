@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-03T00:02:12.327740+00:00",
+  "timestamp": "2025-07-24T00:02:04.673128+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -491,6 +491,102 @@
           "updatedAt": "2025-06-19T22:21:59Z"
         }
       ]
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOOVtHv87Byfh8",
+      "title": "Terminology should introduce the notion of Trust Domains as it can be important for the scope of this Draft",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/24",
+      "state": "OPEN",
+      "author": "identitymonk",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The credential provisioned to and used (JWT) by the workload for exchange for a temporary credential usable with a resource server might cross a trust domain boundary.\n\nThis notion is important as it could have impacts on the details of flow to use for the issuance of some types of credentials.\n\n",
+      "createdAt": "2025-07-22T06:06:59Z",
+      "updatedAt": "2025-07-22T06:06:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOOVtHv87BynAI",
+      "title": "On \"pattern is not described in a specification\"",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/25",
+      "state": "OPEN",
+      "author": "identitymonk",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The ability to obtain a set of credentials specific for a dedicated resource server, depends highly of the capabilities of the resource server in terms of inbound authorization mechanisms.\n\nI would suggest to establish a list of common resource servers capabilities. On top of my head would be:\n\n- OAuth2 Token\n- JWT Token\n- OpenID Token (not OpenID Connect)\n- SAML Assertion\n- X.509 client certificate\n- API key\n- Basic Authorization Header, aka username and password\n- Azure / GCP / AWS credentials\n\nThere will be two types of those, the opensource and the proprietary ones. For each type, a bibliography should be established.\n\nFor example, if the resource server capability is OAuth2, then the pattern is described by [RFC8693 / OAuth2 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693). Some specificities arise if the JWT issuer and the Exchange Service are not in the same Trust Domain (see #24), in this case, the flow will have to be extended to support [Identity Assertion Authorization Grant]( https://datatracker.ietf.org/doc/draft-parecki-oauth-identity-assertion-authz-grant/).\n\nPlease note that [RFC8693 / OAuth2 Token Exchange](https://datatracker.ietf.org/doc/html/rfc8693) has the ability to support SAML to OAuth Token Exchange.\n\nIt remains true that for proprietary capabilities, like for example AWS IAM Credentials, no specification can established such pattern. Still [their documentation provides the guiding rules on how to get credentials for their trust domain issued](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html).",
+      "createdAt": "2025-07-22T06:20:07Z",
+      "updatedAt": "2025-07-22T06:20:07Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOOVtHv87ByoPB",
+      "title": "Secruity Token Service might be better than Exchange Service",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/26",
+      "state": "OPEN",
+      "author": "identitymonk",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "STS or Security Token Service was introduced a long time ago as a term to describe a general token (credential) issuer.\n\nIt might worth to be evaluated as a term for the description of the flow and architecture.",
+      "createdAt": "2025-07-22T06:22:22Z",
+      "updatedAt": "2025-07-22T06:22:22Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOOVtHv87ByrpG",
+      "title": "This Draft has a lot of references to OpenID Connect while it focuses on workload bound credentials",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/27",
+      "state": "OPEN",
+      "author": "identitymonk",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "OpenID Connect means that a end-user is involved into the process of the initial credential (JWT) issuance.\n\nOn the other side, this Draft is starting the flow by a provisioning from the JWT issuer to the Workload, indicating that the presence of one user is not necessarily mandatory if even possible.\n\nThere are multiple options to move forward from this situation:\n\n- Confirm the scenario presented is for tokens issued to Workload directly without any user involved, then remove all OpenID Connect references as they are not applicable here\n- Expand that the issue of JWT to the workload might come from a delegation of authorization from a user. ",
+      "createdAt": "2025-07-22T06:27:20Z",
+      "updatedAt": "2025-07-22T06:27:20Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 28,
+      "id": "I_kwDOOVtHv87BytL_",
+      "title": "This Draft assumes that the initial credential is a JWT, is it always the case?",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/28",
+      "state": "OPEN",
+      "author": "identitymonk",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Some workloads might be issued a credential in the form of:\n\n- SAML Assertion\n- X.509 client certificate\n-  Azure / GCP / AWS credentials\n\nWould this specification benefit from expanding the scope of the description to those methods?\n",
+      "createdAt": "2025-07-22T06:29:59Z",
+      "updatedAt": "2025-07-22T06:29:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 29,
+      "id": "I_kwDOOVtHv87ByuIj",
+      "title": "The Draft establishes that the Token is opaque to the Worload while it is a JWT",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/29",
+      "state": "OPEN",
+      "author": "identitymonk",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "What happen is the token is really opaque to the workload? meaning that it is not a JWT.\n\nWould this Draft benefit from expanding the scope to include this case?",
+      "createdAt": "2025-07-22T06:31:28Z",
+      "updatedAt": "2025-07-22T06:31:28Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
