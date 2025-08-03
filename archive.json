@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-24T00:02:04.673128+00:00",
+  "timestamp": "2025-08-03T00:01:41.849591+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -585,6 +585,22 @@
       "body": "What happen is the token is really opaque to the workload? meaning that it is not a JWT.\n\nWould this Draft benefit from expanding the scope to include this case?",
       "createdAt": "2025-07-22T06:31:28Z",
       "updatedAt": "2025-07-22T06:31:28Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 30,
+      "id": "I_kwDOOVtHv87Dzn-T",
+      "title": "Security considerations for dedicated issuer URL",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/30",
+      "state": "OPEN",
+      "author": "liwadman",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Hello! \n\nTo make a quick introduction, I'm with AWS identity and I'm engaged heavily with a lot of big customers who are doing JWT-base workload identity fed, and I've been involved in setting our strategy and security responses for dealing with JWT auth.\n\n\nIn 7.1 you say something I'm a big fan of, which I interpret as \"having a dedicated issuer url\". To me this is unquestionably a good thing, and is something that AWS has set as a requirement for our partners who are multi-tenant SaaS providers who use JWTs to access their customers AWS account.\n\nIn the later versions of this, I'd love to see rationale as to \"why it's a good idea to have a dedicated issuer URL\" written down.\n\ne.g. by using a dedicated issuer url, you help ensure that in the event of any misconfiguration of the setting, policy, or code that is authorizing is not correctly doing authorization based on the JWT claims that the resource is only accessible from the JWT from that one tenant, and not all other tenants, or effectively public in the event of a platform with free signup.\n\nHappy to help build out that security consideration, and others.\n\nCheers,",
+      "createdAt": "2025-08-01T20:45:05Z",
+      "updatedAt": "2025-08-01T20:45:05Z",
       "closedAt": null,
       "comments": []
     }
