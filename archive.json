@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-25T00:02:24.165584+00:00",
+  "timestamp": "2025-10-07T00:02:14.049431+00:00",
   "repo": "heymarcel/draft-ietf-wimse-headless-jwt-authentication",
   "labels": [
     {
@@ -615,6 +615,22 @@
           "updatedAt": "2025-09-24T11:49:48Z"
         }
       ]
+    },
+    {
+      "number": 31,
+      "id": "I_kwDOOVtHv87Pz6Nx",
+      "title": "Will this be transposed into OAuth?",
+      "url": "https://github.com/heymarcel/draft-ietf-wimse-headless-jwt-authentication/issues/31",
+      "state": "OPEN",
+      "author": "JorTurFer",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Hello\nWe are quite interested on this flow because it's something that we need for our services. We use our internal IDP and we want to develop things aligned with the standards. \n\nIf this is published as WIMSE RFC, will be transposed into OAuth terminology or that's needed as second step? RFC 7523 defines the assertion type (`client_assertion_type`) `urn:ietf:params:oauth:client-assertion-type:jwt-bearer` but this proposal doesn't. Needs to be transposed into OAuth or this proposal will define it too?\n\nWe are willing to help with this (if there is something where help is needed)",
+      "createdAt": "2025-10-06T09:57:54Z",
+      "updatedAt": "2025-10-06T10:03:38Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
